@@ -1,7 +1,7 @@
 async function getAccessToken() {
   // src/services/authServiice
   const clientId = import.meta.env.VITE_COPERNICUS_CLIENT_ID;
-  const clientSecret = VITE_COPERNICUS_CLIENT_SECRET;
+  const clientSecret = import.meta.env.VITE_COPERNICUS_CLIENT_SECRET;
 
   // Send data as FormData
   const formData = new URLSearchParams();

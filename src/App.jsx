@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { getAccessToken } from "./authService";
 import "./App.css";
+import fetchSentinelData from "./sentineldata";
 
 function App() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
+  const [sentinelData, setSentinelData] = useState(null);
 
   useEffect(() => {
     async function fetchToken() {
       try {
-        const accessToken = getAccessToken;
+        const accessToken = await getAccessToken();
         setToken(accessToken);
       } catch (error) {
         setError(error.message);
@@ -17,6 +19,20 @@ function App() {
       }
     }
     fetchToken();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await fetchSentinelData();
+        setSentinelData(data);
+        console.log("Data:", data);
+      } catch (error) {
+        console.error("Error to get sentinel-data", error);
+        setError(error.message);
+      }
+    }
+    fetchData();
   }, []);
 
   return (
