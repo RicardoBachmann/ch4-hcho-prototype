@@ -28,7 +28,7 @@ function App() {
         setSentinelData(data);
         console.log("Data:", data);
       } catch (error) {
-        console.error("Error to get sentinel-data", error);
+        console.error("Error to get sentinel-data:", error);
         setError(error.message);
       }
     }
