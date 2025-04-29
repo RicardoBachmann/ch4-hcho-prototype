@@ -20,25 +20,25 @@ export default function SyncMapTracking({ sentinel5Position }) {
 
     mapRefA.current = new mapboxGl.Map({
       container: mapContainerRefA.current,
-      center: [-74.0242, 40.6941],
+      center: [sentinel5Position.longitude, sentinel5Position.latitude],
       style: "mapbox://styles/mapbox/satellite-v9",
-      zoom: 10.12,
+      zoom: 4,
       attributionControl: false,
     });
 
     mapRefB.current = new mapboxGl.Map({
       container: mapContainerRefB.current,
-      center: [-74.0242, 40.6941],
+      center: [sentinel5Position.longitude, sentinel5Position.latitude],
       style: "mapbox://styles/mapbox/satellite-v9",
-      zoom: 10.12,
+      zoom: 4,
       attributionControl: true,
     });
 
     mapRefC.current = new mapboxGl.Map({
       container: mapContainerRefC.current,
-      center: [-74.0242, 40.6941],
+      center: [sentinel5Position.longitude, sentinel5Position.latitude],
       style: "mapbox://styles/mapbox/satellite-v9",
-      zoom: 10.12,
+      zoom: 4,
       attributionControl: false,
     });
 
@@ -56,17 +56,31 @@ export default function SyncMapTracking({ sentinel5Position }) {
     mapRefC.current.scrollZoom.disable();
     mapRefC.current.dragPan.disable();
 
-    // Sentinel-5 position marker
-    const marker = new mapboxGl.Marker()
-      .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
-      .addTo(mapRefB.current);
-
     return () => {
       if (mapRefA.current) mapRefA.current.remove();
       if (mapRefB.current) mapRefB.current.remove();
       if (mapRefC.current) mapRefC.current.remove();
     };
   }, []);
+
+  // Dynamic Sentinel-5 data
+  useEffect(() => {
+    // Sentinel-5 position marker
+    const marker = new mapboxGl.Marker()
+      .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
+      .addTo(mapRefB.current);
+
+    if (mapRefB.current && mapRefB.current.loaded()) {
+      mapRefB.current.flyTo({
+        center: [sentinel5Position.longitude, sentinel5Position.latitude],
+        zoom: 5,
+      });
+    }
+
+    return () => {
+      marker.remove();
+    };
+  }, [sentinel5Position]);
 
   return (
     <>
