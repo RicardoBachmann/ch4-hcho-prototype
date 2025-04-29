@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getAccessToken } from "./authService";
 import "./App.css";
 import fetchSentinelData from "./sentineldata";
+import SyncMapTracking from "./Components/SyncMapTracking";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -39,6 +40,9 @@ function App() {
     <div>
       {token && <p>Token erfolgreich abgerufen!</p>}
       {!token && <p>Fehler:{error}!</p>}
+      <section>
+        <SyncMapTracking />
+      </section>
     </div>
   );
 }
