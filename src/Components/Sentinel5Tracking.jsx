@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Sentinel5Tracking() {
+export default function Sentinel5Tracking({ setSentinel5Position }) {
   const [satelliteData, setSatelliteData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +18,14 @@ export default function Sentinel5Tracking() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        if (data.position && data.position.length > 0) {
+          setSentinel5Position({
+            latitude: data.position[0].satlatitude,
+            longitude: data.position[0].satlongitude,
+            altitude: data.position[0].sataltitude,
+          });
+        }
+
         console.log("Sentinel-5 data:", data);
         setSatelliteData(data);
       } catch (error) {

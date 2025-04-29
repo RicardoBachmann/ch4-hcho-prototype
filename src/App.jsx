@@ -10,6 +10,12 @@ function App() {
   const [error, setError] = useState(null);
   const [sentinelData, setSentinelData] = useState(null);
 
+  const [sentinel5Position, setSentinel5Position] = useState({
+    longitude: 0,
+    latitude: 0,
+    altiude: 0,
+  });
+
   useEffect(() => {
     async function fetchToken() {
       try {
@@ -42,8 +48,8 @@ function App() {
       {token && <p>Token erfolgreich abgerufen!</p>}
       {!token && <p>Fehler:{error}!</p>}
       <section>
-        <SyncMapTracking />
-        <Sentinel5Tracking />
+        <SyncMapTracking sentinel5Position={sentinel5Position} />
+        <Sentinel5Tracking setSentinel5Position={setSentinel5Position} />
       </section>
     </div>
   );

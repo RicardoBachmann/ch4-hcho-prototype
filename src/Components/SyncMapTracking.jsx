@@ -4,7 +4,7 @@ import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-export default function SyncMapTracking() {
+export default function SyncMapTracking({ sentinel5Position }) {
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
@@ -42,15 +42,6 @@ export default function SyncMapTracking() {
       attributionControl: false,
     });
 
-    /*
-    mapRefB.current.on("load", () => {
-      mapRefB.current.addControl(
-        new mapboxGl.AttributionControl({
-          compact: true,
-        })
-      );
-    });*/
-
     mapRefA.current.on("load", () => {
       mapRefB.current.on("load", () => {
         mapRefC.current.on("load", () => {
@@ -64,6 +55,11 @@ export default function SyncMapTracking() {
 
     mapRefC.current.scrollZoom.disable();
     mapRefC.current.dragPan.disable();
+
+    // Sentinel-5 position marker
+    const marker = new mapboxGl.Marker()
+      .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
+      .addTo(mapRefB.current);
 
     return () => {
       if (mapRefA.current) mapRefA.current.remove();
