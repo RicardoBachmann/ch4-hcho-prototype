@@ -5,9 +5,6 @@ import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function SyncMapTracking() {
-  const mapRef = useRef(null);
-  const mapContainerRef = useRef(null);
-
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
@@ -15,6 +12,8 @@ export default function SyncMapTracking() {
   const mapContainerRefA = useRef(null);
   const mapContainerRefB = useRef(null);
   const mapContainerRefC = useRef(null);
+
+  // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
     mapboxGl.accessToken =
       "pk.eyJ1IjoiZGV0cm9pdDMxMyIsImEiOiJjbTRqb3ljbTQwZnJxMmlzaTRtMWRzcnhpIn0.akOKBt52fpXDljrtyHo8wg";
@@ -24,62 +23,47 @@ export default function SyncMapTracking() {
       center: [-74.0242, 40.6941],
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 10.12,
+      attributionControl: false,
     });
 
-    try {
-      mapRefB.current = new mapboxGl.Map({
-        container: mapContainerRefB.current,
-        center: [-74.0242, 40.6941],
-        style: "mapbox://styles/mapbox/satellite-v9",
-        zoom: 10.12,
-      });
-      console.log("Map B erfolgreich initialisiert");
-    } catch (error) {
-      console.error("Fehler bei Map B:", error);
-    }
+    mapRefB.current = new mapboxGl.Map({
+      container: mapContainerRefB.current,
+      center: [-74.0242, 40.6941],
+      style: "mapbox://styles/mapbox/satellite-v9",
+      zoom: 10.12,
+      attributionControl: true,
+    });
 
-    try {
-      mapRefC.current = new mapboxGl.Map({
-        container: mapContainerRefC.current,
-        center: [-74.0242, 40.6941],
-        style: "mapbox://styles/mapbox/satellite-v9",
-        zoom: 10.12,
-      });
-      console.log("Map C erfolgreich initialisiert");
-    } catch (error) {
-      console.error("Fehler bei Map C:", error);
-    }
+    mapRefC.current = new mapboxGl.Map({
+      container: mapContainerRefC.current,
+      center: [-74.0242, 40.6941],
+      style: "mapbox://styles/mapbox/satellite-v9",
+      zoom: 10.12,
+      attributionControl: false,
+    });
+
+    /*
+    mapRefB.current.on("load", () => {
+      mapRefB.current.addControl(
+        new mapboxGl.AttributionControl({
+          compact: true,
+        })
+      );
+    });*/
 
     mapRefA.current.on("load", () => {
-      console.log("Map A ist gelade");
       mapRefB.current.on("load", () => {
-        console.log("Map B ist gelade");
         mapRefC.current.on("load", () => {
-          console.log("Map C ist gelade");
-          console.log("Starte sync");
           syncMaps(mapRefA.current, mapRefB.current, mapRefC.current);
         });
       });
     });
 
-    console.log("Map methods available:", Object.keys(mapRefA.current));
-    console.log("Is .on a function?", typeof mapRefA.current.on === "function");
-    console.log("____________");
-    console.log("Container A:", mapContainerRefA.current);
-    console.log("Container B:", mapContainerRefB.current);
-    console.log("Container C:", mapContainerRefC.current);
-    console.log("_______________");
-    console.log(
-      "Sind Container A und B identisch?",
-      mapContainerRefA.current === mapContainerRefB.current
-    );
-    console.log(
-      "Sind Container B und C identisch?",
-      mapContainerRefB.current === mapContainerRefC.current
-    );
-    console.log("_______SYNC________");
-    console.log("syncMaps Funktion:", syncMaps);
-    console.log("syncMaps typeof:", typeof syncMaps);
+    mapRefA.current.scrollZoom.disable();
+    mapRefA.current.dragPan.disable();
+
+    mapRefC.current.scrollZoom.disable();
+    mapRefC.current.dragPan.disable();
 
     return () => {
       if (mapRefA.current) mapRefA.current.remove();
@@ -95,8 +79,9 @@ export default function SyncMapTracking() {
         id="container"
         style={{
           display: "flex",
+          gap: "20px",
           width: "100%",
-          height: "900px",
+          height: "100vh",
         }}
       >
         <div ref={mapContainerRefA} style={{ flex: 1, height: "100%" }} />
