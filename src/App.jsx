@@ -3,6 +3,7 @@ import { getAccessToken } from "./authService";
 import "./App.css";
 import fetchSentinelData from "./sentineldata";
 import SyncMapTracking from "./Components/SyncMapTracking";
+import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -42,6 +43,7 @@ function App() {
       {!token && <p>Fehler:{error}!</p>}
       <section>
         <SyncMapTracking />
+        <Sentinel5Tracking />
       </section>
     </div>
   );
