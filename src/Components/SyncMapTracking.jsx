@@ -1,5 +1,4 @@
-import React from "react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -13,14 +12,19 @@ export default function SyncMapTracking({ sentinel5Position }) {
   const mapContainerRefB = useRef(null);
   const mapContainerRefC = useRef(null);
 
+  // State to track if maps are initialized
+  const [mapsInitialized, setMapsInitialized] = useState(false);
+
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
+    if (mapsInitialized) return;
     mapboxGl.accessToken =
       "pk.eyJ1IjoiZGV0cm9pdDMxMyIsImEiOiJjbTRqb3ljbTQwZnJxMmlzaTRtMWRzcnhpIn0.akOKBt52fpXDljrtyHo8wg";
 
+    const defaultPosition = [-90.96, -0.47];
     mapRefA.current = new mapboxGl.Map({
       container: mapContainerRefA.current,
-      center: [sentinel5Position.longitude, sentinel5Position.latitude],
+      center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
       attributionControl: false,
@@ -28,7 +32,7 @@ export default function SyncMapTracking({ sentinel5Position }) {
 
     mapRefB.current = new mapboxGl.Map({
       container: mapContainerRefB.current,
-      center: [sentinel5Position.longitude, sentinel5Position.latitude],
+      center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
       attributionControl: true,
@@ -36,80 +40,79 @@ export default function SyncMapTracking({ sentinel5Position }) {
 
     mapRefC.current = new mapboxGl.Map({
       container: mapContainerRefC.current,
-      center: [sentinel5Position.longitude, sentinel5Position.latitude],
+      center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
       attributionControl: false,
     });
 
-    mapRefA.current.on("load", () => {
-      mapRefB.current.on("load", () => {
-        mapRefC.current.on("load", () => {
-          syncMaps(mapRefA.current, mapRefB.current, mapRefC.current);
-        });
-      });
-    });
+    const setupMaps = () => {
+      syncMaps(mapRefA.current, mapRefB.current, mapRefC.current);
+      mapRefA.current.scrollZoom.disable();
+      mapRefA.current.dragPan.disable();
 
-    mapRefA.current.scrollZoom.disable();
-    mapRefA.current.dragPan.disable();
+      mapRefC.current.scrollZoom.disable();
+      mapRefC.current.dragPan.disable();
+      setMapsInitialized(true);
+    };
 
-    mapRefC.current.scrollZoom.disable();
-    mapRefC.current.dragPan.disable();
+    // Wait for all maps to load
+    let mapsLoaded = 0;
+    const checkAllMapsLoaded = () => {
+      mapsLoaded++;
+      if (mapsLoaded === 3) {
+        setupMaps();
+      }
+    };
+
+    mapRefA.current.on("load", checkAllMapsLoaded);
+    mapRefB.current.on("load", checkAllMapsLoaded);
+    mapRefC.current.on("load", checkAllMapsLoaded);
 
     return () => {
       if (mapRefA.current) mapRefA.current.remove();
       if (mapRefB.current) mapRefB.current.remove();
       if (mapRefC.current) mapRefC.current.remove();
     };
-  }, [sentinel5Position]);
+  }, []);
 
   // Dynamic Sentinel-5 data
   useEffect(() => {
-    if (!mapRefB.current || !sentinel5Position) return;
+    if (!mapsInitialized || !mapRefB.current || !sentinel5Position) return;
 
-    // Log the postion data to verify its correct
-    console.log("Sentinel5 position:", sentinel5Position);
-
-    // Create a function to update the map
-    const updateMap = () => {
-      try {
-        // First check if valid coordinates
-        if (!sentinel5Position.longitude || !sentinel5Position.latitude) {
-          console.warn("Invalid position data:", sentinel5Position);
-          return;
-        }
-
-        //Clear any existing markers (using a safer approach)
-        const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
-        existingMarkers.forEach((marker) => marker.remove());
-
-        // Add new marker
-        const marker = new mapboxGl.Marker({
-          color: "#FF0000",
-        })
-          .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
-          .addTo(mapRefB.current);
-
-        //Center the map on the marker
-        mapRefB.current.flyTo({
-          center: [sentinel5Position.longitude, sentinel5Position.latitude],
-          zoom: 5,
-          essential: true,
-        });
-        console.log("Map updated with new postion");
-      } catch (error) {
-        console.log("Error updating map:", error);
-      }
-    };
-
-    // Check if map is loaded
-    if (mapRefB.current.loaded()) {
-      updateMap();
-    } else {
-      // If not loaded, wair for it
-      mapRefB.current.once("load", updateMap);
+    // Skip if invalid coordinates
+    if (!sentinel5Position.longitude || !sentinel5Position.latitude) {
+      console.warn("Invalid position data:", sentinel5Position);
+      return;
     }
-  }, [sentinel5Position]);
+
+    console.log("Updating marker with position:", sentinel5Position);
+
+    try {
+      // Clear any existing markers
+      const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
+      existingMarkers.forEach((marker) => marker.remove());
+
+      // Add new marker
+      const marker = new mapboxGl.Marker({
+        color: "#FF0000",
+      })
+        .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
+        .addTo(mapRefB.current);
+
+      // Center the map on the marker
+      mapRefB.current.flyTo({
+        center: [sentinel5Position.longitude, sentinel5Position.latitude],
+        zoom: 5,
+        essential: true,
+        duration: 1500, // Smooth transition
+      });
+
+      console.log("Map updated with new position");
+    } catch (error) {
+      console.error("Error updating map:", error);
+    }
+  }, [sentinel5Position, mapsInitialized]);
 
   return (
     <>

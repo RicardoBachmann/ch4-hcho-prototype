@@ -9,6 +9,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
   const [sentinelData, setSentinelData] = useState(null);
+  const [isPositionLoaded, setIsPositionLoaded] = useState(false);
 
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
@@ -43,13 +44,23 @@ function App() {
     fetchData();
   }, []);
 
+  const handleSetPosition = (position) => {
+    setSentinel5Position(position);
+    setIsPositionLoaded(true);
+  };
+
   return (
     <div>
       {token && <p>Token erfolgreich abgerufen!</p>}
       {!token && <p>Fehler:{error}!</p>}
       <section>
-        <SyncMapTracking sentinel5Position={sentinel5Position} />
-        <Sentinel5Tracking setSentinel5Position={setSentinel5Position} />
+        {/* Only render maps once we have position data */}
+        {isPositionLoaded ? (
+          <SyncMapTracking sentinel5Position={sentinel5Position} />
+        ) : (
+          <div className="loading">Loading satellite position...</div>
+        )}
+        <Sentinel5Tracking setSentinel5Position={handleSetPosition} />
       </section>
     </div>
   );
