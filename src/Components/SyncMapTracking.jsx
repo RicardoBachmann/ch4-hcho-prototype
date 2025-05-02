@@ -61,25 +61,54 @@ export default function SyncMapTracking({ sentinel5Position }) {
       if (mapRefB.current) mapRefB.current.remove();
       if (mapRefC.current) mapRefC.current.remove();
     };
-  }, []);
+  }, [sentinel5Position]);
 
   // Dynamic Sentinel-5 data
   useEffect(() => {
-    // Sentinel-5 position marker
-    const marker = new mapboxGl.Marker()
-      .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
-      .addTo(mapRefB.current);
+    if (!mapRefB.current || !sentinel5Position) return;
 
-    if (mapRefB.current && mapRefB.current.loaded()) {
-      mapRefB.current.flyTo({
-        center: [sentinel5Position.longitude, sentinel5Position.latitude],
-        zoom: 5,
-      });
-    }
+    // Log the postion data to verify its correct
+    console.log("Sentinel5 position:", sentinel5Position);
 
-    return () => {
-      marker.remove();
+    // Create a function to update the map
+    const updateMap = () => {
+      try {
+        // First check if valid coordinates
+        if (!sentinel5Position.longitude || !sentinel5Position.latitude) {
+          console.warn("Invalid position data:", sentinel5Position);
+          return;
+        }
+
+        //Clear any existing markers (using a safer approach)
+        const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
+        existingMarkers.forEach((marker) => marker.remove());
+
+        // Add new marker
+        const marker = new mapboxGl.Marker({
+          color: "#FF0000",
+        })
+          .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
+          .addTo(mapRefB.current);
+
+        //Center the map on the marker
+        mapRefB.current.flyTo({
+          center: [sentinel5Position.longitude, sentinel5Position.latitude],
+          zoom: 5,
+          essential: true,
+        });
+        console.log("Map updated with new postion");
+      } catch (error) {
+        console.log("Error updating map:", error);
+      }
     };
+
+    // Check if map is loaded
+    if (mapRefB.current.loaded()) {
+      updateMap();
+    } else {
+      // If not loaded, wair for it
+      mapRefB.current.once("load", updateMap);
+    }
   }, [sentinel5Position]);
 
   return (

@@ -13,7 +13,7 @@ function App() {
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
     latitude: 0,
-    altiude: 0,
+    altitude: 0,
   });
 
   useEffect(() => {
