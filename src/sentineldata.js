@@ -3,11 +3,10 @@ import { getAccessToken } from "./authService";
 async function fetchSentinelData() {
   const token = await getAccessToken();
 
-  const filter = encodeURIComponent(
-    "startswith(Name,'S5P_') and ContentDate/Start gt 2020-01-01T00:00:00.000Z"
-  );
+  const filter = encodeURIComponent("Collection/Name eq 'SENTINEL-5P'");
 
   const url = `https://catalogue.dataspace.copernicus.eu/odata/v1/Products?$filter=${filter}&$top=5`;
+
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
