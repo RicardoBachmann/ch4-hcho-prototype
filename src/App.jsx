@@ -30,7 +30,7 @@ function App() {
     fetchToken();
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     async function fetchData() {
       try {
         const data = await fetchSentinelData();
@@ -42,7 +42,7 @@ function App() {
       }
     }
     fetchData();
-  }, []);
+  }, []);*/
 
   const handleSetPosition = (position) => {
     setSentinel5Position(position);
@@ -60,7 +60,10 @@ function App() {
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
-        <Sentinel5Tracking setSentinel5Position={handleSetPosition} />
+        <Sentinel5Tracking
+          setSentinel5Position={handleSetPosition}
+          sentinelData={sentinelData}
+        />
       </section>
     </div>
   );

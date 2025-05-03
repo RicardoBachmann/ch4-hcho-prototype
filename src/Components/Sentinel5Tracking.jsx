@@ -39,7 +39,7 @@ export default function Sentinel5Tracking({ setSentinel5Position }) {
       }
     };
     getSentinel5Data();
-  }, [setSentinel5Position]);
+  }, []);
 
   return null;
 }
