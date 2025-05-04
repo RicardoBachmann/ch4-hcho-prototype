@@ -3,14 +3,16 @@ import { getAccessToken } from "./authService";
 async function fetchSentinelData() {
   const token = await getAccessToken();
 
-  const filter = encodeURIComponent(
-    "startswith(Name,'S5P_') and ContentDate/Start gt 2020-01-01T00:00:00.000Z"
-  );
+  // Sentinel-5P catalog openSearch for Level 2 Formaldehyde data
+  const url = `https://catalogue.dataspace.copernicus.eu/resto/api/collections/Sentinel5P/search.json?productType=L2__HCHO__&startDate=2024-01-01`;
 
-  const url = `https://catalogue.dataspace.copernicus.eu/odata/v1/Products?$filter=${filter}&$top=5`;
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  console.log("Bearer Token", token);
+  const rawText = await response.clone().text();
+  console.log("Raw response:", rawText);
   console.log("Status:", response.status);
   console.log("status Text:", response.statusText);
   console.log("Full URL:", url);
@@ -24,6 +26,7 @@ async function fetchSentinelData() {
   }
 
   const data = await response.json();
+  console.log("Actual data returned:", data);
   return data;
 }
 
