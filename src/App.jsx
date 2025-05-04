@@ -30,7 +30,7 @@ function App() {
     fetchToken();
   }, []);
 
-  /*useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       try {
         const data = await fetchSentinelData();
@@ -42,7 +42,7 @@ function App() {
       }
     }
     fetchData();
-  }, []);*/
+  }, []);
 
   const handleSetPosition = (position) => {
     setSentinel5Position(position);

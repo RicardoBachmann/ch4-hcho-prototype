@@ -39,6 +39,12 @@ export default function Sentinel5Tracking({ setSentinel5Position }) {
       }
     };
     getSentinel5Data();
+
+    // N2YO API limit: 1000 transactions/hour (= max once every 3.6s)
+    // Using 15s interval for safe margin (240 requests/hour)
+    const interval = setInterval(getSentinel5Data, 15000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return null;
