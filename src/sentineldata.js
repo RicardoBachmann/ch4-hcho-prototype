@@ -3,13 +3,20 @@ import { getAccessToken } from "./authService";
 async function fetchSentinelData() {
   const token = await getAccessToken();
 
-  const filter = encodeURIComponent("Collection/Name eq 'SENTINEL-5P'");
+  /*const filter = encodeURIComponent("Collection/Name eq 'SENTINEL-5P'");*/
+
+  // Wahrscheinlich ist es "S5P_" statt "SENTINEL-5P"
+  const filter = encodeURIComponent("startswith(Name,'S5P_')");
 
   const url = `https://catalogue.dataspace.copernicus.eu/odata/v1/Products?$filter=${filter}&$top=5`;
+  /*const url = `https://catalogue.dataspace.copernicus.eu/odata/v1/Products`;*/
 
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
+  console.log("Bearer Token", token);
+  const rawText = await response.clone().text();
+  console.log("Raw response:", rawText);
   console.log("Status:", response.status);
   console.log("status Text:", response.statusText);
   console.log("Full URL:", url);
@@ -23,6 +30,7 @@ async function fetchSentinelData() {
   }
 
   const data = await response.json();
+  console.log("Actual data returned:", data);
   return data;
 }
 
