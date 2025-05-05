@@ -4,6 +4,7 @@ import "./App.css";
 import fetchSentinelData from "./sentineldata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
+import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -33,7 +34,7 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchSentinelData();
+        const data = await fetchSentinelData("Formaldehyde");
         setSentinelData(data);
         console.log("Data:", data);
       } catch (error) {
@@ -64,6 +65,7 @@ function App() {
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
+        <FormaldehydeLayer data={sentinelData} />
       </section>
     </div>
   );

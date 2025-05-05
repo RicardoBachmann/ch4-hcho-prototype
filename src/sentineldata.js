@@ -1,10 +1,15 @@
 import { getAccessToken } from "./authService";
 
-async function fetchSentinelData() {
+async function fetchSentinelData(productTypeName) {
   const token = await getAccessToken();
+  const productTypes = {
+    Formaldehyde: "L2__HCHO__",
+    SulfurDioxide: "L2__SO2___",
+  };
 
   // Sentinel-5P catalog openSearch for Level 2 Formaldehyde data
-  const url = `https://catalogue.dataspace.copernicus.eu/resto/api/collections/Sentinel5P/search.json?productType=L2__HCHO__&startDate=2024-01-01`;
+  /*const url = `https://catalogue.dataspace.copernicus.eu/resto/api/collections/Sentinel5P/search.json?productType=L2__HCHO__&startDate=2024-01-01`;*/
+  const url = `https://catalogue.dataspace.copernicus.eu/resto/api/collections/Sentinel5P/search.json?productType=${productTypes[productTypeName]}&startDate=2024-01-01`;
 
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
