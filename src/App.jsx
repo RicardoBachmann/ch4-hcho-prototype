@@ -18,56 +18,6 @@ function App() {
     setMapRefs(refs);
   };
 
-  // In App.jsx, nach dem Setzen von mapRefs
-  useEffect(() => {
-    if (!mapRefs || !mapRefs.mapA) return;
-
-    console.log("Versuche direkten Test-Layer in App.jsx hinzuzufügen");
-
-    // Timeout, um sicherzustellen, dass die Karte vollständig geladen ist
-    setTimeout(() => {
-      try {
-        const center = mapRefs.mapA.getCenter();
-        const offset = 10;
-
-        if (!mapRefs.mapA.getSource("direct-test-source")) {
-          mapRefs.mapA.addSource("direct-test-source", {
-            type: "geojson",
-            data: {
-              type: "Feature",
-              geometry: {
-                type: "Polygon",
-                coordinates: [
-                  [
-                    [center.lng - offset, center.lat - offset],
-                    [center.lng + offset, center.lat - offset],
-                    [center.lng + offset, center.lat + offset],
-                    [center.lng - offset, center.lat + offset],
-                    [center.lng - offset, center.lat - offset],
-                  ],
-                ],
-              },
-            },
-          });
-
-          mapRefs.mapA.addLayer({
-            id: "direct-test-layer",
-            type: "fill",
-            source: "direct-test-source",
-            paint: {
-              "fill-color": "#00FF00",
-              "fill-opacity": 0.7,
-            },
-          });
-
-          console.log("Direkter Test-Layer hinzugefügt");
-        }
-      } catch (error) {
-        console.error("Fehler beim direkten Hinzufügen:", error);
-      }
-    }, 3000); // 3 Sekunden warten
-  }, [mapRefs]);
-
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
     latitude: 0,
@@ -124,7 +74,7 @@ function App() {
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
-        {/*Render FormaldehydeLayer only if mapRefs are available*/}
+        {/*Render Layer only if mapRefs are available*/}
         {mapRefs && sentinelData && (
           <>
             <FormaldehydeLayer data={sentinelData} mapRefs={mapRefs} />

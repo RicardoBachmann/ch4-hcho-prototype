@@ -55,6 +55,10 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
 
+      // Transfer the card references to the parent component,
+      // as soon as all three cards are initialised. This allows other
+      // components (such as the FormaldehydeLayer) can access these map instances
+      // access these map instances without having to recreate them.
       if (onLayerReady) {
         onLayerReady({
           mapA: mapRefA.current,
