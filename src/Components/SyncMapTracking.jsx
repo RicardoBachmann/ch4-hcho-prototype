@@ -3,7 +3,7 @@ import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-export default function SyncMapTracking({ sentinel5Position }) {
+export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
@@ -54,6 +54,14 @@ export default function SyncMapTracking({ sentinel5Position }) {
       mapRefC.current.scrollZoom.disable();
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
+
+      if (onLayerReady) {
+        onLayerReady({
+          mapA: mapRefA.current,
+          mapB: mapRefB.current,
+          mapC: mapRefC.current,
+        });
+      }
     };
 
     // Wait for all maps to load

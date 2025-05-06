@@ -11,6 +11,11 @@ function App() {
   const [error, setError] = useState(null);
   const [sentinelData, setSentinelData] = useState(null);
   const [isPositionLoaded, setIsPositionLoaded] = useState(false);
+  const [mapRefs, setMapRefs] = useState(null);
+
+  const handleMapsReady = (refs) => {
+    setMapRefs(refs);
+  };
 
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
@@ -57,7 +62,10 @@ function App() {
       <section>
         {/* Only render maps once we have position data */}
         {isPositionLoaded ? (
-          <SyncMapTracking sentinel5Position={sentinel5Position} />
+          <SyncMapTracking
+            onLayerReady={handleMapsReady}
+            sentinel5Position={sentinel5Position}
+          />
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
@@ -65,7 +73,10 @@ function App() {
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
-        <FormaldehydeLayer data={sentinelData} />
+        {/*Render FormaldehydeLayer only if mapRefs are available*/}
+        {mapRefs && sentinelData && (
+          <FormaldehydeLayer data={sentinelData} mapRefs={mapRefs} />
+        )}
       </section>
     </div>
   );
