@@ -77,7 +77,7 @@ function App() {
         {/*Render Layer only if mapRefs are available*/}
         {mapRefs && sentinelData && (
           <>
-            <FormaldehydeLayer data={sentinelData} mapRefs={mapRefs} />
+            <FormaldehydeLayer mapRefs={mapRefs} />
             <SulfurDioxide data={sentinelData} mapRefs={mapRefs} />
           </>
         )}

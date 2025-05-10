@@ -25,7 +25,49 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
     mapRefA.current = new mapboxGl.Map({
       container: mapContainerRefA.current,
       center: defaultPosition,
-      style: "mapbox://styles/mapbox/satellite-v9",
+      style: {
+        version: 8,
+        sources: {
+          // OpenStreetMap als Basiskarte
+          "osm-tiles": {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          },
+          // Formaldehyd-Daten als zweite Quelle
+          "formaldehyde-tiles": {
+            type: "raster",
+            tiles: [
+              "https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}",
+            ],
+            tileSize: 256,
+          },
+        },
+        layers: [
+          // Basisschicht mit OpenStreetMap
+          {
+            id: "osm-layer",
+            type: "raster",
+            source: "osm-tiles",
+            minzoom: 0,
+            maxzoom: 19,
+          },
+          // Formaldehyd-Schicht darüber
+          {
+            id: "formaldehyde-layer",
+            type: "raster",
+            source: "formaldehyde-tiles",
+            minzoom: 0,
+            maxzoom: 15,
+            paint: {
+              "raster-opacity": 0.7,
+            },
+          },
+        ],
+      },
+      center: [10.0, 51.0], // Zentrierung auf Deutschland
       zoom: 4,
       attributionControl: false,
     });
@@ -55,10 +97,10 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
 
-      // Transfer the card references to the parent component,
-      // as soon as all three cards are initialised. This allows other
-      // components (such as the FormaldehydeLayer) can access these map instances
-      // access these map instances without having to recreate them.
+      // Provides the initialised map instances of the parent component.
+      // This callback function enables other components (such as FormaldehydeLayer),
+      // directly access the map references and add their own layers,
+      // without having to create new map instances.
       if (onLayerReady) {
         onLayerReady({
           mapA: mapRefA.current,
@@ -113,12 +155,12 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
         .addTo(mapRefB.current);
 
       // Center the map on the marker
-      mapRefB.current.flyTo({
+      /*mapRefB.current.flyTo({
         center: [sentinel5Position.longitude, sentinel5Position.latitude],
         zoom: 5,
         essential: true,
         duration: 1500, // Smooth transition
-      });
+      });*/
 
       /*console.log("Map updated with new position");*/
     } catch (error) {
