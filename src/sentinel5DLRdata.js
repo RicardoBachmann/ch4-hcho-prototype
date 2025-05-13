@@ -1,3 +1,10 @@
+// DLR Data:
+// - No token required
+// - Direct tiles available
+// - Level 3 data
+// - Can be used immediately in Mapbox
+// ! Later: STAC Implementation for DLR (More control and metadata, can select specific days, modern standard) !
+
 async function fetchDLRStacData() {
   try {
     const url =

@@ -97,8 +97,6 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
       console.warn("Invalid position data:", sentinel5Position);
       return;
     }
-    /*
-    console.log("Updating marker with position:", sentinel5Position);*/
 
     try {
       // Clear any existing markers
@@ -119,8 +117,6 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
         essential: true,
         duration: 1500, // Smooth transition
       });*/
-
-      /*console.log("Map updated with new position");*/
     } catch (error) {
       console.error("Error updating map:", error);
     }
