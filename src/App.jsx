@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { getAccessToken } from "./authService";
 import "./App.css";
-import fetchSentinelData from "./sentineldata";
+/*import fetchSentinelData from "./sentineldata";*/
+import fetchDLRStacData from "./sentinel5DLRdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
@@ -40,7 +41,7 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchSentinelData("Formaldehyde");
+        const data = await fetchDLRStacData("Formaldehyde");
         setSentinelData(data);
         console.log("Data:", data);
       } catch (error) {

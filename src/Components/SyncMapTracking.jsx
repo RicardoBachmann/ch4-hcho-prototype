@@ -25,49 +25,7 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
     mapRefA.current = new mapboxGl.Map({
       container: mapContainerRefA.current,
       center: defaultPosition,
-      style: {
-        version: 8,
-        sources: {
-          // OpenStreetMap als Basiskarte
-          "osm-tiles": {
-            type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-            tileSize: 256,
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          },
-          // Formaldehyd-Daten als zweite Quelle
-          "formaldehyde-tiles": {
-            type: "raster",
-            tiles: [
-              "https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}",
-            ],
-            tileSize: 256,
-          },
-        },
-        layers: [
-          // Basisschicht mit OpenStreetMap
-          {
-            id: "osm-layer",
-            type: "raster",
-            source: "osm-tiles",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-          // Formaldehyd-Schicht darüber
-          {
-            id: "formaldehyde-layer",
-            type: "raster",
-            source: "formaldehyde-tiles",
-            minzoom: 0,
-            maxzoom: 15,
-            paint: {
-              "raster-opacity": 0.7,
-            },
-          },
-        ],
-      },
-      center: [10.0, 51.0], // Zentrierung auf Deutschland
+      style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
       attributionControl: false,
     });

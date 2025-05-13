@@ -11,6 +11,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/n2yo/, ""),
       },
+      "/api/dlr": {
+        target: "https://geoservice.dlr.de",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/dlr/, ""),
+      },
     },
   },
 });
