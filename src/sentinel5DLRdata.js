@@ -21,7 +21,7 @@ async function fetchDLRStacData() {
       return null;
     }
   } catch (error) {
-    console.error("Error fetching DLR STAC data:", error);
+    console.error("Fetch error:", error);
     throw error;
   }
 }
