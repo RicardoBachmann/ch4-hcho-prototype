@@ -1,34 +1,11 @@
-import { useEffect, useState } from "react";
-import fetchDLRStacData from "../../sentinel5DLRdata";
+import { useEffect } from "react";
 
-export default function FormaldehydeLayer({ mapRefs }) {
-  const [stacData, setStacData] = useState(null);
-  const [cogUrl, setCogUrl] = useState(null);
-
-  useEffect(() => {
-    fetchDLRStacData().then((data) => {
-      console.log("Received data:", data);
-      setStacData(data);
-    });
-  }, [mapRefs]);
-
-  useEffect(() => {
-    if (stacData && stacData.features && stacData.features.length > 0) {
-      const firstItem = stacData.features[0];
-      console.log("First STAC item", firstItem);
-      if (firstItem.assets && firstItem.assets.hcho) {
-        const url = firstItem.assets.hcho.href;
-        setCogUrl(url);
-        console.log("COG URL saved", url);
-      }
-    }
-  }, [stacData]);
-
+export default function FormaldehydeLayer({ data, mapRefs }) {
   console.log("mapRefs structure:", mapRefs);
 
   useEffect(() => {
-    if (cogUrl && mapRefs && mapRefs.mapA) {
-      console.log("Adding WMS layers to map A and C");
+    if (mapRefs && mapRefs.mapA && mapRefs.mapC) {
+      console.log("Adding HCHO-WMS layer to map A & C");
 
       const wmsUrl =
         "https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
@@ -50,6 +27,23 @@ export default function FormaldehydeLayer({ mapRefs }) {
           },
         });
       }
+      //Map C
+      if (mapRefs.mapC.isStyleLoaded()) {
+        if (!mapRefs.mapC.getSource("hcho-source-c"))
+          mapRefs.mapC.addSource("hcho-source-c", {
+            type: "raster",
+            tiles: [wmsUrl],
+            tileSize: 256,
+          });
+        mapRefs.mapC.addLayer({
+          id: "hcho-layer-c",
+          type: "raster",
+          source: "hcho-source-c",
+          paint: {
+            "raster-opacity": 0.7,
+          },
+        });
+      }
     }
     // Clean up
     return () => {
@@ -61,8 +55,16 @@ export default function FormaldehydeLayer({ mapRefs }) {
           mapRefs.mapA.removeSource("hcho-source-a");
         }
       }
+      if (mapRefs.mapC) {
+        if (mapRefs.mapC.getLayer("hcho-layer-c")) {
+          mapRefs.mapC.removeLayer("hcho-layer-c");
+        }
+        if (mapRefs.mapC.getSource("hcho-source-c")) {
+          mapRefs.mapC.removeSource("hcho-source-c");
+        }
+      }
     };
-  }, [cogUrl, mapRefs]);
+  }, [mapRefs]);
 
   return null;
 }
