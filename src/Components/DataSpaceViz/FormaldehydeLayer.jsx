@@ -28,6 +28,7 @@ export default function FormaldehydeLayer({ data, mapRefs }) {
         });
       }
       //Map C
+      /*
       if (mapRefs.mapC.isStyleLoaded()) {
         if (!mapRefs.mapC.getSource("hcho-source-c"))
           mapRefs.mapC.addSource("hcho-source-c", {
@@ -43,7 +44,7 @@ export default function FormaldehydeLayer({ data, mapRefs }) {
             "raster-opacity": 0.7,
           },
         });
-      }
+      }*/
     }
     // Clean up
     return () => {
@@ -55,14 +56,14 @@ export default function FormaldehydeLayer({ data, mapRefs }) {
           mapRefs.mapA.removeSource("hcho-source-a");
         }
       }
-      if (mapRefs.mapC) {
+      /*if (mapRefs.mapC) {
         if (mapRefs.mapC.getLayer("hcho-layer-c")) {
           mapRefs.mapC.removeLayer("hcho-layer-c");
         }
         if (mapRefs.mapC.getSource("hcho-source-c")) {
           mapRefs.mapC.removeSource("hcho-source-c");
         }
-      }
+      }*/
     };
   }, [mapRefs]);
 

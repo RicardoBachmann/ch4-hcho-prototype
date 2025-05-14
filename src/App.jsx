@@ -5,12 +5,12 @@ import "./App.css";
 import fetchDLRStacData from "./sentinel5DLRdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
-import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
 import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
-import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
-import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
-import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
 import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
+import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
+// import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
+// import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
+// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -93,24 +93,24 @@ function App() {
         {/*Render Layer only if mapRefs are available*/}
         {mapRefs && sentinelData && (
           <>
-            <CarbonMonoxideLayer
-              data={sentinelData.carbonMonoxide}
-              mapRefs={mapRefs}
-            />
             <FormaldehydeLayer
               data={sentinelData.formaldehyde}
               mapRefs={mapRefs}
             />
-            <MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />
-            <NitrogenDioxideLayer
-              data={sentinelData.nitrogenDioxide}
-              mapRefs={mapRefs}
-            />
-            <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
             <SulfurDioxide
               data={sentinelData.sulfurDioxide}
               mapRefs={mapRefs}
             />
+            <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
+            {/*<CarbonMonoxideLayer
+              data={sentinelData.carbonMonoxide}
+              mapRefs={mapRefs}
+            />*/}
+            {/*<MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />*/}
+            {/*<NitrogenDioxideLayer
+              data={sentinelData.nitrogenDioxide}
+              mapRefs={mapRefs}
+            />*/}
           </>
         )}
       </section>
