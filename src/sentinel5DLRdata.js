@@ -3,12 +3,18 @@
 // - Direct tiles available
 // - Level 3 data
 // - Can be used immediately in Mapbox
+// - NRTI = Near Real-Time Imagery
 // ! Later: STAC Implementation for DLR (More control and metadata, can select specific days, modern standard) !
 
-async function fetchDLRStacData() {
+async function fetchDLRStacData(productKey) {
+  const productName = {
+    Formaldehyde: "S5P_TROPOMI_L3_P1D_HCHO_v2",
+    SulfurDioxide: "S5P_TROPOMI_L3_P1D_SO2_v2",
+  };
+
   try {
-    const url =
-      "/api/dlr/eoc/ogc/stac/v1/collections/S5P_TROPOMI_L3_P1D_HCHO_v2/items?limit=1";
+    const collectionID = productName[productKey];
+    const url = `/api/dlr/eoc/ogc/stac/v1/collections/${collectionID}/items?limit=1`;
     console.log("Fetching URL:", url);
     const response = await fetch(url);
     console.log("Response status:", response.status);

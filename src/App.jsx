@@ -11,7 +11,10 @@ import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
 function App() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
-  const [sentinelData, setSentinelData] = useState(null);
+  const [sentinelData, setSentinelData] = useState({
+    formaldehyde: null,
+    sulfurDioxide: null,
+  });
   const [isPositionLoaded, setIsPositionLoaded] = useState(false);
   const [mapRefs, setMapRefs] = useState(null);
 
@@ -41,9 +44,13 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchDLRStacData("Formaldehyde");
-        setSentinelData(data);
-        console.log("Data:", data);
+        const formaldehydeData = await fetchDLRStacData("Formaldehyde");
+        const sulfurDioxideData = await fetchDLRStacData("SulfurDioxide");
+        setSentinelData({
+          formaldehyde: formaldehydeData,
+          sulfurDioxide: sulfurDioxideData,
+        });
+        console.log("Data:", formaldehydeData, sulfurDioxideData);
       } catch (error) {
         console.error("Error to get sentinel-data:", error);
         setError(error.message);
@@ -78,8 +85,14 @@ function App() {
         {/*Render Layer only if mapRefs are available*/}
         {mapRefs && sentinelData && (
           <>
-            <FormaldehydeLayer mapRefs={mapRefs} />
-            <SulfurDioxide data={sentinelData} mapRefs={mapRefs} />
+            <FormaldehydeLayer
+              data={sentinelData.formaldehyde}
+              mapRefs={mapRefs}
+            />
+            <SulfurDioxide
+              data={sentinelData.sulfurDioxide}
+              mapRefs={mapRefs}
+            />
           </>
         )}
       </section>
