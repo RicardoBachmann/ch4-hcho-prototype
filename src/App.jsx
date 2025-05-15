@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getAccessToken } from "./authService";
 import "./App.css";
 
 import fetchDLRStacData from "./sentinel5DLRdata";
@@ -14,7 +13,6 @@ import AerosolIndexLayer from "./Components/DataSpaceViz/AerosolIndexLayer";
 // import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
 
 function App() {
-  const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
   const [sentinelData, setSentinelData] = useState({
     carbonMonoxideLayer: null,
@@ -39,30 +37,27 @@ function App() {
   });
 
   useEffect(() => {
-    async function fetchToken() {
-      try {
-        const accessToken = await getAccessToken();
-        setToken(accessToken);
-      } catch (error) {
-        setError(error.message);
-        console.error(`Error getting Token:`, error);
-      }
-    }
-    fetchToken();
-  }, []);
-
-  useEffect(() => {
     async function fetchData() {
       try {
         const formaldehydeData = await fetchDLRStacData("Formaldehyde");
         const sulfurDioxideData = await fetchDLRStacData("SulfurDioxide");
+        const aerosolIndexData = await fetchDLRStacData("AerosolIndex");
+        const ozoneData = await fetchDLRStacData("Ozone");
         setSentinelData({
           formaldehyde: formaldehydeData,
           sulfurDioxide: sulfurDioxideData,
+          aerosolIndex: aerosolIndexData,
+          ozone: ozoneData,
         });
-        console.log("Data:", formaldehydeData, sulfurDioxideData);
+        console.log(
+          "Data:",
+          formaldehydeData,
+          sulfurDioxideData,
+          aerosolIndexData,
+          ozoneData
+        );
       } catch (error) {
-        console.error("Error to get sentinel-data:", error);
+        console.error("Error to get Sentinel5 product-data:", error);
         setError(error.message);
       }
     }
@@ -76,8 +71,6 @@ function App() {
 
   return (
     <div>
-      {token && <p>Token erfolgreich abgerufen!</p>}
-      {!token && <p>Fehler:{error}!</p>}
       <section>
         {/* Only render maps once we have position data */}
         {isPositionLoaded ? (
