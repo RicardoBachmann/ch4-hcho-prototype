@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
+import LayerToggle from "./LayerToggle";
 
 export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
   const mapRefA = useRef(null);
@@ -134,9 +135,27 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
           height: "100vh",
         }}
       >
-        <div ref={mapContainerRefA} style={{ flex: 1, height: "100%" }} />
-        <div ref={mapContainerRefB} style={{ flex: 1, height: "100%" }} />
-        <div ref={mapContainerRefC} style={{ flex: 1, height: "100%" }} />
+        <div style={{ flex: 1, position: "relative", height: "100%" }}>
+          <div
+            ref={mapContainerRefA}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <LayerToggle />
+        </div>
+        <div style={{ flex: 1, height: "100%" }}>
+          <div
+            ref={mapContainerRefB}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
+
+        <div style={{ flex: 1, position: "relative", height: "100%" }}>
+          <div
+            ref={mapContainerRefC}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <LayerToggle />
+        </div>
       </div>
     </>
   );
