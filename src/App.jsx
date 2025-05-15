@@ -1,15 +1,36 @@
 import { useState, useEffect } from "react";
 import { getAccessToken } from "./authService";
 import "./App.css";
-import fetchSentinelData from "./sentineldata";
+
+import fetchDLRStacData from "./sentinel5DLRdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
+import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
+import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
+import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
+import AerosolIndexLayer from "./Components/DataSpaceViz/AerosolIndexLayer";
+// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
+// import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
+// import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
 
 function App() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
-  const [sentinelData, setSentinelData] = useState(null);
+  const [sentinelData, setSentinelData] = useState({
+    carbonMonoxideLayer: null,
+    formaldehyde: null,
+    methan: null,
+    nitrogenDioxide: null,
+    ozone: null,
+    sulfurDioxide: null,
+    aerosolIndex: null,
+  });
   const [isPositionLoaded, setIsPositionLoaded] = useState(false);
+  const [mapRefs, setMapRefs] = useState(null);
+
+  const handleMapsReady = (refs) => {
+    setMapRefs(refs);
+  };
 
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
@@ -33,9 +54,13 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchSentinelData();
-        setSentinelData(data);
-        console.log("Data:", data);
+        const formaldehydeData = await fetchDLRStacData("Formaldehyde");
+        const sulfurDioxideData = await fetchDLRStacData("SulfurDioxide");
+        setSentinelData({
+          formaldehyde: formaldehydeData,
+          sulfurDioxide: sulfurDioxideData,
+        });
+        console.log("Data:", formaldehydeData, sulfurDioxideData);
       } catch (error) {
         console.error("Error to get sentinel-data:", error);
         setError(error.message);
@@ -56,7 +81,10 @@ function App() {
       <section>
         {/* Only render maps once we have position data */}
         {isPositionLoaded ? (
-          <SyncMapTracking sentinel5Position={sentinel5Position} />
+          <SyncMapTracking
+            onLayerReady={handleMapsReady}
+            sentinel5Position={sentinel5Position}
+          />
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
@@ -64,6 +92,37 @@ function App() {
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
+        {/*Render Layer only if mapRefs are available*/}
+        {mapRefs && sentinelData && (
+          <>
+            <FormaldehydeLayer
+              data={sentinelData.formaldehyde}
+              mapRefs={mapRefs}
+            />
+            <SulfurDioxide
+              data={sentinelData.sulfurDioxide}
+              mapRefs={mapRefs}
+            />
+            <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
+            <AerosolIndexLayer
+              data={sentinelData.aerosolIndex}
+              mapRefs={mapRefs}
+            />
+            {/*<CarbonMonoxideLayer
+              data={sentinelData.carbonMonoxide}
+              mapRefs={mapRefs}
+            />*/}
+            {/*<MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />*/}
+            {/*<NitrogenDioxideLayer
+              data={sentinelData.nitrogenDioxide}
+              mapRefs={mapRefs}
+            />*/}
+            {/*<NitrogenDioxideLayer
+              data={sentinelData.nitrogenDioxide}
+              mapRefs={mapRefs}
+            />*/}
+          </>
+        )}
       </section>
     </div>
   );

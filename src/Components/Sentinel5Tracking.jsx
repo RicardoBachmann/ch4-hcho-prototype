@@ -25,7 +25,7 @@ export default function Sentinel5Tracking({ setSentinel5Position }) {
             longitude: data.positions[0].satlongitude,
             altitude: data.positions[0].sataltitude,
           };
-          console.log("Setting new position:", newPosition);
+          /*console.log("Setting new position:", newPosition);*/
           setSatelliteData(newPosition);
           setSentinel5Position(newPosition);
         } else {

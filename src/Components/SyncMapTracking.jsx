@@ -3,7 +3,7 @@ import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-export default function SyncMapTracking({ sentinel5Position }) {
+export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
@@ -54,6 +54,18 @@ export default function SyncMapTracking({ sentinel5Position }) {
       mapRefC.current.scrollZoom.disable();
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
+
+      // Provides the initialised map instances of the parent component.
+      // This callback function enables other components (such as FormaldehydeLayer),
+      // directly access the map references and add their own layers,
+      // without having to create new map instances.
+      if (onLayerReady) {
+        onLayerReady({
+          mapA: mapRefA.current,
+          mapB: mapRefB.current,
+          mapC: mapRefC.current,
+        });
+      }
     };
 
     // Wait for all maps to load
@@ -86,8 +98,6 @@ export default function SyncMapTracking({ sentinel5Position }) {
       return;
     }
 
-    console.log("Updating marker with position:", sentinel5Position);
-
     try {
       // Clear any existing markers
       const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
@@ -101,14 +111,12 @@ export default function SyncMapTracking({ sentinel5Position }) {
         .addTo(mapRefB.current);
 
       // Center the map on the marker
-      mapRefB.current.flyTo({
+      /*mapRefB.current.flyTo({
         center: [sentinel5Position.longitude, sentinel5Position.latitude],
         zoom: 5,
         essential: true,
         duration: 1500, // Smooth transition
-      });
-
-      console.log("Map updated with new position");
+      });*/
     } catch (error) {
       console.error("Error updating map:", error);
     }
