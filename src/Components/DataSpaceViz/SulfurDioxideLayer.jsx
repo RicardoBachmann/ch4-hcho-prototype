@@ -29,7 +29,7 @@ export default function SulfurDioxide({ data, mapRefs }) {
       }
 
       //Map C
-      /* if (mapRefs.mapC.isStyleLoaded()) {
+      if (mapRefs.mapC.isStyleLoaded()) {
         if (!mapRefs.mapC.getSource("so2-source-c"))
           mapRefs.mapC.addSource("so2-source-c", {
             type: "raster",
@@ -44,7 +44,7 @@ export default function SulfurDioxide({ data, mapRefs }) {
             "raster-opacity": 0.7,
           },
         });
-      }*/
+      }
     }
     // Clean up
     return () => {

@@ -8,9 +8,10 @@ import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
 import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
 import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
+import AerosolIndexLayer from "./Components/DataSpaceViz/AerosolIndexLayer";
+// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
 // import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
 // import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
-// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -22,6 +23,7 @@ function App() {
     nitrogenDioxide: null,
     ozone: null,
     sulfurDioxide: null,
+    aerosolIndex: null,
   });
   const [isPositionLoaded, setIsPositionLoaded] = useState(false);
   const [mapRefs, setMapRefs] = useState(null);
@@ -102,11 +104,19 @@ function App() {
               mapRefs={mapRefs}
             />
             <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
+            <AerosolIndexLayer
+              data={sentinelData.aerosolIndex}
+              mapRefs={mapRefs}
+            />
             {/*<CarbonMonoxideLayer
               data={sentinelData.carbonMonoxide}
               mapRefs={mapRefs}
             />*/}
             {/*<MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />*/}
+            {/*<NitrogenDioxideLayer
+              data={sentinelData.nitrogenDioxide}
+              mapRefs={mapRefs}
+            />*/}
             {/*<NitrogenDioxideLayer
               data={sentinelData.nitrogenDioxide}
               mapRefs={mapRefs}
