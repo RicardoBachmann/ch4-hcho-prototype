@@ -1,9 +1,6 @@
 import { useState } from "react";
 
-export default function LayerToggle() {
-  const [activeLayerMapA, setActiveLayerMapA] = useState(null);
-  const [activeLayerMapC, setActiveLayerMapC] = useState(null);
-
+export default function LayerToggle({ isActive, setIsActive, mapId }) {
   const productLayers = [
     {
       id: "hcho",
@@ -20,9 +17,17 @@ export default function LayerToggle() {
     { id: "ai", displayName: "Aerosol Index (AI)" },
   ];
 
-  function handleChangeLayer(id, activeLayerMapA, activeLayerMapC) {
-    return null;
-  }
+  const handleToggle = (layerId) => {
+    console.log("Button clicked:", layerId);
+    console.log("Current active layer:", isActive);
+    if (isActive === layerId) {
+      setIsActive(null);
+      console.log("Deactivating layer");
+    } else {
+      console.log("Activating layer:", layerId);
+      setIsActive(layerId);
+    }
+  };
 
   return (
     <div
@@ -38,7 +43,13 @@ export default function LayerToggle() {
       }}
     >
       {productLayers.map((layer) => (
-        <button key={layer.id}>{layer.displayName}</button>
+        <button
+          key={layer.id}
+          onClick={() => handleToggle(layer.id)}
+          style={{ backgroundColor: isActive === layer.id ? "green" : null }}
+        >
+          {layer.displayName}
+        </button>
       ))}
     </div>
   );

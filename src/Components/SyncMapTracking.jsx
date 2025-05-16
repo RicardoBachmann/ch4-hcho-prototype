@@ -16,6 +16,10 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
   // State to track if maps are initialized
   const [mapsInitialized, setMapsInitialized] = useState(false);
 
+  // States to switch between S5-product layers in Map A-C
+  const [activeLayerMapA, setActiveLayerMapA] = useState(null);
+  const [activeLayerMapC, setActiveLayerMapC] = useState(null);
+
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
     if (mapsInitialized) return;
@@ -140,7 +144,11 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
             ref={mapContainerRefA}
             style={{ width: "100%", height: "100%" }}
           />
-          <LayerToggle />
+          <LayerToggle
+            isActive={activeLayerMapA}
+            setIsActive={setActiveLayerMapA}
+            mapId="A"
+          />
         </div>
         <div style={{ flex: 1, height: "100%" }}>
           <div
@@ -154,7 +162,11 @@ export default function SyncMapTracking({ sentinel5Position, onLayerReady }) {
             ref={mapContainerRefC}
             style={{ width: "100%", height: "100%" }}
           />
-          <LayerToggle />
+          <LayerToggle
+            isActive={activeLayerMapC}
+            setIsActive={setActiveLayerMapC}
+            mapId="C"
+          />
         </div>
       </div>
     </>
