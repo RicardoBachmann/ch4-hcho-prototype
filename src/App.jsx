@@ -4,13 +4,6 @@ import "./App.css";
 import fetchDLRStacData from "./sentinel5DLRdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
-import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
-import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
-import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
-import AerosolIndexLayer from "./Components/DataSpaceViz/AerosolIndexLayer";
-// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
-// import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
-// import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
 
 function App() {
   const [error, setError] = useState(null);
@@ -72,11 +65,11 @@ function App() {
   return (
     <div>
       <section>
-        {/* Only render maps once we have position data */}
         {isPositionLoaded ? (
           <SyncMapTracking
             onLayerReady={handleMapsReady}
             sentinel5Position={sentinel5Position}
+            sentinelData={sentinelData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>
@@ -85,37 +78,6 @@ function App() {
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
-        {/*Render Layer only if mapRefs are available*/}
-        {mapRefs && sentinelData && (
-          <>
-            <FormaldehydeLayer
-              data={sentinelData.formaldehyde}
-              mapRefs={mapRefs}
-            />
-            <SulfurDioxide
-              data={sentinelData.sulfurDioxide}
-              mapRefs={mapRefs}
-            />
-            <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
-            <AerosolIndexLayer
-              data={sentinelData.aerosolIndex}
-              mapRefs={mapRefs}
-            />
-            {/*<CarbonMonoxideLayer
-              data={sentinelData.carbonMonoxide}
-              mapRefs={mapRefs}
-            />*/}
-            {/*<MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />*/}
-            {/*<NitrogenDioxideLayer
-              data={sentinelData.nitrogenDioxide}
-              mapRefs={mapRefs}
-            />*/}
-            {/*<NitrogenDioxideLayer
-              data={sentinelData.nitrogenDioxide}
-              mapRefs={mapRefs}
-            />*/}
-          </>
-        )}
       </section>
     </div>
   );
