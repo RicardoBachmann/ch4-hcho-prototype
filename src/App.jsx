@@ -7,6 +7,7 @@ import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
 function App() {
   const [error, setError] = useState(null);
+  // null Initial state and indicates that the data is not yet loaded
   const [sentinelData, setSentinelData] = useState({
     carbonMonoxideLayer: null,
     formaldehyde: null,
@@ -16,19 +17,32 @@ function App() {
     sulfurDioxide: null,
     aerosolIndex: null,
   });
-  const [isPositionLoaded, setIsPositionLoaded] = useState(false);
-  const [mapRefs, setMapRefs] = useState(null);
 
+  // State to store the map instance that are initialized in SyncMapTracking
+  // and needed by layer components to add visualizations (instances available all over the app hierarchy).
+  const [mapInstance, setMapInstance] = useState(null);
+
+  // Callback func passed to SyncMapTracking
+  // Recevies map instance once they're initialized and ready for use
   const handleMapsReady = (refs) => {
-    setMapRefs(refs);
+    setMapInstance(refs);
   };
 
+  // States and lower callback func for position tracking S5-Satellite
+  const [isPositionLoaded, setIsPositionLoaded] = useState(false);
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
     latitude: 0,
     altitude: 0,
   });
 
+  const handleSetPosition = (position) => {
+    setSentinel5Position(position);
+    setIsPositionLoaded(true);
+  };
+
+  // useEffect fetches satellite data products on component mount
+  // and stores them in the sentinelData state for use throughout the app
   useEffect(() => {
     async function fetchData() {
       try {
@@ -57,11 +71,6 @@ function App() {
     fetchData();
   }, []);
 
-  const handleSetPosition = (position) => {
-    setSentinel5Position(position);
-    setIsPositionLoaded(true);
-  };
-
   return (
     <div>
       <section>
@@ -74,6 +83,7 @@ function App() {
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
+        {error && <div className="error-message">Error:{error}</div>}
         <Sentinel5Tracking
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
