@@ -8,35 +8,39 @@ import SulfurDioxide from "../Components/DataSpaceViz/SulfurDioxideLayer";
 import OzoneLayer from "../Components/DataSpaceViz/OzoneLayer";
 import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
 
-// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
-// import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
-// import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
+// import NitrogenDioxideLayer from "../Components/DataSpaceViz/NitrogenDioxideLayer";
+// import CarbonMonoxideLayer from "../Components/DataSpaceViz/CarbonMonoxideLayer";
+// import MethanLayer from "../Components/DataSpaceViz/MethanLayer";
 
 import LayerToggle from "./LayerToggle";
 
 export default function SyncMapTracking({
-  sentinel5Position,
-  onLayerReady,
-  sentinelData,
+  sentinel5Position, // Live coordinates
+  onLayerReady, // Callback for map instances to share with app.jsx
+  sentinelData, // S5-data for visual layers
 }) {
+  i;
+  // Refs(DOM anchor) for Mabpox-maps
+  const mapContainerRefA = useRef(null);
+  const mapContainerRefB = useRef(null);
+  const mapContainerRefC = useRef(null);
+  // Refs to initialised Mapbox map instances
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
 
-  const mapContainerRefA = useRef(null);
-  const mapContainerRefB = useRef(null);
-  const mapContainerRefC = useRef(null);
-
-  // State to track if maps are initialized
+  // State to track if maps are initialized attempting to interact with these (def. coding)
   const [mapsInitialized, setMapsInitialized] = useState(false);
 
   // States to switch between S5-product layers in Map A-C
-
+  // Stores which data layer is active on which map
   const [activeMapLayers, setActiveMapLayers] = useState({
     mapA: null,
     mapC: null,
   });
 
+  // Function enable switching between data layers by
+  // checking whether a layer is already active and activating or deactivating it accordingly
   const handleToggleMapA = (layerId) => {
     setActiveMapLayers((prev) => ({
       ...prev,
@@ -52,10 +56,11 @@ export default function SyncMapTracking({
   };
 
   // Effect to inform the parent when layers change
+  // Dataperformance!
   useEffect(() => {
     if (!mapsInitialized) return;
 
-    // Delete all A-layers
+    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
     const layerIdsA = [
       "hcho-layer-a",
       "so2-layer-a",
@@ -63,17 +68,21 @@ export default function SyncMapTracking({
       "ai-layer-a",
     ];
 
+    // Runs of each layerIds(A-C) and remove existing layer and its source.
     layerIdsA.forEach((id) => {
       if (mapRefA.current.getLayer(id)) {
         mapRefA.current.removeLayer(id);
       }
+      // Every layer an associated data source.
+      // This line converts a layer name into the cooresponding sosurce name
+      // so that both can be removed.
       const sourceId = id.replace("-layer-", "-source-");
       if (mapRefA.current.getSource(sourceId)) {
         mapRefA.current.removeSource(sourceId);
       }
     });
 
-    // Delete all C-layers
+    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
     const layerIdsC = [
       "hcho-layer-c",
       "so2-layer-c",
@@ -218,8 +227,11 @@ export default function SyncMapTracking({
           />
 
           <LayerToggle
+            // Current active layer (null or layerId e.g("hcho"))
             isActive={activeMapLayers.mapA}
+            // Callback function, that runs when user select a layer
             setIsActive={(layerId) => handleToggleMapA(layerId)}
+            // ID, that specifies which map this LayerToggle applies to (A or C)
             mapId="A"
           />
         </div>
@@ -246,18 +258,23 @@ export default function SyncMapTracking({
 
       {/* Layer-Rendering*/}
 
-      {/*Render Layer only if mapRefs are available*/}
+      {/*Render Layer only if mapRefs & date are available (def.coding)*/}
       {mapsInitialized && sentinelData && (
         <>
           {/*Map A Layer*/}
           {activeMapLayers.mapA === "hcho" && (
             <FormaldehydeLayer
               data={sentinelData.formaldehyde}
+              // Passes all three Mapbox map instances to the layer component.
+              // Component must know on which map it should render its data.
+              // Because of map-sync, component need access to all refs
               mapRefs={{
                 mapA: mapRefA.current,
                 mapB: mapRefB.current,
                 mapC: mapRefC.current,
               }}
+              // Specifies on which of the three maps the layer should actually be rendered
+              // targetMap-prop instructed to render data-layers only an the specific map
               targetMap="A"
             />
           )}
