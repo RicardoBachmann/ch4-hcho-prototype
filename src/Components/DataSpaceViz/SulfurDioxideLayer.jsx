@@ -56,14 +56,14 @@ export default function SulfurDioxide({ data, mapRefs }) {
           mapRefs.mapA.removeSource("so2-source-a");
         }
       }
-      /*if (mapRefs.mapC) {
+      if (mapRefs.mapC) {
         if (mapRefs.mapC.getLayer("so2-layer-c")) {
           mapRefs.mapC.removeLayer("so2-layer-c");
         }
         if (mapRefs.mapC.getSource("so2-source-c")) {
           mapRefs.mapC.removeSource("so2-source-c");
         }
-      }*/
+      }
     };
   }, [mapRefs]);
 

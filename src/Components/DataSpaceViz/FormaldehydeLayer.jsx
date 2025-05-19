@@ -56,14 +56,14 @@ export default function FormaldehydeLayer({ data, mapRefs }) {
           mapRefs.mapA.removeSource("hcho-source-a");
         }
       }
-      /*if (mapRefs.mapC) {
+      if (mapRefs.mapC) {
         if (mapRefs.mapC.getLayer("hcho-layer-c")) {
           mapRefs.mapC.removeLayer("hcho-layer-c");
         }
         if (mapRefs.mapC.getSource("hcho-source-c")) {
           mapRefs.mapC.removeSource("hcho-source-c");
         }
-      }*/
+      }
     };
   }, [mapRefs]);
 

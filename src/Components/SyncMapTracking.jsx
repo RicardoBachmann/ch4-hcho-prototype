@@ -19,7 +19,6 @@ export default function SyncMapTracking({
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
 }) {
-  i;
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
   const mapContainerRefB = useRef(null);
@@ -233,6 +232,7 @@ export default function SyncMapTracking({
             setIsActive={(layerId) => handleToggleMapA(layerId)}
             // ID, that specifies which map this LayerToggle applies to (A or C)
             mapId="A"
+            targetMap="A"
           />
         </div>
 
@@ -252,6 +252,7 @@ export default function SyncMapTracking({
             isActive={activeMapLayers.mapC}
             setIsActive={(layerId) => handleToggleMapC(layerId)}
             mapId="C"
+            targetMap="C"
           />
         </div>
       </div>
@@ -267,7 +268,7 @@ export default function SyncMapTracking({
               data={sentinelData.formaldehyde}
               // Passes all three Mapbox map instances to the layer component.
               // Component must know on which map it should render its data.
-              // Because of map-sync, component need access to all refs
+              // Because of map-sync, component need access to all 3 refs
               mapRefs={{
                 mapA: mapRefA.current,
                 mapB: mapRefB.current,

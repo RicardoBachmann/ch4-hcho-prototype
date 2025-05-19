@@ -1,6 +1,11 @@
 import React from "react";
 
-export default function LayerToggle({ isActive, setIsActive, mapId }) {
+export default function LayerToggle({
+  isActive,
+  setIsActive,
+  mapId,
+  targetMap,
+}) {
   const productLayers = [
     {
       id: "hcho",
@@ -20,12 +25,15 @@ export default function LayerToggle({ isActive, setIsActive, mapId }) {
   const handleToggle = (layerId) => {
     console.log("Button clicked:", layerId);
     console.log("Current active layer:", isActive);
+    console.log("Target map:", targetMap);
+    console.log("mapId:", mapId);
+    // Deactivate the layer if already active
     if (isActive === layerId) {
       setIsActive(null);
       console.log("Deactivating layer");
     } else {
       console.log("Activating layer:", layerId);
-      setIsActive(layerId);
+      setIsActive(layerId); // Activate the new layer
     }
   };
 
