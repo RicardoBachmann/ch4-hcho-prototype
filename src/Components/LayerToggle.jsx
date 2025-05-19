@@ -22,11 +22,30 @@ export default function LayerToggle({
     { id: "ai", displayName: "Aerosol Index (AI)" },
   ];
 
-  const handleToggle = (layerId) => {
+  // Toggle Layer A
+  const handleToggleMapA = (layerId) => {
     console.log("Button clicked:", layerId);
     console.log("Current active layer:", isActive);
     console.log("Target map:", targetMap);
     console.log("mapId:", mapId);
+    // Decision logic: Activate or deactivate?
+    // Deactivate the layer if already active
+    if (isActive === layerId) {
+      setIsActive(null);
+      console.log("Deactivating layer");
+    } else {
+      console.log("Activating layer:", layerId);
+      setIsActive(layerId); // Activate the new layer
+    }
+  };
+
+  // Toggle Layer C
+  const handleToggleMapC = (layerId) => {
+    console.log("Button clicked:", layerId);
+    console.log("Current active layer:", isActive);
+    console.log("Target map:", targetMap);
+    console.log("mapId:", mapId);
+    // Decision logic: Activate or deactivate?
     // Deactivate the layer if already active
     if (isActive === layerId) {
       setIsActive(null);
@@ -53,7 +72,9 @@ export default function LayerToggle({
       {productLayers.map((layer) => (
         <button
           key={layer.id}
-          onClick={() => handleToggle(layer.id)}
+          onClick={
+            (() => handleToggleMapA(layer.id), handleToggleMapC(layer.id))
+          }
           style={{ backgroundColor: isActive === layer.id ? "green" : null }}
         >
           {layer.displayName}

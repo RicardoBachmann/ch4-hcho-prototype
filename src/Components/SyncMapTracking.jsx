@@ -38,6 +38,9 @@ export default function SyncMapTracking({
     mapC: null,
   });
 
+  const activeLayerA = activeMapLayers.mapA;
+  const activeLayerC = activeMapLayers.mapC;
+
   // Function enable switching between data layers by
   // checking whether a layer is already active and activating or deactivating it accordingly
   const handleToggleMapA = (layerId) => {
@@ -54,6 +57,54 @@ export default function SyncMapTracking({
     }));
   };
 
+  // Toggle Map A
+  useEffect(() => {
+    if (!mapsInitialized) return;
+    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
+    const layerIdsA = [
+      "hcho-layer-a",
+      "so2-layer-a",
+      "o3-layer-a",
+      "ai-layer-a",
+    ];
+
+    // Runs of each layerIds(A-C) and remove existing layer and its source.
+    layerIdsA.forEach((id) => {
+      if (mapRefA.current && mapRefA.current.getLayer(id)) {
+        mapRefA.current.removeLayer(id);
+      }
+      // Every layer an associated data source.
+      // This line converts a layer name into the cooresponding sosurce name
+      // so that both can be removed.
+      const sourceId = id.replace("-layer-", "-source-");
+      if (mapRefA.current.getSource(sourceId)) {
+        mapRefA.current.removeSource(sourceId);
+      }
+    });
+  }, [activeLayerA, mapsInitialized]);
+
+  // Toggle Map C
+  useEffect(() => {
+    if (!mapsInitialized) return;
+    const layerIdsC = [
+      "hcho-layer-c",
+      "so2-layer-c",
+      "o3-layer-c",
+      "ai-layer-c",
+    ];
+
+    layerIdsC.forEach((id) => {
+      if (mapRefC.current && mapRefC.current.getLayer(id)) {
+        mapRefC.current.removeLayer(id);
+      }
+      const sourceId = id.replace("-layer-", "-source-");
+      if (mapRefC.current.getSource(sourceId)) {
+        mapRefC.current.removeSource(sourceId);
+      }
+    });
+  }, [activeLayerC, mapsInitialized]);
+
+  /*
   // Effect to inform the parent when layers change
   // Dataperformance!
   useEffect(() => {
@@ -98,7 +149,7 @@ export default function SyncMapTracking({
         mapRefC.current.removeSource(sourceId);
       }
     });
-  }, [activeMapLayers, mapsInitialized]);
+  }, [activeMapLayers, mapsInitialized]);*/
 
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
