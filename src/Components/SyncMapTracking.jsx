@@ -41,6 +41,8 @@ export default function SyncMapTracking({
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
 
+  /*
+
   // Function enable switching between data layers by
   // checking whether a layer is already active and activating or deactivating it accordingly
   const handleToggleMapA = (layerId) => {
@@ -149,7 +151,8 @@ export default function SyncMapTracking({
         mapRefC.current.removeSource(sourceId);
       }
     });
-  }, [activeMapLayers, mapsInitialized]);*/
+  }, [activeMapLayers, mapsInitialized]);
+  */
 
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
@@ -258,6 +261,64 @@ export default function SyncMapTracking({
     }
   }, [sentinel5Position, mapsInitialized]);
 
+  // New effect for rendering map layer data once and save it
+  useEffect(() => {
+    console.log("Layer initialization useEffect running");
+    // Sobald einer der folgenden Bedingungen zurifft, wird die funktion sofort beendet
+    if (!mapsInitialized || !mapRefA.current || !mapRefB.current) return;
+    // Create all layers with visible prop on
+    // Map A
+
+    // Funktion parameters sind in map und mapId
+    createAllLayersForMap(mapRefA.current, "a");
+    createAllLayersForMap(mapRefC.current, "c");
+
+    // Function for creating all layers for map
+    function createAllLayersForMap(map, mapId) {
+      console.log(`Creating all layers for map ${mapId}`);
+      createLayer("hcho", map, mapId);
+      createLayer("so2", map, mapId);
+      createLayer("o3", map, mapId);
+      createLayer("ai", map, mapId);
+    }
+
+    // Assist function for creating a single layer
+    function createLayer(layerType, map, mapId) {
+      console.log(`Creating layer ${layerType} from map ${mapId}`);
+      let layerId = `${layerType}-layer-${mapId}`;
+      let sourceId = `${layerType}-source-${mapId}`;
+
+      if (!map.getSource(sourceId)) {
+        console.log(`Adding source ${sourceId}`);
+        map.addSource(sourceId, {
+          type: "raster",
+          tiles: [
+            `https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
+          ],
+          tileSize: 256,
+        });
+        console.log(`Source ${sourceId} added successfully`);
+      }
+
+      // Create layer if not exist
+      if (!map.getLayer(layerId)) {
+        console.log(`Adding layer ${layerId}`);
+        map.addLayer({
+          id: layerId,
+          type: "raster",
+          source: sourceId,
+          layout: {
+            visibility: "none",
+          },
+          paint: {
+            "raster-opacity": 0.7,
+          },
+        });
+        console.log(`Layer ${layerId} added successfully`);
+      }
+    }
+  }, [mapsInitialized]); // runs once when map mounted
+
   return (
     <>
       <div
@@ -275,7 +336,7 @@ export default function SyncMapTracking({
             ref={mapContainerRefA}
             style={{ width: "100%", height: "100%" }}
           />
-
+          {/* 
           <LayerToggle
             // Current active layer (null or layerId e.g("hcho"))
             isActive={activeMapLayers.mapA}
@@ -285,6 +346,7 @@ export default function SyncMapTracking({
             mapId="A"
             targetMap="A"
           />
+ */}
         </div>
 
         <div style={{ flex: 1, height: "100%" }}>
@@ -299,36 +361,38 @@ export default function SyncMapTracking({
             ref={mapContainerRefC}
             style={{ width: "100%", height: "100%" }}
           />
+          {/* 
           <LayerToggle
             isActive={activeMapLayers.mapC}
             setIsActive={(layerId) => handleToggleMapC(layerId)}
             mapId="C"
             targetMap="C"
           />
+           */}
         </div>
       </div>
 
-      {/* Layer-Rendering*/}
+      {/* Layer-Rendering
 
       {/*Render Layer only if mapRefs & date are available (def.coding)*/}
       {mapsInitialized && sentinelData && (
         <>
           {/*Map A Layer*/}
-          {activeMapLayers.mapA === "hcho" && (
-            <FormaldehydeLayer
-              data={sentinelData.formaldehyde}
-              // Passes all three Mapbox map instances to the layer component.
-              // Component must know on which map it should render its data.
-              // Because of map-sync, component need access to all 3 refs
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              // Specifies on which of the three maps the layer should actually be rendered
-              // targetMap-prop instructed to render data-layers only an the specific map
-              targetMap="A"
-            />
+          {/*{activeMapLayers.mapA === "hcho" && (
+          <FormaldehydeLayer
+            data={sentinelData.formaldehyde}
+            // Passes all three Mapbox map instances to the layer component.
+            // Component must know on which map it should render its data.
+            // Because of map-sync, component need access to all 3 refs
+            mapRefs={{
+              mapA: mapRefA.current,
+              mapB: mapRefB.current,
+              mapC: mapRefC.current,
+            }}
+            // Specifies on which of the three maps the layer should actually be rendered
+            // targetMap-prop instructed to render data-layers only an the specific map
+            targetMap="A"
+          />
           )}
           {activeMapLayers.mapA === "so2" && (
             <SulfurDioxide
@@ -364,16 +428,16 @@ export default function SyncMapTracking({
             />
           )}
           {/*Map C Layer*/}
-          {activeMapLayers.mapC === "hcho" && (
-            <FormaldehydeLayer
-              data={sentinelData.formaldehyde}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="C"
-            />
+          {/*activeMapLayers.mapC === "hcho" && (
+          <FormaldehydeLayer
+            data={sentinelData.formaldehyde}
+            mapRefs={{
+              mapA: mapRefA.current,
+              mapB: mapRefB.current,
+              mapC: mapRefC.current,
+            }}
+            targetMap="C"
+          />
           )}
           {activeMapLayers.mapC === "so2" && (
             <SulfurDioxide
@@ -408,6 +472,7 @@ export default function SyncMapTracking({
               targetMap="C"
             />
           )}
+          */}
         </>
       )}
     </>
