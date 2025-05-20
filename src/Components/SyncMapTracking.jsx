@@ -322,8 +322,10 @@ export default function SyncMapTracking({
   // Visibility control for Map A
   useEffect(() => {
     console.log("Visible control for Map A loaded:");
-    if (!mapsInitialized || !mapRefA.current) return;
-    console.log("Maps not initialized yet or mapRefA is null");
+    if (!mapsInitialized || !mapRefA.current) {
+      console.log("Maps not initialized yet or mapRefA is null");
+      return;
+    }
 
     const allLayerIds = [
       "hcho-layer-a",
@@ -344,7 +346,7 @@ export default function SyncMapTracking({
     if (activeLayerA) {
       const activeLayerId = `${activeLayerA}-layer-a`;
       if (mapRefA.current.getLayer(activeLayerId)) {
-        console.log("Set layer:", layerId, "to visible");
+        console.log("Set layer:", activeLayerId, "to visible");
         mapRefA.current.setLayoutProperty(
           activeLayerId,
           "visibility",
@@ -357,6 +359,47 @@ export default function SyncMapTracking({
       console.log("No active Layer for Map A");
     }
   }, [activeLayerA, mapsInitialized]);
+
+  // Visibility control for Map C
+  useEffect(() => {
+    console.log("Visible control for Map C loaded:");
+    if (!mapsInitialized || !mapRefC.current) {
+      console.log("Maps not initialized yet or mapRefC is null");
+      return;
+    }
+
+    const allLayerIds = [
+      "hcho-layer-c",
+      "so2-layer-c",
+      "o3-layer-c",
+      "ai-layer-c",
+    ];
+
+    // Set all layers default of invisible
+    allLayerIds.forEach((layerId) => {
+      if (mapRefC.current.getLayer(layerId)) {
+        console.log("Set layer:", layerId, "to invisible");
+        mapRefC.current.setLayoutProperty(layerId, "visibility", "none");
+      } else {
+        console.log("Layer", layerId, "not found on map");
+      }
+    });
+    if (activeLayerC) {
+      const activeLayerId = `${activeLayerC}-layer-c`;
+      if (mapRefC.current.getLayer(activeLayerId)) {
+        console.log("Set layer:", activeLayerId, "to visible");
+        mapRefC.current.setLayoutProperty(
+          activeLayerId,
+          "visibility",
+          "visible"
+        );
+      } else {
+        console.log("Active layer", activeLayerId, "not found on map");
+      }
+    } else {
+      console.log("No active Layer for Map C");
+    }
+  }, [activeLayerC, mapsInitialized]);
 
   return (
     <>
@@ -375,7 +418,7 @@ export default function SyncMapTracking({
             ref={mapContainerRefA}
             style={{ width: "100%", height: "100%" }}
           />
-          {/* 
+
           <LayerToggle
             // Current active layer (null or layerId e.g("hcho"))
             isActive={activeMapLayers.mapA}
@@ -385,7 +428,6 @@ export default function SyncMapTracking({
             mapId="A"
             targetMap="A"
           />
- */}
         </div>
 
         <div style={{ flex: 1, height: "100%" }}>
@@ -400,14 +442,13 @@ export default function SyncMapTracking({
             ref={mapContainerRefC}
             style={{ width: "100%", height: "100%" }}
           />
-          {/* 
+
           <LayerToggle
             isActive={activeMapLayers.mapC}
             setIsActive={(layerId) => handleToggleMapC(layerId)}
             mapId="C"
             targetMap="C"
           />
-           */}
         </div>
       </div>
 
