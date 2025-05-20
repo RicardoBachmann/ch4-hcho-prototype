@@ -75,103 +75,6 @@ export default function SyncMapTracking({
     });
   };
 
-  /*
-
-  // Toggle Map A
-  useEffect(() => {
-    if (!mapsInitialized) return;
-    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
-    const layerIdsA = [
-      "hcho-layer-a",
-      "so2-layer-a",
-      "o3-layer-a",
-      "ai-layer-a",
-    ];
-
-    // Runs of each layerIds(A-C) and remove existing layer and its source.
-    layerIdsA.forEach((id) => {
-      if (mapRefA.current && mapRefA.current.getLayer(id)) {
-        mapRefA.current.removeLayer(id);
-      }
-      // Every layer an associated data source.
-      // This line converts a layer name into the cooresponding sosurce name
-      // so that both can be removed.
-      const sourceId = id.replace("-layer-", "-source-");
-      if (mapRefA.current.getSource(sourceId)) {
-        mapRefA.current.removeSource(sourceId);
-      }
-    });
-  }, [activeLayerA, mapsInitialized]);
-
-  // Toggle Map C
-  useEffect(() => {
-    if (!mapsInitialized) return;
-    const layerIdsC = [
-      "hcho-layer-c",
-      "so2-layer-c",
-      "o3-layer-c",
-      "ai-layer-c",
-    ];
-
-    layerIdsC.forEach((id) => {
-      if (mapRefC.current && mapRefC.current.getLayer(id)) {
-        mapRefC.current.removeLayer(id);
-      }
-      const sourceId = id.replace("-layer-", "-source-");
-      if (mapRefC.current.getSource(sourceId)) {
-        mapRefC.current.removeSource(sourceId);
-      }
-    });
-  }, [activeLayerC, mapsInitialized]);
-
-  /*
-  // Effect to inform the parent when layers change
-  // Dataperformance!
-  useEffect(() => {
-    if (!mapsInitialized) return;
-
-    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
-    const layerIdsA = [
-      "hcho-layer-a",
-      "so2-layer-a",
-      "o3-layer-a",
-      "ai-layer-a",
-    ];
-
-    // Runs of each layerIds(A-C) and remove existing layer and its source.
-    layerIdsA.forEach((id) => {
-      if (mapRefA.current.getLayer(id)) {
-        mapRefA.current.removeLayer(id);
-      }
-      // Every layer an associated data source.
-      // This line converts a layer name into the cooresponding sosurce name
-      // so that both can be removed.
-      const sourceId = id.replace("-layer-", "-source-");
-      if (mapRefA.current.getSource(sourceId)) {
-        mapRefA.current.removeSource(sourceId);
-      }
-    });
-
-    // In  Mapbox, each layer has an associated data source. (Delete all A-layers)
-    const layerIdsC = [
-      "hcho-layer-c",
-      "so2-layer-c",
-      "o3-layer-c",
-      "ai-layer-c",
-    ];
-
-    layerIdsC.forEach((id) => {
-      if (mapRefC.current.getLayer(id)) {
-        mapRefC.current.removeLayer(id);
-      }
-      const sourceId = id.replace("-layer-", "-source-");
-      if (mapRefC.current.getSource(sourceId)) {
-        mapRefC.current.removeSource(sourceId);
-      }
-    });
-  }, [activeMapLayers, mapsInitialized]);
-  */
-
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
     if (mapsInitialized) return;
@@ -347,10 +250,10 @@ export default function SyncMapTracking({
     }
 
     const allLayerIds = [
-      "hcho-layer-a",
-      "so2-layer-a",
-      "o3-layer-a",
-      "ai-layer-a",
+      "HCHO-layer-a",
+      "SO2-layer-a",
+      "O3-layer-a",
+      "AI-layer-a",
     ];
 
     // Set all layers default of invisible
@@ -385,10 +288,10 @@ export default function SyncMapTracking({
     }
 
     const allLayerIds = [
-      "hcho-layer-c",
-      "so2-layer-c",
-      "o3-layer-c",
-      "ai-layer-c",
+      "HCHO-layer-c",
+      "SO2-layer-c",
+      "O3-layer-c",
+      "AI-layer-c",
     ];
 
     // Set all layers default of invisible
@@ -465,110 +368,6 @@ export default function SyncMapTracking({
           />
         </div>
       </div>
-
-      {/* Layer-Rendering
-
-      {/*Render Layer only if mapRefs & date are available (def.coding)*/}
-      {mapsInitialized && sentinelData && (
-        <>
-          {/*Map A Layer*/}
-          {/*{activeMapLayers.mapA === "hcho" && (
-          <FormaldehydeLayer
-            data={sentinelData.formaldehyde}
-            // Passes all three Mapbox map instances to the layer component.
-            // Component must know on which map it should render its data.
-            // Because of map-sync, component need access to all 3 refs
-            mapRefs={{
-              mapA: mapRefA.current,
-              mapB: mapRefB.current,
-              mapC: mapRefC.current,
-            }}
-            // Specifies on which of the three maps the layer should actually be rendered
-            // targetMap-prop instructed to render data-layers only an the specific map
-            targetMap="A"
-          />
-          )}
-          {activeMapLayers.mapA === "so2" && (
-            <SulfurDioxide
-              data={sentinelData.sulfurDioxide}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="A"
-            />
-          )}
-          {activeMapLayers.mapA === "o3" && (
-            <OzoneLayer
-              data={sentinelData.ozone}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="A"
-            />
-          )}
-          {activeMapLayers.mapA === "ai" && (
-            <AerosolIndexLayer
-              data={sentinelData.aerosolIndex}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="A"
-            />
-          )}
-          {/*Map C Layer*/}
-          {/*activeMapLayers.mapC === "hcho" && (
-          <FormaldehydeLayer
-            data={sentinelData.formaldehyde}
-            mapRefs={{
-              mapA: mapRefA.current,
-              mapB: mapRefB.current,
-              mapC: mapRefC.current,
-            }}
-            targetMap="C"
-          />
-          )}
-          {activeMapLayers.mapC === "so2" && (
-            <SulfurDioxide
-              data={sentinelData.sulfurDioxide}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="C"
-            />
-          )}
-          {activeMapLayers.mapC === "o3" && (
-            <OzoneLayer
-              data={sentinelData.ozone}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="C"
-            />
-          )}
-          {activeMapLayers.mapC === "ai" && (
-            <AerosolIndexLayer
-              data={sentinelData.aerosolIndex}
-              mapRefs={{
-                mapA: mapRefA.current,
-                mapB: mapRefB.current,
-                mapC: mapRefC.current,
-              }}
-              targetMap="C"
-            />
-          )}
-          */}
-        </>
-      )}
     </>
   );
 }
