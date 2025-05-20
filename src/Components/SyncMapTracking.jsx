@@ -319,6 +319,45 @@ export default function SyncMapTracking({
     }
   }, [mapsInitialized]); // runs once when map mounted
 
+  // Visibility control for Map A
+  useEffect(() => {
+    console.log("Visible control for Map A loaded:");
+    if (!mapsInitialized || !mapRefA.current) return;
+    console.log("Maps not initialized yet or mapRefA is null");
+
+    const allLayerIds = [
+      "hcho-layer-a",
+      "so2-layer-a",
+      "o3-layer-a",
+      "ai-layer-a",
+    ];
+
+    // Set all layers default of invisible
+    allLayerIds.forEach((layerId) => {
+      if (mapRefA.current.getLayer(layerId)) {
+        console.log("Set layer:", layerId, "to invisible");
+        mapRefA.current.setLayoutProperty(layerId, "visibility", "none");
+      } else {
+        console.log("Layer", layerId, "not found on map");
+      }
+    });
+    if (activeLayerA) {
+      const activeLayerId = `${activeLayerA}-layer-a`;
+      if (mapRefA.current.getLayer(activeLayerId)) {
+        console.log("Set layer:", layerId, "to visible");
+        mapRefA.current.setLayoutProperty(
+          activeLayerId,
+          "visibility",
+          "visible"
+        );
+      } else {
+        console.log("Active layer", activeLayerId, "not found on map");
+      }
+    } else {
+      console.log("No active Layer for Map A");
+    }
+  }, [activeLayerA, mapsInitialized]);
+
   return (
     <>
       <div
