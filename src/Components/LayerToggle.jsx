@@ -1,25 +1,31 @@
-import React from "react";
-
 export default function LayerToggle({
   isActive,
   setIsActive,
   mapId,
   targetMap,
 }) {
+  console.log(
+    "LayerToggle rendering with isActive:",
+    isActive,
+    "mapId:",
+    mapId,
+    "targetMap:",
+    targetMap
+  );
   const productLayers = [
     {
-      id: "hcho",
+      id: "HCHO",
       displayName: "Formaldehyde (HCHO)",
     },
     {
-      id: "so2",
+      id: "SO2",
       displayName: "Sulfur Dioxide (SO2)",
     },
     {
-      id: "o3",
+      id: "O3",
       displayName: "Ozone (O3)",
     },
-    { id: "ai", displayName: "Aerosol Index (AI)" },
+    { id: "AI", displayName: "Aerosol Index (AI)" },
   ];
 
   // Toggle Layer A
@@ -72,9 +78,14 @@ export default function LayerToggle({
       {productLayers.map((layer) => (
         <button
           key={layer.id}
-          onClick={
-            (() => handleToggleMapA(layer.id), handleToggleMapC(layer.id))
-          }
+          onClick={() => {
+            console.log("Button clicked for", layer.id, "on map", mapId);
+            if (mapId === "A") {
+              handleToggleMapA(layer.id);
+            } else if (mapId === "C") {
+              handleToggleMapC(layer.id);
+            }
+          }}
           style={{ backgroundColor: isActive === layer.id ? "green" : null }}
         >
           {layer.displayName}

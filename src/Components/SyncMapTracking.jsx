@@ -40,21 +40,39 @@ export default function SyncMapTracking({
 
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
+  console.log(
+    "Current activeLayerA:",
+    activeLayerA,
+    "Current activeLayerA:",
+    activeLayerC
+  );
 
   // Function enable switching between data layers by
   // checking whether a layer is already active and activating or deactivating it accordingly
   const handleToggleMapA = (layerId) => {
-    setActiveMapLayers((prev) => ({
-      ...prev,
-      mapA: prev.mapA === layerId ? null : layerId,
-    }));
+    console.log("Toggle Map A called with layerId:", layerId);
+    setActiveMapLayers((prev) => {
+      const newState = {
+        ...prev,
+        mapA: prev.mapA === layerId ? null : layerId,
+      };
+
+      console.log("New state after toggle:", newState);
+      return newState;
+    });
   };
 
   const handleToggleMapC = (layerId) => {
-    setActiveMapLayers((prev) => ({
-      ...prev,
-      mapC: prev.mapC === layerId ? null : layerId,
-    }));
+    console.log("Toggle Map C called with layerId:", layerId);
+    setActiveMapLayers((prev) => {
+      const newState = {
+        ...prev,
+        mapC: prev.mapC === layerId ? null : layerId,
+      };
+
+      console.log("New state after toggle:", newState);
+      return newState;
+    });
   };
 
   /*
@@ -276,10 +294,10 @@ export default function SyncMapTracking({
     // Function for creating all layers for map
     function createAllLayersForMap(map, mapId) {
       console.log(`Creating all layers for map ${mapId}`);
-      createLayer("hcho", map, mapId);
-      createLayer("so2", map, mapId);
-      createLayer("o3", map, mapId);
-      createLayer("ai", map, mapId);
+      createLayer("HCHO", map, mapId);
+      createLayer("SO2", map, mapId);
+      createLayer("O3", map, mapId);
+      createLayer("AI", map, mapId);
     }
 
     // Assist function for creating a single layer
@@ -289,20 +307,22 @@ export default function SyncMapTracking({
       let sourceId = `${layerType}-source-${mapId}`;
 
       if (!map.getSource(sourceId)) {
-        console.log(`Adding source ${sourceId}`);
-        map.addSource(sourceId, {
-          type: "raster",
-          tiles: [
-            `https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
-          ],
-          tileSize: 256,
-        });
-        console.log(`Source ${sourceId} added successfully`);
+        try {
+          console.log(`Source ${sourceId} added successfully`);
+          map.addSource(sourceId, {
+            type: "raster",
+            tiles: [
+              `https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
+            ],
+            tileSize: 256,
+          });
+        } catch (error) {
+          console.error(`Error adding source ${sourceId}:`, error);
+        }
       }
 
       // Create layer if not exist
       if (!map.getLayer(layerId)) {
-        console.log(`Adding layer ${layerId}`);
         map.addLayer({
           id: layerId,
           type: "raster",
@@ -321,7 +341,6 @@ export default function SyncMapTracking({
 
   // Visibility control for Map A
   useEffect(() => {
-    console.log("Visible control for Map A loaded:");
     if (!mapsInitialized || !mapRefA.current) {
       console.log("Maps not initialized yet or mapRefA is null");
       return;
@@ -355,14 +374,11 @@ export default function SyncMapTracking({
       } else {
         console.log("Active layer", activeLayerId, "not found on map");
       }
-    } else {
-      console.log("No active Layer for Map A");
     }
   }, [activeLayerA, mapsInitialized]);
 
   // Visibility control for Map C
   useEffect(() => {
-    console.log("Visible control for Map C loaded:");
     if (!mapsInitialized || !mapRefC.current) {
       console.log("Maps not initialized yet or mapRefC is null");
       return;
@@ -396,8 +412,6 @@ export default function SyncMapTracking({
       } else {
         console.log("Active layer", activeLayerId, "not found on map");
       }
-    } else {
-      console.log("No active Layer for Map C");
     }
   }, [activeLayerC, mapsInitialized]);
 
