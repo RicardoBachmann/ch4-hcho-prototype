@@ -41,8 +41,6 @@ export default function SyncMapTracking({
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
 
-  /*
-
   // Function enable switching between data layers by
   // checking whether a layer is already active and activating or deactivating it accordingly
   const handleToggleMapA = (layerId) => {
@@ -58,6 +56,8 @@ export default function SyncMapTracking({
       mapC: prev.mapC === layerId ? null : layerId,
     }));
   };
+
+  /*
 
   // Toggle Map A
   useEffect(() => {
