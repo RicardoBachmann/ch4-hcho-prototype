@@ -1,17 +1,4 @@
-export default function LayerToggle({
-  isActive,
-  setIsActive,
-  mapId,
-  targetMap,
-}) {
-  console.log(
-    "LayerToggle rendering with isActive:",
-    isActive,
-    "mapId:",
-    mapId,
-    "targetMap:",
-    targetMap
-  );
+export default function LayerToggle({ isActive, setIsActive }) {
   const productLayers = [
     {
       id: "HCHO",
@@ -28,36 +15,12 @@ export default function LayerToggle({
     { id: "AI", displayName: "Aerosol Index (AI)" },
   ];
 
-  // Toggle Layer A
-  const handleToggleMapA = (layerId) => {
-    console.log("Button clicked:", layerId);
-    console.log("Current active layer:", isActive);
-    console.log("Target map:", targetMap);
-    console.log("mapId:", mapId);
+  const handleToggle = (layerId) => {
     // Decision logic: Activate or deactivate?
     // Deactivate the layer if already active
     if (isActive === layerId) {
       setIsActive(null);
-      console.log("Deactivating layer");
     } else {
-      console.log("Activating layer:", layerId);
-      setIsActive(layerId); // Activate the new layer
-    }
-  };
-
-  // Toggle Layer C
-  const handleToggleMapC = (layerId) => {
-    console.log("Button clicked:", layerId);
-    console.log("Current active layer:", isActive);
-    console.log("Target map:", targetMap);
-    console.log("mapId:", mapId);
-    // Decision logic: Activate or deactivate?
-    // Deactivate the layer if already active
-    if (isActive === layerId) {
-      setIsActive(null);
-      console.log("Deactivating layer");
-    } else {
-      console.log("Activating layer:", layerId);
       setIsActive(layerId); // Activate the new layer
     }
   };
@@ -79,12 +42,7 @@ export default function LayerToggle({
         <button
           key={layer.id}
           onClick={() => {
-            console.log("Button clicked for", layer.id, "on map", mapId);
-            if (mapId === "A") {
-              handleToggleMapA(layer.id);
-            } else if (mapId === "C") {
-              handleToggleMapC(layer.id);
-            }
+            handleToggle(layer.id);
           }}
           style={{ backgroundColor: isActive === layer.id ? "green" : null }}
         >
