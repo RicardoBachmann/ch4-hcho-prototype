@@ -7,6 +7,7 @@
 // ! Later: STAC Implementation for DLR (More control and metadata, can select specific days, modern standard) !
 
 async function fetchDLRStacData(productKey) {
+  // Product names to actual API collection IDs for better code readability
   const productName = {
     Formaldehyde: "S5P_TROPOMI_L3_P1D_HCHO_v2",
     SulfurDioxide: "S5P_TROPOMI_L3_P1D_SO2_v2",
@@ -17,6 +18,7 @@ async function fetchDLRStacData(productKey) {
     CarbonMonoxide: "S5P_TROPOMI_L3_P1D_CO_v2",
   };
 
+  // Intercepts all errors that could occur during the network request process
   try {
     const collectionID = productName[productKey];
     const url = `/api/dlr/eoc/ogc/stac/v1/collections/${collectionID}/items?limit=1`;
@@ -28,6 +30,7 @@ async function fetchDLRStacData(productKey) {
     const text = await response.text();
     console.log("Response text:", text);
 
+    // Focuses specifically on errors when parsing the JSON, instead of throwing the error up
     try {
       const data = JSON.parse(text);
       console.log("Parsed data:", data);

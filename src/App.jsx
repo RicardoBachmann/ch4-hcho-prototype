@@ -1,21 +1,13 @@
 import { useState, useEffect } from "react";
-import { getAccessToken } from "./authService";
 import "./App.css";
 
 import fetchDLRStacData from "./sentinel5DLRdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
-import FormaldehydeLayer from "./Components/DataSpaceViz/FormaldehydeLayer";
-import SulfurDioxide from "./Components/DataSpaceViz/SulfurDioxideLayer";
-import OzoneLayer from "./Components/DataSpaceViz/OzoneLayer";
-import AerosolIndexLayer from "./Components/DataSpaceViz/AerosolIndexLayer";
-// import NitrogenDioxideLayer from "./Components/DataSpaceViz/NitrogenDioxideLayer";
-// import CarbonMonoxideLayer from "./Components/DataSpaceViz/CarbonMonoxideLayer";
-// import MethanLayer from "./Components/DataSpaceViz/MethanLayer";
 
 function App() {
-  const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
+  // null Initial state and indicates that the data is not yet loaded
   const [sentinelData, setSentinelData] = useState({
     carbonMonoxideLayer: null,
     formaldehyde: null,
@@ -25,104 +17,77 @@ function App() {
     sulfurDioxide: null,
     aerosolIndex: null,
   });
-  const [isPositionLoaded, setIsPositionLoaded] = useState(false);
-  const [mapRefs, setMapRefs] = useState(null);
 
+  // State to store the map instance that are initialized in SyncMapTracking
+  // and needed by layer components to add visualizations (instances available all over the app hierarchy).
+  const [mapInstance, setMapInstance] = useState(null);
+
+  // Callback func passed to SyncMapTracking
+  // Recevies map instance once they're initialized and ready for use
   const handleMapsReady = (refs) => {
-    setMapRefs(refs);
+    setMapInstance(refs);
   };
 
+  // States and lower callback func for position tracking S5-Satellite
+  const [isPositionLoaded, setIsPositionLoaded] = useState(false);
   const [sentinel5Position, setSentinel5Position] = useState({
     longitude: 0,
     latitude: 0,
     altitude: 0,
   });
 
-  useEffect(() => {
-    async function fetchToken() {
-      try {
-        const accessToken = await getAccessToken();
-        setToken(accessToken);
-      } catch (error) {
-        setError(error.message);
-        console.error(`Error getting Token:`, error);
-      }
-    }
-    fetchToken();
-  }, []);
+  const handleSetPosition = (position) => {
+    setSentinel5Position(position);
+    setIsPositionLoaded(true);
+  };
 
+  // useEffect fetches satellite data products on component mount
+  // and stores them in the sentinelData state for use throughout the app
   useEffect(() => {
     async function fetchData() {
       try {
         const formaldehydeData = await fetchDLRStacData("Formaldehyde");
         const sulfurDioxideData = await fetchDLRStacData("SulfurDioxide");
+        const aerosolIndexData = await fetchDLRStacData("AerosolIndex");
+        const ozoneData = await fetchDLRStacData("Ozone");
         setSentinelData({
           formaldehyde: formaldehydeData,
           sulfurDioxide: sulfurDioxideData,
+          aerosolIndex: aerosolIndexData,
+          ozone: ozoneData,
         });
-        console.log("Data:", formaldehydeData, sulfurDioxideData);
+        console.log(
+          "Data:",
+          formaldehydeData,
+          sulfurDioxideData,
+          aerosolIndexData,
+          ozoneData
+        );
       } catch (error) {
-        console.error("Error to get sentinel-data:", error);
+        console.error("Error to get Sentinel5 product-data:", error);
         setError(error.message);
       }
     }
     fetchData();
   }, []);
 
-  const handleSetPosition = (position) => {
-    setSentinel5Position(position);
-    setIsPositionLoaded(true);
-  };
-
   return (
     <div>
-      {token && <p>Token erfolgreich abgerufen!</p>}
-      {!token && <p>Fehler:{error}!</p>}
       <section>
-        {/* Only render maps once we have position data */}
         {isPositionLoaded ? (
           <SyncMapTracking
             onLayerReady={handleMapsReady}
             sentinel5Position={sentinel5Position}
+            sentinelData={sentinelData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
+        {error && <div className="error-message">Error:{error}</div>}
         <Sentinel5Tracking
           setSentinel5Position={handleSetPosition}
           sentinelData={sentinelData}
         />
-        {/*Render Layer only if mapRefs are available*/}
-        {mapRefs && sentinelData && (
-          <>
-            <FormaldehydeLayer
-              data={sentinelData.formaldehyde}
-              mapRefs={mapRefs}
-            />
-            <SulfurDioxide
-              data={sentinelData.sulfurDioxide}
-              mapRefs={mapRefs}
-            />
-            <OzoneLayer data={sentinelData.ozone} mapRefs={mapRefs} />
-            <AerosolIndexLayer
-              data={sentinelData.aerosolIndex}
-              mapRefs={mapRefs}
-            />
-            {/*<CarbonMonoxideLayer
-              data={sentinelData.carbonMonoxide}
-              mapRefs={mapRefs}
-            />*/}
-            {/*<MethanLayer data={sentinelData.methan} mapRefs={mapRefs} />*/}
-            {/*<NitrogenDioxideLayer
-              data={sentinelData.nitrogenDioxide}
-              mapRefs={mapRefs}
-            />*/}
-            {/*<NitrogenDioxideLayer
-              data={sentinelData.nitrogenDioxide}
-              mapRefs={mapRefs}
-            />*/}
-          </>
-        )}
       </section>
     </div>
   );
