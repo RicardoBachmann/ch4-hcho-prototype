@@ -331,6 +331,21 @@ export default function SyncMapTracking({
     }
   }, [clickedCoordinates]);
 
+  useEffect(() => {
+    if (clickedCoordinates) {
+      fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${clickedCoordinates.lng},${clickedCoordinates.lat}.json?access_token=pk.eyJ1IjoiZGV0cm9pdDMxMyIsImEiOiJjbTRqb3ljbTQwZnJxMmlzaTRtMWRzcnhpIn0.akOKBt52fpXDljrtyHo8wg`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("geocoding:", data);
+          if (data.features.length > 0) {
+            return;
+          }
+        });
+    }
+  }, [clickedCoordinates]);
+
   return (
     <>
       <div
