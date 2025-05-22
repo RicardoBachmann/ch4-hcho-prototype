@@ -38,8 +38,8 @@ export default function SyncMapTracking({
     mapC: null,
   });
 
-  // State for Location tracking
-  const [moveLoactionData, setMoveLoactionData] = useState(null);
+  // State to store reverse geolocation coordinates
+  const [clickedCoordinates, setClickedCoordinates] = useState(null);
 
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
@@ -312,18 +312,24 @@ export default function SyncMapTracking({
 
   useEffect(() => {
     if (!mapRefB.current) return;
-    const getCoordsAfterClick = (e) => {
+    const getCoordinates = (e) => {
       const coords = e.lngLat;
-      console.log("Coordinates:", coords);
+      setClickedCoordinates(coords);
     };
-    mapRefB.current.on("click", getCoordsAfterClick);
+    mapRefB.current.on("click", getCoordinates);
 
     return () => {
       if (mapRefB.current) {
-        mapRefB.current.off("click", getCoordsAfterClick);
+        mapRefB.current.off("click", getCoordinates);
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (clickedCoordinates) {
+      console.log("Clicked coordinations:", clickedCoordinates);
+    }
+  }, [clickedCoordinates]);
 
   return (
     <>
