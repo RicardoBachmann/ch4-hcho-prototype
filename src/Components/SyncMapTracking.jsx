@@ -38,6 +38,9 @@ export default function SyncMapTracking({
     mapC: null,
   });
 
+  // State for Location tracking
+  const [moveLoactionData, setMoveLoactionData] = useState(null);
+
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
   console.log(
@@ -148,7 +151,7 @@ export default function SyncMapTracking({
     };
   }, []);
 
-  // Dynamic Sentinel-5 data
+  // Sentinel-5 Satellite postion data
   useEffect(() => {
     if (!mapsInitialized || !mapRefB.current || !sentinel5Position) return;
 
@@ -182,7 +185,7 @@ export default function SyncMapTracking({
     }
   }, [sentinel5Position, mapsInitialized]);
 
-  // New effect for rendering map layer data once and save it
+  // Rendering map layer-data once and save it
   useEffect(() => {
     // Sobald einer der folgenden Bedingungen zurifft, wird die funktion sofort beendet
     if (!mapsInitialized || !mapRefA.current || !mapRefB.current) return;
@@ -239,7 +242,7 @@ export default function SyncMapTracking({
     }
   }, [mapsInitialized]); // runs once when map mounted
 
-  // Visibility control for Map A
+  // Visibility control for Map-A
   useEffect(() => {
     if (!mapsInitialized || !mapRefA.current) {
       return;
@@ -272,7 +275,7 @@ export default function SyncMapTracking({
     }
   }, [activeLayerA, mapsInitialized]);
 
-  // Visibility control for Map C
+  // Visibility control for Map-C
   useEffect(() => {
     if (!mapsInitialized || !mapRefC.current) {
       return;
@@ -304,6 +307,23 @@ export default function SyncMapTracking({
       }
     }
   }, [activeLayerC, mapsInitialized]);
+
+  // Cursor-Location information (Reverse geocoding)
+
+  useEffect(() => {
+    if (!mapRefB.current) return;
+    const getCoordsAfterClick = (e) => {
+      const coords = e.lngLat;
+      console.log("Coordinates:", coords);
+    };
+    mapRefB.current.on("click", getCoordsAfterClick);
+
+    return () => {
+      if (mapRefB.current) {
+        mapRefB.current.off("click", getCoordsAfterClick);
+      }
+    };
+  }, []);
 
   return (
     <>
