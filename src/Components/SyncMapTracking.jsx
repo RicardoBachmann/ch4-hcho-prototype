@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, use } from "react";
 import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -38,8 +38,10 @@ export default function SyncMapTracking({
     mapC: null,
   });
 
-  // State to store reverse geolocation coordinates
+  // States to get & store reverse geolocation coordinates
   const [clickedCoordinates, setClickedCoordinates] = useState(null);
+  const [storeClickedCoordinates, setStoreClickedCoordinates] = useState(null);
+  const [location, setLocation] = useState("");
 
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
@@ -318,6 +320,7 @@ export default function SyncMapTracking({
     };
     mapRefB.current.on("click", getCoordinates);
 
+    // Event Cleanup
     return () => {
       if (mapRefB.current) {
         mapRefB.current.off("click", getCoordinates);
@@ -325,11 +328,12 @@ export default function SyncMapTracking({
     };
   }, []);
 
+  /*
   useEffect(() => {
     if (clickedCoordinates) {
       console.log("Clicked coordinations:", clickedCoordinates);
     }
-  }, [clickedCoordinates]);
+  }, [clickedCoordinates]);*/
 
   useEffect(() => {
     if (clickedCoordinates) {
@@ -338,9 +342,11 @@ export default function SyncMapTracking({
       )
         .then((res) => res.json())
         .then((data) => {
+          setStoreClickedCoordinates(data);
           console.log("geocoding:", data);
           if (data.features.length > 0) {
-            return;
+            console.log("clicked location is:", data.features[0].place_name);
+            setLocation(data.features[0].place_name);
           }
         });
     }
@@ -375,11 +381,25 @@ export default function SyncMapTracking({
           />
         </div>
 
-        <div style={{ flex: 1, height: "100%" }}>
+        <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <div
             ref={mapContainerRefB}
             style={{ width: "100%", height: "100%" }}
           />
+          {location && (
+            <div
+              style={{
+                position: "absolute",
+                top: "10px",
+                left: "10px",
+                backgroundColor: "black",
+                padding: "5px",
+                zIndex: 1000,
+              }}
+            >
+              {location}
+            </div>
+          )}
         </div>
 
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
