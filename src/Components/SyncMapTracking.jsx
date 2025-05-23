@@ -40,8 +40,8 @@ export default function SyncMapTracking({
 
   // States to get & store reverse geolocation coordinates
   const [clickedCoordinates, setClickedCoordinates] = useState(null);
-  const [storeClickedCoordinates, setStoreClickedCoordinates] = useState(null);
-  const [location, setLocation] = useState("");
+  const [clickedLocation, setClickedLocation] = useState("");
+  const [geocodingData, setGeocodingData] = useState(null);
 
   const activeLayerA = activeMapLayers.mapA;
   const activeLayerC = activeMapLayers.mapC;
@@ -342,11 +342,16 @@ export default function SyncMapTracking({
       )
         .then((res) => res.json())
         .then((data) => {
-          setStoreClickedCoordinates(data);
+          setGeocodingData(data);
           console.log("geocoding:", data);
           if (data.features.length > 0) {
             console.log("clicked location is:", data.features[0].place_name);
-            setLocation(data.features[0].place_name);
+            const selectedFeature = data.features.find(
+              (item) => item.place_name
+            );
+            setClickedLocation(selectedFeature.place_name);
+          } else {
+            setClickedLocation("Ozean");
           }
         });
     }
@@ -386,7 +391,7 @@ export default function SyncMapTracking({
             ref={mapContainerRefB}
             style={{ width: "100%", height: "100%" }}
           />
-          {location && (
+          {clickedLocation && (
             <div
               style={{
                 position: "absolute",
@@ -397,7 +402,7 @@ export default function SyncMapTracking({
                 zIndex: 1000,
               }}
             >
-              {location}
+              {clickedLocation}
             </div>
           )}
         </div>
