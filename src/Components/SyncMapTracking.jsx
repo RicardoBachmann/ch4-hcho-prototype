@@ -38,7 +38,7 @@ export default function SyncMapTracking({
     mapC: null,
   });
 
-  // States to get & store reverse geolocation coordinates
+  // States for click-based reverse geocoding feature
   const [clickedCoordinates, setClickedCoordinates] = useState(null);
   const [clickedLocation, setClickedLocation] = useState("");
   const [geocodingData, setGeocodingData] = useState(null);
@@ -335,15 +335,18 @@ export default function SyncMapTracking({
     }
   }, [clickedCoordinates]);*/
 
+  // try/catch for error handling
   useEffect(() => {
-    if (clickedCoordinates) {
-      fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${clickedCoordinates.lng},${clickedCoordinates.lat}.json?access_token=pk.eyJ1IjoiZGV0cm9pdDMxMyIsImEiOiJjbTRqb3ljbTQwZnJxMmlzaTRtMWRzcnhpIn0.akOKBt52fpXDljrtyHo8wg`
-      )
-        .then((res) => res.json())
-        .then((data) => {
+    if (!clickedCoordinates) return;
+    {
+      async function getCoordinatesData() {
+        try {
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${clickedCoordinates.lng},${clickedCoordinates.lat}.json?access_token=pk.eyJ1IjoiZGV0cm9pdDMxMyIsImEiOiJjbTRqb3ljbTQwZnJxMmlzaTRtMWRzcnhpIn0.akOKBt52fpXDljrtyHo8wg`
+          );
+          const data = await response.json();
           setGeocodingData(data);
-          console.log("geocoding:", data);
+          console.log("geocading:", data);
           if (data.features.length > 0) {
             console.log("clicked location is:", data.features[0].place_name);
             const selectedFeature = data.features.find(
@@ -353,7 +356,12 @@ export default function SyncMapTracking({
           } else {
             setClickedLocation("Ozean");
           }
-        });
+        } catch (error) {
+          console.error("Error fetching reverse geocoding data:", error);
+          setClickedLocation("Error loading location");
+        }
+      }
+      getCoordinatesData();
     }
   }, [clickedCoordinates]);
 
