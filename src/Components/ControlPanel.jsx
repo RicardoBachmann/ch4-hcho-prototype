@@ -1,7 +1,10 @@
 import React from "react";
 
-export default function ControlPanel({ sentinel5Position }) {
-  console.log("ControlPanelComponen:", { sentinel5Position });
+export default function ControlPanel({
+  sentinel5Position,
+  clickedLocation,
+  sentinelData,
+}) {
   return (
     <div
       style={{
@@ -18,6 +21,11 @@ export default function ControlPanel({ sentinel5Position }) {
         <li>Latitude:{sentinel5Position.latitude.toFixed(3)}</li>
         <li>Longitude:{sentinel5Position.longitude.toFixed(3)}</li>
       </ul>
+      {sentinelData.formaldehyde && (
+        <p>
+          Date time:{sentinelData.formaldehyde.features[0].properties.datetime}
+        </p>
+      )}
     </div>
   );
 }

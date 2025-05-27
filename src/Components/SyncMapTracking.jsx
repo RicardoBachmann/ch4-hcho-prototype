@@ -403,6 +403,7 @@ export default function SyncMapTracking({
           <ControlPanel
             sentinel5Position={sentinel5Position}
             clickedLocation={clickedLocation}
+            sentinelData={sentinelData}
           />
           {clickedLocation && (
             <div

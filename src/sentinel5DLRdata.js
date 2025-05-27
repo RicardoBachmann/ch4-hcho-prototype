@@ -34,6 +34,7 @@ async function fetchDLRStacData(productKey) {
     try {
       const data = JSON.parse(text);
       console.log("Parsed data:", data);
+
       return data;
     } catch (parseError) {
       console.error("JSON parse error", parseError);
