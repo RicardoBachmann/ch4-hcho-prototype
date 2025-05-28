@@ -79,6 +79,102 @@ export default function ControlPanel({
             </div>
           );
         })()}
+      <hr />
+      <h4>Sulfur Dioxide SO2</h4>
+      {sentinelData.sulfurDioxide &&
+        (() => {
+          const formatDate = (dateString) => new Date(dateString).toUTCString();
+          const properties = sentinelData.sulfurDioxide.features[0].properties;
+
+          return (
+            <div>
+              <p>
+                Date Time: <br />
+                {formatDate(properties.datetime)}
+              </p>
+              <p>
+                Start: <br />
+                {formatDate(properties.start_datetime)}
+              </p>
+              <p>
+                End: <br />
+                {formatDate(properties.end_datetime)}
+              </p>
+              <p>
+                Create: <br />
+                {formatDate(properties.created)}
+              </p>
+              <p>
+                Update: <br />
+                {formatDate(properties.updated)}
+              </p>
+            </div>
+          );
+        })()}
+      <hr />
+      <h4>Ozone O3</h4>
+      {sentinelData.ozone &&
+        (() => {
+          const formatDate = (dateString) => new Date(dateString).toUTCString();
+          const properties = sentinelData.ozone.features[0].properties;
+
+          return (
+            <div>
+              <p>
+                Date Time: <br />
+                {formatDate(properties.datetime)}
+              </p>
+              <p>
+                Start: <br />
+                {formatDate(properties.start_datetime)}
+              </p>
+              <p>
+                End: <br />
+                {formatDate(properties.end_datetime)}
+              </p>
+              <p>
+                Create: <br />
+                {formatDate(properties.created)}
+              </p>
+              <p>
+                Update: <br />
+                {formatDate(properties.updated)}
+              </p>
+            </div>
+          );
+        })()}
+      <hr />
+      <h4>Aerosol Index AI</h4>
+      {sentinelData.aerosolIndex &&
+        (() => {
+          const formatDate = (dateString) => new Date(dateString).toUTCString();
+          const properties = sentinelData.aerosolIndex.features[0].properties;
+
+          return (
+            <div>
+              <p>
+                Date Time: <br />
+                {formatDate(properties.datetime)}
+              </p>
+              <p>
+                Start: <br />
+                {formatDate(properties.start_datetime)}
+              </p>
+              <p>
+                End: <br />
+                {formatDate(properties.end_datetime)}
+              </p>
+              <p>
+                Create: <br />
+                {formatDate(properties.created)}
+              </p>
+              <p>
+                Update: <br />
+                {formatDate(properties.updated)}
+              </p>
+            </div>
+          );
+        })()}
     </div>
   );
 }
