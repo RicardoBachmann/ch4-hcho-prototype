@@ -5,6 +5,28 @@ export default function ControlPanel({
   clickedLocation,
   sentinelData,
 }) {
+  const productTypes = [
+    {
+      id: "hcho",
+      name: "Formaldehyde HCHO",
+      dataSource: sentinelData.formaldehyde,
+    },
+    {
+      id: "so2",
+      name: "Sulfur Dioxide SO2",
+      dataSource: sentinelData.sulfurDioxide,
+    },
+    {
+      id: "o3",
+      name: "Ozone O3",
+      dataSource: sentinelData.ozone,
+    },
+    {
+      id: "ai",
+      name: "Aerosol Index AI",
+      dataSource: sentinelData.aerosolIndex,
+    },
+  ];
   return (
     <div
       style={{
@@ -21,7 +43,7 @@ export default function ControlPanel({
         <label>
           {" "}
           Current S5 Position:
-          <ul style={{ listStyle: "none5" }}>
+          <ul style={{ listStyle: "none" }}>
             <li>Latitude:{sentinel5Position.latitude.toFixed(3)}</li>
             <li>Longitude:{sentinel5Position.longitude.toFixed(3)}</li>
           </ul>
@@ -48,133 +70,40 @@ export default function ControlPanel({
         </label>
       )}
       <hr />
-      <h4>Formaldehyde HCHO</h4>
-      {sentinelData.formaldehyde &&
-        (() => {
-          const formatDate = (dateString) => new Date(dateString).toUTCString();
-          const properties = sentinelData.formaldehyde.features[0].properties;
 
-          return (
-            <div>
-              <p>
+      {productTypes.map((item) => {
+        if (!item.dataSource) return null;
+        const properties = item.dataSource.features[0].properties;
+        // Helper function to convert date/time string for all product types
+        const formatDate = (dateString) => new Date(dateString).toUTCString();
+        return (
+          <div>
+            <h4>{item.name}</h4>
+            <ul style={{ listStyle: "none" }}>
+              <li>
                 Date Time: <br />
                 {formatDate(properties.datetime)}
-              </p>
-              <p>
+              </li>
+              <li>
                 Start: <br />
                 {formatDate(properties.start_datetime)}
-              </p>
-              <p>
+              </li>
+              <li>
                 End: <br />
                 {formatDate(properties.end_datetime)}
-              </p>
-              <p>
+              </li>
+              <li>
                 Create: <br />
                 {formatDate(properties.created)}
-              </p>
-              <p>
+              </li>
+              <li>
                 Update: <br />
                 {formatDate(properties.updated)}
-              </p>
-            </div>
-          );
-        })()}
-      <hr />
-      <h4>Sulfur Dioxide SO2</h4>
-      {sentinelData.sulfurDioxide &&
-        (() => {
-          const formatDate = (dateString) => new Date(dateString).toUTCString();
-          const properties = sentinelData.sulfurDioxide.features[0].properties;
-
-          return (
-            <div>
-              <p>
-                Date Time: <br />
-                {formatDate(properties.datetime)}
-              </p>
-              <p>
-                Start: <br />
-                {formatDate(properties.start_datetime)}
-              </p>
-              <p>
-                End: <br />
-                {formatDate(properties.end_datetime)}
-              </p>
-              <p>
-                Create: <br />
-                {formatDate(properties.created)}
-              </p>
-              <p>
-                Update: <br />
-                {formatDate(properties.updated)}
-              </p>
-            </div>
-          );
-        })()}
-      <hr />
-      <h4>Ozone O3</h4>
-      {sentinelData.ozone &&
-        (() => {
-          const formatDate = (dateString) => new Date(dateString).toUTCString();
-          const properties = sentinelData.ozone.features[0].properties;
-
-          return (
-            <div>
-              <p>
-                Date Time: <br />
-                {formatDate(properties.datetime)}
-              </p>
-              <p>
-                Start: <br />
-                {formatDate(properties.start_datetime)}
-              </p>
-              <p>
-                End: <br />
-                {formatDate(properties.end_datetime)}
-              </p>
-              <p>
-                Create: <br />
-                {formatDate(properties.created)}
-              </p>
-              <p>
-                Update: <br />
-                {formatDate(properties.updated)}
-              </p>
-            </div>
-          );
-        })()}
-      <hr />
-      <h4>Aerosol Index AI</h4>
-      {sentinelData.aerosolIndex &&
-        (() => {
-          const formatDate = (dateString) => new Date(dateString).toUTCString();
-          const properties = sentinelData.aerosolIndex.features[0].properties;
-
-          return (
-            <div>
-              <p>
-                Date Time: <br />
-                {formatDate(properties.datetime)}
-              </p>
-              <p>
-                Start: <br />
-                {formatDate(properties.start_datetime)}
-              </p>
-              <p>
-                End: <br />
-                {formatDate(properties.end_datetime)}
-              </p>
-              <p>
-                Create: <br />
-                {formatDate(properties.created)}
-              </p>
-              <p>
-                Update: <br />
-                {formatDate(properties.updated)}
-              </p>
-            </div>
-          );
-        })()}
+              </li>
+            </ul>
+          </div>
+        );
+      })}
     </div>
   );
 }
