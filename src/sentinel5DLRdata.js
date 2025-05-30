@@ -21,7 +21,7 @@ async function fetchDLRStacData(productKey) {
   // Intercepts all errors that could occur during the network request process
   try {
     const collectionID = productName[productKey];
-    const url = `/api/dlr/eoc/ogc/stac/v1/collections/${collectionID}/items?limit=5`;
+    const url = `/api/dlr/eoc/ogc/stac/v1/collections/${collectionID}/items?datetime=2019-07-17&limit=5`;
     console.log("Fetching URL:", url);
     const response = await fetch(url);
     console.log("Response status:", response.status);
@@ -33,6 +33,10 @@ async function fetchDLRStacData(productKey) {
     // Focuses specifically on errors when parsing the JSON, instead of throwing the error up
     try {
       const data = JSON.parse(text);
+      console.log(
+        "All dates:",
+        data.features.map((f) => f.properties.datetime)
+      );
       console.log("Parsed data:", data);
 
       return data;

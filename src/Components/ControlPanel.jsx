@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 
 export default function ControlPanel({
   sentinel5Position,
@@ -27,13 +27,23 @@ export default function ControlPanel({
       dataSource: sentinelData.aerosolIndex,
     },
   ];
+  const [showProduct, setShowProduct] = useState({});
+
+  function handleShowProduct(id) {
+    setShowProduct((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  }
+
   return (
     <div
       style={{
         position: "absolute",
         top: "10px",
         right: "10px",
-        backgroundColor: "red",
+        border: "1px solid red",
+        borderRadius: "5px",
         padding: "10px",
         zIndex: 1000,
       }}
@@ -78,29 +88,37 @@ export default function ControlPanel({
         const formatDate = (dateString) => new Date(dateString).toUTCString();
         return (
           <div>
-            <h4>{item.name}</h4>
-            <ul style={{ listStyle: "none" }}>
-              <li>
-                Date Time: <br />
-                {formatDate(properties.datetime)}
-              </li>
-              <li>
-                Start: <br />
-                {formatDate(properties.start_datetime)}
-              </li>
-              <li>
-                End: <br />
-                {formatDate(properties.end_datetime)}
-              </li>
-              <li>
-                Create: <br />
-                {formatDate(properties.created)}
-              </li>
-              <li>
-                Update: <br />
-                {formatDate(properties.updated)}
-              </li>
-            </ul>
+            <button
+              onClick={() => {
+                handleShowProduct(item.id);
+              }}
+            >
+              {item.name}
+            </button>
+            {showProduct[item.id] && (
+              <ul style={{ listStyle: "none" }}>
+                <li>
+                  Date Time: <br />
+                  {formatDate(properties.datetime)}
+                </li>
+                <li>
+                  Start: <br />
+                  {formatDate(properties.start_datetime)}
+                </li>
+                <li>
+                  End: <br />
+                  {formatDate(properties.end_datetime)}
+                </li>
+                <li>
+                  Create: <br />
+                  {formatDate(properties.created)}
+                </li>
+                <li>
+                  Update: <br />
+                  {formatDate(properties.updated)}
+                </li>
+              </ul>
+            )}
           </div>
         );
       })}
