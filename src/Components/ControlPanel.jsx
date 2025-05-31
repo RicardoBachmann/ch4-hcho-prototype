@@ -28,7 +28,7 @@ export default function ControlPanel({
     },
   ];
   const [showProduct, setShowProduct] = useState({});
-  const [activeButton, setActiveButton] = useState(null);
+  const [activeButtons, setActiveButtons] = useState([]);
 
   function handleShowProduct(id) {
     setShowProduct((prev) => ({
@@ -91,10 +91,19 @@ export default function ControlPanel({
           <div>
             <button
               onClick={() => {
-                handleShowProduct(item.id), setActiveButton(item.id);
+                handleShowProduct(item.id);
+                if (activeButtons.includes(item.id)) {
+                  setActiveButtons(
+                    activeButtons.filter((id) => id !== item.de)
+                  );
+                } else {
+                  setActiveButtons([...activeButtons, item.id]);
+                }
               }}
               style={{
-                backgroundColor: activeButton === item.id ? "red" : "black",
+                backgroundColor: activeButtons.includes(item.id)
+                  ? "red"
+                  : "black",
               }}
             >
               {item.name}
