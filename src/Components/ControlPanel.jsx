@@ -28,6 +28,7 @@ export default function ControlPanel({
     },
   ];
   const [showProduct, setShowProduct] = useState({});
+  const [activeButton, setActiveButton] = useState(null);
 
   function handleShowProduct(id) {
     setShowProduct((prev) => ({
@@ -90,7 +91,10 @@ export default function ControlPanel({
           <div>
             <button
               onClick={() => {
-                handleShowProduct(item.id);
+                handleShowProduct(item.id), setActiveButton(item.id);
+              }}
+              style={{
+                backgroundColor: activeButton === item.id ? "red" : "black",
               }}
             >
               {item.name}
