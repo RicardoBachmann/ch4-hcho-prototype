@@ -94,7 +94,7 @@ export default function ControlPanel({
                 handleShowProduct(item.id);
                 if (activeButtons.includes(item.id)) {
                   setActiveButtons(
-                    activeButtons.filter((id) => id !== item.de)
+                    activeButtons.filter((id) => id !== item.id)
                   );
                 } else {
                   setActiveButtons([...activeButtons, item.id]);
