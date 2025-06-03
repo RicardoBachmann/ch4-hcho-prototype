@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import fetchDLRStacData from "./sentinel5DLRdata";
+import testEmitConnection from "./Components/nasaEMITdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
@@ -69,6 +70,9 @@ function App() {
       }
     }
     fetchData();
+    testEmitConnection().then((result) => {
+      console.log("Test completed:", result);
+    });
   }, []);
 
   return (
