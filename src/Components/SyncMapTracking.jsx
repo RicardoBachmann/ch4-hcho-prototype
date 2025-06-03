@@ -19,6 +19,7 @@ export default function SyncMapTracking({
   sentinel5Position, // Live coordinates
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
+  emitData, // Nasa-Emit data
 }) {
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
@@ -244,6 +245,24 @@ export default function SyncMapTracking({
       }
     }
   }, [mapsInitialized]); // runs once when map mounted
+
+  // EMIT-Layer
+  useEffect(() => {
+    if (!mapsInitialized || !mapRefB.current || !emitData) return;
+
+    // 1. Get and split 1st string
+    const polygonString = emitData.feed.entry[0].polygons[0][0];
+    const coordArray = polygonString.split(" ");
+
+    // 2. Form pairs with For-Loop
+    const coordinatePairs = [];
+    for (let i = 0; i < coordArray.length; i += 2) {
+      const lat = parseFloat(coordArray[i]); // String to Number
+      const lng = parseFloat(coordArray[i + 1]); // String to Number
+      coordinatePairs.push([lng, lat]);
+    }
+    console.log("Coordinate pairs:", coordinatePairs);
+  }, [mapsInitialized, emitData]);
 
   // Visibility control for Map-A
   useEffect(() => {

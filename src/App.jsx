@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import fetchDLRStacData from "./sentinel5DLRdata";
-import testEmitConnection from "./Components/nasaEMITdata";
+import fetchEMITdata from "./nasaEMITdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
+import MethaneEMITLayer from "./Components/DataSpaceViz/MethaneEMITLayer";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
     sulfurDioxide: null,
     aerosolIndex: null,
   });
-
+  // Sate to save NASA EMIT-Data
+  const [emitData, setEmitData] = useState(null);
   // State to store the map instance that are initialized in SyncMapTracking
   // and needed by layer components to add visualizations (instances available all over the app hierarchy).
   const [mapInstance, setMapInstance] = useState(null);
@@ -42,7 +44,7 @@ function App() {
     setIsPositionLoaded(true);
   };
 
-  // useEffect fetches satellite data products on component mount
+  // useEffect fetches DLR-Satellite data products on component mount
   // and stores them in the sentinelData state for use throughout the app
   useEffect(() => {
     async function fetchData() {
@@ -70,9 +72,21 @@ function App() {
       }
     }
     fetchData();
-    testEmitConnection().then((result) => {
-      console.log("Test completed:", result);
-    });
+  }, []);
+
+  // NASA-EMIT API integration
+  useEffect(() => {
+    async function loadEmitData() {
+      try {
+        const data = await fetchEMITdata();
+        console.log("EMIT Data loaded:", data);
+        setEmitData(data);
+      } catch (error) {
+        console.error("Error fetching EMIT data:", error);
+        setError(error.message);
+      }
+    }
+    loadEmitData();
   }, []);
 
   return (
@@ -83,6 +97,7 @@ function App() {
             onLayerReady={handleMapsReady}
             sentinel5Position={sentinel5Position}
             sentinelData={sentinelData}
+            emitData={emitData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>

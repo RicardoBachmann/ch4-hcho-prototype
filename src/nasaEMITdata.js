@@ -1,4 +1,4 @@
-async function testEmitConnection() {
+async function fetchEMITdata() {
   console.log("Test EMIT connection:");
 
   //NASA CMR API for EMIT methane data
@@ -15,9 +15,12 @@ async function testEmitConnection() {
     const data = await response.json();
 
     console.log("EMIT Response:", data);
+    console.log("First granule links:", data.feed.entry[0].links);
+    return data;
   } catch (error) {
     console.error("EMIT Data Error:", error);
+    throw error;
   }
 }
 
-export default testEmitConnection;
+export default fetchEMITdata;
