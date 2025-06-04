@@ -311,6 +311,13 @@ export default function SyncMapTracking({
       !!mapRefB.current.getSource("ch4-source")
     );
     console.log("CH4 layer exists:", !!mapRefB.current.getLayer("ch4-layer"));
+
+    // EMIT Granule png extract
+    const extractPNG = emitData.feed.entry[0].links.find((link) => {
+      return link.title.includes(".png");
+    });
+    const pngUrl = extractPNG.href;
+    console.log("extractPNG:", extractPNG);
   }, [mapsInitialized, emitData]);
 
   // Visibility control for Map-A
