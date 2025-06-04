@@ -246,7 +246,7 @@ export default function SyncMapTracking({
     }
   }, [mapsInitialized]); // runs once when map mounted
 
-  // EMIT-Layer
+  // EMIT-Layer Polygon
   useEffect(() => {
     if (!mapsInitialized || !mapRefB.current || !emitData) return;
 
@@ -255,13 +255,67 @@ export default function SyncMapTracking({
     const coordArray = polygonString.split(" ");
 
     // 2. Form pairs with For-Loop
-    const coordinatePairs = [];
+    const coordinatePairs = [
+      [6, 49],
+      [15, 49],
+      [15, 55],
+      [6, 55],
+      [6, 49],
+    ];
+    /*
     for (let i = 0; i < coordArray.length; i += 2) {
       const lat = parseFloat(coordArray[i]); // String to Number
       const lng = parseFloat(coordArray[i + 1]); // String to Number
       coordinatePairs.push([lng, lat]);
     }
+      */
     console.log("Coordinate pairs:", coordinatePairs);
+
+    // 3. Add CH4 polygon granules source
+    console.log("Try to add CH4 source...");
+    if (mapRefB.current) {
+      console.log("Map is exists");
+      if (!mapRefB.current.getSource("ch4-source")) {
+        console.log("Add ch4 source and layer");
+        console.log("coordinatePairs:", coordinatePairs);
+        mapRefB.current.addSource("ch4-source", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: [[coordinatePairs]],
+            },
+          },
+        });
+      }
+      if (!mapRefB.current.getLayer("ch4-layer")) {
+        mapRefB.current.addLayer({
+          id: "ch4-layer",
+          type: "fill",
+          source: "ch4-source",
+          layout: {},
+          paint: {
+            "fill-color": "#FF00FF",
+            "fill-opacity": 0.9,
+          },
+        });
+      }
+      mapRefB.current.addLayer({
+        id: "ch4-layer-stroke",
+        type: "line",
+        source: "ch4-source",
+        paint: {
+          "line-color": "black",
+          "line-width": 3,
+        },
+      });
+    }
+    console.log(
+      "CH4 source exists:",
+      !!mapRefB.current.getSource("ch4-source")
+    );
+    console.log("CH4 layer exists:", !!mapRefB.current.getLayer("ch4-layer"));
   }, [mapsInitialized, emitData]);
 
   // Visibility control for Map-A
