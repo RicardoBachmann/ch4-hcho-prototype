@@ -255,20 +255,14 @@ export default function SyncMapTracking({
     const coordArray = polygonString.split(" ");
 
     // 2. Form pairs with For-Loop
-    const coordinatePairs = [
-      [6, 49],
-      [15, 49],
-      [15, 55],
-      [6, 55],
-      [6, 49],
-    ];
-    /*
+    const coordinatePairs = [];
+
     for (let i = 0; i < coordArray.length; i += 2) {
       const lat = parseFloat(coordArray[i]); // String to Number
       const lng = parseFloat(coordArray[i + 1]); // String to Number
       coordinatePairs.push([lng, lat]);
     }
-      */
+
     console.log("Coordinate pairs:", coordinatePairs);
 
     // 3. Add CH4 polygon granules source
@@ -284,7 +278,7 @@ export default function SyncMapTracking({
             type: "Feature",
             geometry: {
               type: "Polygon",
-              coordinates: [[coordinatePairs]],
+              coordinates: [coordinatePairs],
             },
           },
         });
@@ -305,6 +299,7 @@ export default function SyncMapTracking({
         id: "ch4-layer-stroke",
         type: "line",
         source: "ch4-source",
+        layout: {},
         paint: {
           "line-color": "black",
           "line-width": 3,
