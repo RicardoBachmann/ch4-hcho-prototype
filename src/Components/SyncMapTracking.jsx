@@ -318,6 +318,32 @@ export default function SyncMapTracking({
     });
     const pngUrl = extractPNG.href;
     console.log("extractPNG:", extractPNG);
+    if (!mapRefB.current.getSource("ch4-png-source")) {
+      mapRefB.current.addSource("ch4-png-source", {
+        type: "image",
+        url: pngUrl.replace(
+          "https://data.lpdaac.earthdatacloud.nasa.gov",
+          "/api/nasa"
+        ),
+        coordinates: [
+          coordinatePairs[0], // Top-left
+          coordinatePairs[1], // Top-right
+          coordinatePairs[2], // Bottom-right
+          coordinatePairs[3], // Bottom-left
+        ],
+      });
+    }
+
+    if (!mapRefB.current.getLayer("ch4-png-layer")) {
+      mapRefB.current.addLayer({
+        id: "ch4-png-layer",
+        type: "raster",
+        source: "ch4-png-source",
+        paint: {
+          "raster-opacity": 0.8,
+        },
+      });
+    }
   }, [mapsInitialized, emitData]);
 
   // Visibility control for Map-A

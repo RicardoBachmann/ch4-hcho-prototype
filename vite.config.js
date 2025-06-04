@@ -16,6 +16,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/dlr/, ""),
       },
+      "/api/nasa": {
+        target: "https://data.lpdaac.earthdatacloud.nasa.gov",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/nasa/, ""),
+      },
     },
   },
 });
