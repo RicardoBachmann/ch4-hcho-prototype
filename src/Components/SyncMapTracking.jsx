@@ -246,124 +246,124 @@ export default function SyncMapTracking({
     }
   }, [mapsInitialized]); // runs once when map mounted
 
-  // EMIT-Layer Polygon
   useEffect(() => {
     if (!mapsInitialized || !mapRefB.current || !emitData) return;
 
-    // 1. Get and split 1st string
+    // 1. NASA-EMIT Extract coordinates
     const polygonString = emitData.feed.entry[0].polygons[0][0];
     const coordArray = polygonString.split(" ");
 
-    // 2. Form pairs with For-Loop
     const coordinatePairs = [];
-
     for (let i = 0; i < coordArray.length; i += 2) {
-      const lat = parseFloat(coordArray[i]); // String to Number
-      const lng = parseFloat(coordArray[i + 1]); // String to Number
+      const lat = parseFloat(coordArray[i]);
+      const lng = parseFloat(coordArray[i + 1]);
       coordinatePairs.push([lng, lat]);
     }
 
-    console.log("Coordinate pairs:", coordinatePairs);
+    console.log("EMIT Koordinaten:", coordinatePairs);
 
-    // 3. Add CH4 polygon granules source
-    console.log("Try to add CH4 source...");
-    if (mapRefB.current) {
-      console.log("Map is exists");
-      if (!mapRefB.current.getSource("ch4-source")) {
-        console.log("Add ch4 source and layer");
-        console.log("coordinatePairs:", coordinatePairs);
-        mapRefB.current.addSource("ch4-source", {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: [coordinatePairs],
-            },
+    // 2. Red Polygon Source und Layer
+    if (!mapRefB.current.getSource("ch4-source")) {
+      mapRefB.current.addSource("ch4-source", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [coordinatePairs],
           },
-        });
-      }
-      if (!mapRefB.current.getLayer("ch4-layer")) {
-        mapRefB.current.addLayer({
-          id: "ch4-layer",
-          type: "fill",
-          source: "ch4-source",
-          layout: {},
-          paint: {
-            "fill-color": "#FF00FF",
-            "fill-opacity": 0.9,
-          },
-        });
-      }
+        },
+      });
+
       mapRefB.current.addLayer({
         id: "ch4-layer-stroke",
         type: "line",
         source: "ch4-source",
         layout: {},
         paint: {
-          "line-color": "black",
-          "line-width": 3,
+          "line-color": "#FF0000",
+          "line-width": 2,
         },
       });
     }
 
-    // EMIT Granule png extract - EINFACHER ANSATZ
+    // 3. PNG URL find/extract
     const extractPNG = emitData.feed.entry[0].links.find((link) => {
       return link.title.includes(".png");
     });
 
     if (extractPNG) {
-      console.log(" Original PNG URL:", extractPNG.href);
+      console.log("Original PNG URL:", extractPNG.href);
 
-      // Teste beide Proxy-Varianten
+      // IMPORTANT: NASA URL --> Proxy URL
+      // "https://data.lpdaac.earthdatacloud.nasa.gov/path/to/file.png"
+      // to:
+      //// "/api/nasa/path/to/file.png"
       const nasaProxyUrl = extractPNG.href.replace(
         "https://data.lpdaac.earthdatacloud.nasa.gov",
         "/api/nasa"
       );
 
-      const cloudFrontUrl =
-        "/api/cloudfront/s3-2d2df3a34830d5223d1e9547cd713408/lp-prod-public.s3.us-west-2.amazonaws.com/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png";
-
       console.log("NASA Proxy URL:", nasaProxyUrl);
-      console.log("CloudFront URL:", cloudFrontUrl);
 
-      // Test both URLs:
-      fetch(
-        "/api/cloudfront/s3-2d2df3a34830d5223d1e9547cd713408/lp-prod-public.s3.us-west-2.amazonaws.com/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png"
-      )
-        .then((r) => console.log("CloudFront Status:", r.status))
-        .catch((e) => console.log("CloudFront Error:", e.message));
+      // 4. Load PNG & create blob
+      // blob(): "Binary Large Object"
+      // Container for raw binary data(NASA) to render NASA-PNG Data in Mapbox
+      const loadPNG = async () => {
+        try {
+          console.log("Load PNG from:", nasaProxyUrl);
 
-      fetch(
-        "/api/nasa/lp-prod-public/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png"
-      )
-        .then((r) => console.log("NASA Status:", r.status))
-        .catch((e) => console.log("NASA Error:", e.message));
+          // Test fetch with detailed logging
+          const response = await fetch(nasaProxyUrl);
 
-      // Verwende CloudFront URL direkt
-      if (!mapRefB.current.getSource("ch4-png-source")) {
-        mapRefB.current.addSource("ch4-png-source", {
-          type: "image",
-          url: cloudFrontUrl,
-          coordinates: [
-            coordinatePairs[0], // Top-left
-            coordinatePairs[1], // Top-right
-            coordinatePairs[2], // Bottom-right
-            coordinatePairs[3], // Bottom-left
-          ],
-        });
-      }
+          console.log("NASA Response Status:", response.status);
+          console.log("NASA Response Headers:", response.headers);
 
-      if (!mapRefB.current.getLayer("ch4-png-layer")) {
-        mapRefB.current.addLayer({
-          id: "ch4-png-layer",
-          type: "raster",
-          source: "ch4-png-source",
-          paint: {
-            "raster-opacity": 0.8,
-          },
-        });
-      }
+          if (!response.ok) {
+            throw new Error(
+              `NASA API Error: ${response.status} ${response.statusText}`
+            );
+          }
+
+          // Create blob
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          console.log("PNG successfully loaded, size:", blob.size, "bytes");
+
+          // Add PNG Source
+          if (!mapRefB.current.getSource("ch4-png-source")) {
+            mapRefB.current.addSource("ch4-png-source", {
+              type: "image",
+              url: imageUrl,
+              // EMIT Granules are mostly rectangular polygons
+              // Mapbox takes these 4 points and "stretches" the PNG exactly between them!
+              // NASA EMIT provides coordinates in clockwise order: TL→TR→BR→BL
+              // First 4 coordinates form the rectangular projection boundary
+              coordinates: coordinatePairs.slice(0, 4),
+            });
+
+            mapRefB.current.addLayer({
+              id: "ch4-png-layer",
+              type: "raster",
+              source: "ch4-png-source",
+              paint: {
+                "raster-opacity": 0.8,
+              },
+            });
+
+            console.log(" Add PNG Layer!");
+          }
+        } catch (error) {
+          console.error("PNG Loading Error:", error);
+
+          // Fallback: Display polygon only
+          console.log("Fallback: Show only polygon without PNG");
+        }
+      };
+
+      // PNG load asynchron
+      loadPNG();
     }
   }, [mapsInitialized, emitData]);
 
