@@ -306,43 +306,64 @@ export default function SyncMapTracking({
         },
       });
     }
-    console.log(
-      "CH4 source exists:",
-      !!mapRefB.current.getSource("ch4-source")
-    );
-    console.log("CH4 layer exists:", !!mapRefB.current.getLayer("ch4-layer"));
 
-    // EMIT Granule png extract
+    // EMIT Granule png extract - EINFACHER ANSATZ
     const extractPNG = emitData.feed.entry[0].links.find((link) => {
       return link.title.includes(".png");
     });
-    const pngUrl = extractPNG.href;
-    console.log("extractPNG:", extractPNG);
-    if (!mapRefB.current.getSource("ch4-png-source")) {
-      mapRefB.current.addSource("ch4-png-source", {
-        type: "image",
-        url: pngUrl.replace(
-          "https://data.lpdaac.earthdatacloud.nasa.gov",
-          "/api/nasa"
-        ),
-        coordinates: [
-          coordinatePairs[0], // Top-left
-          coordinatePairs[1], // Top-right
-          coordinatePairs[2], // Bottom-right
-          coordinatePairs[3], // Bottom-left
-        ],
-      });
-    }
 
-    if (!mapRefB.current.getLayer("ch4-png-layer")) {
-      mapRefB.current.addLayer({
-        id: "ch4-png-layer",
-        type: "raster",
-        source: "ch4-png-source",
-        paint: {
-          "raster-opacity": 0.8,
-        },
-      });
+    if (extractPNG) {
+      console.log(" Original PNG URL:", extractPNG.href);
+
+      // Teste beide Proxy-Varianten
+      const nasaProxyUrl = extractPNG.href.replace(
+        "https://data.lpdaac.earthdatacloud.nasa.gov",
+        "/api/nasa"
+      );
+
+      const cloudFrontUrl =
+        "/api/cloudfront/s3-2d2df3a34830d5223d1e9547cd713408/lp-prod-public.s3.us-west-2.amazonaws.com/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png";
+
+      console.log("NASA Proxy URL:", nasaProxyUrl);
+      console.log("CloudFront URL:", cloudFrontUrl);
+
+      // Test both URLs:
+      fetch(
+        "/api/cloudfront/s3-2d2df3a34830d5223d1e9547cd713408/lp-prod-public.s3.us-west-2.amazonaws.com/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png"
+      )
+        .then((r) => console.log("CloudFront Status:", r.status))
+        .catch((e) => console.log("CloudFront Error:", e.message));
+
+      fetch(
+        "/api/nasa/lp-prod-public/EMITL2BCH4ENH.002/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034/EMIT_L2B_CH4ENH_002_20250531T200515_2515113_034.png"
+      )
+        .then((r) => console.log("NASA Status:", r.status))
+        .catch((e) => console.log("NASA Error:", e.message));
+
+      // Verwende CloudFront URL direkt
+      if (!mapRefB.current.getSource("ch4-png-source")) {
+        mapRefB.current.addSource("ch4-png-source", {
+          type: "image",
+          url: cloudFrontUrl,
+          coordinates: [
+            coordinatePairs[0], // Top-left
+            coordinatePairs[1], // Top-right
+            coordinatePairs[2], // Bottom-right
+            coordinatePairs[3], // Bottom-left
+          ],
+        });
+      }
+
+      if (!mapRefB.current.getLayer("ch4-png-layer")) {
+        mapRefB.current.addLayer({
+          id: "ch4-png-layer",
+          type: "raster",
+          source: "ch4-png-source",
+          paint: {
+            "raster-opacity": 0.8,
+          },
+        });
+      }
     }
   }, [mapsInitialized, emitData]);
 
