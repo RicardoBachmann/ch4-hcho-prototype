@@ -95,9 +95,15 @@ function App() {
   useEffect(() => {
     async function loadDamData() {
       try {
-        const response = await fetch("/data/10dams.geojson");
-        const data = await response.json();
+        const response = await fetch("/data/10dams.json");
+        console.log("Response status:", response.status);
+        console.log("Response ok:", response.ok);
+
+        const text = await response.text();
+        console.log("Raw response:", text.substring(0, 100));
+        const data = JSON.parse(text);
         console.log("GDW Data loaded:", data);
+
         setDamData(data);
       } catch (error) {
         console.error("Error to import GDW data:", error);
