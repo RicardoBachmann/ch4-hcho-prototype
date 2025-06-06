@@ -24,6 +24,9 @@ function App() {
   // and needed by layer components to add visualizations (instances available all over the app hierarchy).
   const [mapInstance, setMapInstance] = useState(null);
 
+  // State to save Dam data
+  const [damData, setDamData] = useState(null);
+
   // Callback func passed to SyncMapTracking
   // Recevies map instance once they're initialized and ready for use
   const handleMapsReady = (refs) => {
@@ -88,6 +91,22 @@ function App() {
     loadEmitData();
   }, []);
 
+  // GeoJSON Dam Data
+  useEffect(() => {
+    async function loadDamData() {
+      try {
+        const response = await fetch("/data/10dams.geojson");
+        const data = await response.json();
+        console.log("GDW Data loaded:", data);
+        setDamData(data);
+      } catch (error) {
+        console.error("Error to import GDW data:", error);
+        setError(error.message);
+      }
+    }
+    loadDamData();
+  }, []);
+
   return (
     <div>
       <section>
@@ -97,6 +116,7 @@ function App() {
             sentinel5Position={sentinel5Position}
             sentinelData={sentinelData}
             emitData={emitData}
+            damData={damData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>

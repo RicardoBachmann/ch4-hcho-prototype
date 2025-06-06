@@ -13,6 +13,7 @@ import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
 // import MethanLayer from "../Components/DataSpaceViz/MethanLayer";
 
 import MethaneEMITLayer from "./DataSpaceViz/MethaneEMITLayer";
+import DamLayer from "./DataSpaceViz/DamLayer";
 
 import LayerToggle from "./LayerToggle";
 import ControlPanel from "./ControlPanel";
@@ -22,6 +23,7 @@ export default function SyncMapTracking({
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
   emitData, // Nasa-Emit data
+  damData, // Global-Dam-Watch data
 }) {
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
@@ -412,6 +414,11 @@ export default function SyncMapTracking({
             mapsInitialized={mapsInitialized}
             mapRefB={mapRefB.current}
             emitData={emitData}
+          />
+          <DamLayer
+            mapsInitialized={mapsInitialized}
+            mapRefB={mapRefB.current}
+            damData={damData}
           />
           {clickedLocation && (
             <div
