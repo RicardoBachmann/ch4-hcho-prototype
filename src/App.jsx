@@ -4,7 +4,6 @@ import "./App.css";
 import fetchDLRStacData from "./sentinel5DLRdata";
 import fetchEMITdata from "./nasaEMITdata";
 import SyncMapTracking from "./Components/SyncMapTracking";
-import MethaneEMITLayer from "./Components/DataSpaceViz/MethaneEMITLayer";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
 function App() {
