@@ -170,9 +170,16 @@ export default function SyncMapTracking({
     }
 
     try {
+      /*
       // Clear any existing markers
       const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
-      existingMarkers.forEach((marker) => marker.remove());
+      existingMarkers.forEach((marker) => marker.remove()); */
+
+      // Clear only SATELLITE markers, not dam markers!!!!!
+      const existingSatelliteMarkers = document.querySelectorAll(
+        ".mapboxgl-marker.satellite-marker"
+      );
+      existingSatelliteMarkers.forEach((marker) => marker.remove());
 
       // Add new marker
       const marker = new mapboxGl.Marker({
@@ -180,6 +187,9 @@ export default function SyncMapTracking({
       })
         .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
         .addTo(mapRefB.current);
+
+      // Mark as satellite marker
+      marker.getElement().classList.add("satellite-marker");
 
       // Center the map on the marker
       /*mapRefB.current.flyTo({
@@ -417,7 +427,7 @@ export default function SyncMapTracking({
           />
           <DamLayer
             mapsInitialized={mapsInitialized}
-            mapRefB={mapRefB.current}
+            mapRefB={mapRefB}
             damData={damData}
           />
           {clickedLocation && (
