@@ -9,18 +9,55 @@ export default function MethaneEMITLayer({
     if (!mapsInitialized || !mapRefB || !emitData) return;
 
     // 1. NASA-EMIT Extract coordinates
-    const polygonString = emitData.feed.entry[0].polygons[0][0];
-    const coordArray = polygonString.split(" ");
+    // Single granule
+    /*const polygonString = emitData.feed.entry[0].polygons[0][0];*/
+    // Multi granules
 
+    /*
     const coordinatePairs = [];
     for (let i = 0; i < coordArray.length; i += 2) {
       const lat = parseFloat(coordArray[i]);
       const lng = parseFloat(coordArray[i + 1]);
       coordinatePairs.push([lng, lat]);
-    }
+    }*/
 
-    console.log("EMIT Koordinaten:", coordinatePairs);
+    console.log("EMIT data:", emitData);
 
+    emitData.feed.entry.forEach((entry, index) => {
+      const polygonString = entry.polygons[0][0];
+      const coordArray = polygonString.split(" ");
+
+      const coordinatePairs = [];
+      for (let i = 0; i < coordArray.length; i += 2) {
+        const lat = parseFloat(coordArray[i]);
+        const lng = parseFloat(coordArray[i + 1]);
+        coordinatePairs.push([lng, lat]);
+      }
+
+      mapRefB.addSource(`ch4-source-${index}`, {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [coordinatePairs],
+          },
+        },
+      });
+
+      mapRefB.addLayer({
+        id: entry.id,
+        type: "line",
+        source: `ch4-source-${index}`,
+        layout: {},
+        paint: {
+          "line-color": "#FF0000",
+          "line-width": 2,
+        },
+      });
+    });
+
+    /*
     // 2. Red Polygon Source und Layer
     if (!mapRefB.getSource("ch4-source")) {
       mapRefB.addSource("ch4-source", {
@@ -44,7 +81,7 @@ export default function MethaneEMITLayer({
           "line-width": 2,
         },
       });
-    }
+    }*/
 
     // 3. PNG URL find/extract
     const extractPNG = emitData.feed.entry[0].links.find((link) => {

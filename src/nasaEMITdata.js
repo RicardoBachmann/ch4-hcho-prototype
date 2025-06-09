@@ -6,9 +6,12 @@ async function fetchEMITdata() {
   const params = new URLSearchParams({
     short_name: "EMITL2BCH4ENH",
     version: "002",
-    page_size: 10,
+    "bounding_box[]": "-180,-23.5,180,23.5",
+    page_size: 100,
     sort_key: "-start_date",
   });
+
+  console.log("EMIT-prop", `${cmrUrl}?${params}`);
 
   try {
     const response = await fetch(`${cmrUrl}?${params}`);
