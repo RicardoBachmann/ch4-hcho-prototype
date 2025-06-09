@@ -7,7 +7,7 @@ async function fetchEMITdata() {
     short_name: "EMITL2BCH4ENH",
     version: "002",
     "bounding_box[]": "-180,-23.5,180,23.5",
-    page_size: 100,
+    page_size: 100, // 1500
     sort_key: "-start_date",
   });
 
