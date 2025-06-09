@@ -13,6 +13,7 @@ import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
 // import MethanLayer from "../Components/DataSpaceViz/MethanLayer";
 
 import MethaneEMITLayer from "./DataSpaceViz/MethaneEMITLayer";
+import DamLayer from "./DataSpaceViz/DamLayer";
 
 import LayerToggle from "./LayerToggle";
 import ControlPanel from "./ControlPanel";
@@ -22,6 +23,7 @@ export default function SyncMapTracking({
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
   emitData, // Nasa-Emit data
+  damData, // Global-Dam-Watch data
 }) {
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
@@ -168,9 +170,16 @@ export default function SyncMapTracking({
     }
 
     try {
+      /*
       // Clear any existing markers
       const existingMarkers = document.querySelectorAll(".mapboxgl-marker");
-      existingMarkers.forEach((marker) => marker.remove());
+      existingMarkers.forEach((marker) => marker.remove()); */
+
+      // Clear only SATELLITE markers, not dam markers!!!!!
+      const existingSatelliteMarkers = document.querySelectorAll(
+        ".mapboxgl-marker.satellite-marker"
+      );
+      existingSatelliteMarkers.forEach((marker) => marker.remove());
 
       // Add new marker
       const marker = new mapboxGl.Marker({
@@ -178,6 +187,9 @@ export default function SyncMapTracking({
       })
         .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
         .addTo(mapRefB.current);
+
+      // Mark as satellite marker
+      marker.getElement().classList.add("satellite-marker");
 
       // Center the map on the marker
       /*mapRefB.current.flyTo({
@@ -412,6 +424,11 @@ export default function SyncMapTracking({
             mapsInitialized={mapsInitialized}
             mapRefB={mapRefB.current}
             emitData={emitData}
+          />
+          <DamLayer
+            mapsInitialized={mapsInitialized}
+            mapRefB={mapRefB}
+            damData={damData}
           />
           {clickedLocation && (
             <div
