@@ -8,8 +8,15 @@ export default function DamLayer({ damData, mapRefB, mapsInitialized }) {
     if (!mapsInitialized || !mapRefB?.current || !damData) return;
 
     console.log("Creating markers...");
+
     damData.features.forEach((item, index) => {
-      const marker = new mapboxGl.Marker()
+      const el = document.createElement("div");
+      el.style.width = "10px";
+      el.style.height = "10px";
+      el.style.background = "red";
+      el.style.borderRadius = "50%";
+
+      const marker = new mapboxGl.Marker(el)
         .setLngLat([item.geometry.coordinates[0], item.geometry.coordinates[1]])
         .addTo(mapRefB.current);
       console.log(`Marker ${index} getLngLat:`, marker.getLngLat());

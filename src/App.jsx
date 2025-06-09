@@ -95,7 +95,7 @@ function App() {
   useEffect(() => {
     async function loadDamData() {
       try {
-        const response = await fetch("/data/10dams.json");
+        const response = await fetch("/data/hydropower-tropical-dams.geojson");
         console.log("Response status:", response.status);
         console.log("Response ok:", response.ok);
 
