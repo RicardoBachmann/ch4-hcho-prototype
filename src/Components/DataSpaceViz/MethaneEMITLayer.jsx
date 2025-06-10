@@ -25,28 +25,39 @@ export default function MethaneEMITLayer({
       }
       // 2. addSource
       // add source as polygon and creat for each an individual index for data improvment
-      mapRefB.addSource(`ch4-source-${index}`, {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [coordinatePairs],
+      const sourceId = `ch4-source-${index}`;
+      if (!mapRefB.getSource(sourceId)) {
+        mapRefB.addSource(sourceId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: [coordinatePairs],
+            },
           },
-        },
-      });
+        });
+      } else {
+        console.error(`Source ${sourceId} already exists, skipping`);
+      }
+
       // 3. addLayer
       // add layer and get the id of NASA's entry.id prop
-      mapRefB.addLayer({
-        id: entry.id,
-        type: "line",
-        source: `ch4-source-${index}`,
-        layout: {},
-        paint: {
-          "line-color": "#FF0000",
-          "line-width": 2,
-        },
-      });
+      const layerId = entry.id;
+      if (!mapRefB.getLayer(layerId)) {
+        mapRefB.addLayer({
+          id: entry.id,
+          type: "line",
+          source: sourceId,
+          layout: {},
+          paint: {
+            "line-color": "#FF0000",
+            "line-width": 2,
+          },
+        });
+      } else {
+        console.warn(`Layer ${layerId} already exists, skipping`);
+      }
 
       // PNG extraction for each polygon granules
       // 4. Find and get all the links with png in it (no tifs)
@@ -97,8 +108,9 @@ export default function MethaneEMITLayer({
             console.log("PNG successfully loaded, size:", blob.size, "bytes");*/
 
             // 6. Add PNG Source
-            if (!mapRefB.getSource(`ch4-png-source-${index}`)) {
-              mapRefB.addSource(`ch4-png-source-${index}`, {
+            const pngSourceId = `ch4-png-source-${index}`;
+            if (!mapRefB.getSource(pngSourceId)) {
+              mapRefB.addSource(pngSourceId, {
                 type: "image",
                 url: imageUrl,
                 // EMIT Granules are mostly rectangular polygons
@@ -107,17 +119,23 @@ export default function MethaneEMITLayer({
                 // First 4 coordinates form the rectangular projection boundary
                 coordinates: coordinatePairs.slice(0, 4),
               });
-
-              mapRefB.addLayer({
-                id: `ch4-png-layer-${index}`,
-                type: "raster",
-                source: `ch4-png-source-${index}`,
-                paint: {
-                  "raster-opacity": 0.8,
-                },
-              });
-              /*
-              console.log(" Add PNG Layer!");*/
+              const pngLayerId = `ch4-png-layer-${index}`;
+              if (!mapRefB.getLayer(pngLayerId)) {
+                mapRefB.addLayer({
+                  id: pngLayerId,
+                  type: "raster",
+                  source: `ch4-png-source-${index}`,
+                  paint: {
+                    "raster-opacity": 0.8,
+                  },
+                });
+                /*
+                console.log(" Add PNG Layer!");*/
+              } else {
+                console.warn(
+                  `PNG Layer ${pngLayerId} already exists, skipping`
+                );
+              }
             }
           } catch (error) {
             console.error("PNG Loading Error:", error);

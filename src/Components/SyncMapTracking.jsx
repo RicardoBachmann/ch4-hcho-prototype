@@ -126,6 +126,11 @@ export default function SyncMapTracking({
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
 
+      // debugg
+      console.log("Maps initialized!");
+      console.log("Map A exists:", !!mapRefA.current);
+      console.log("Map A style loaded:", mapRefA.current?.isStyleLoaded());
+
       // Provides the initialised map instances of the parent component.
       // This callback function enables other components (such as FormaldehydeLayer),
       // directly access the map references and add their own layers,
@@ -233,7 +238,7 @@ export default function SyncMapTracking({
           map.addSource(sourceId, {
             type: "raster",
             tiles: [
-              `https://geoservice.dlr.de/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
+              `/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
             ],
             tileSize: 256,
           });
