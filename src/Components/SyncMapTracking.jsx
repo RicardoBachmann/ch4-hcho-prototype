@@ -126,6 +126,11 @@ export default function SyncMapTracking({
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
 
+      // debugg
+      console.log("Maps initialized!");
+      console.log("Map A exists:", !!mapRefA.current);
+      console.log("Map A style loaded:", mapRefA.current?.isStyleLoaded());
+
       // Provides the initialised map instances of the parent component.
       // This callback function enables other components (such as FormaldehydeLayer),
       // directly access the map references and add their own layers,
