@@ -17,10 +17,50 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/dlr/, ""),
       },
-      "/api/dlr-download": {
-        target: "https://download.geoservice.dlr.de",
+      "/api/nasa": {
+        target: "https://data.lpdaac.earthdatacloud.nasa.gov",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/dlr-download/, ""),
+        followRedirects: true,
+        rewrite: (path) => {
+          console.log("NASA PROXY HIT:", path);
+          return path.replace(/^\/api\/nasa/, "");
+        },
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            if (process.env.VITE_NASA_TOKEN) {
+              console.log(
+                "🔍 Environment check:",
+                !!process.env.VITE_NASA_TOKEN
+              );
+              console.log(
+                "🔍 Token length:",
+                process.env.VITE_NASA_TOKEN?.length || 0
+              );
+              proxyReq.setHeader(
+                "Authorization",
+                `Bearer ${process.env.VITE_NASA_TOKEN}`
+              );
+              console.log("Token added to request");
+            } else {
+              console.log("NO token found...");
+            }
+          });
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            proxyRes.headers["access-control-allow-origin"] = "*";
+            delete proxyRes.headers["x-frame-options"];
+          });
+        },
+      },
+      "/api/cloudfront": {
+        target: "https://d1nklfio7vscoe.cloudfront.net",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/cloudfront/, ""),
+        configure: (proxy) => {
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            proxyRes.headers["access-control-allow-origin"] = "*";
+            delete proxyRes.headers["x-frame-options"];
+          });
+        },
       },
     },
   },
