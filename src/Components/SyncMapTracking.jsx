@@ -417,6 +417,7 @@ export default function SyncMapTracking({
           <FormaldehydeGeoTIFFLayer
             sentinelData={sentinelData}
             mapRefA={mapRefA}
+            isActive={activeMapLayers.mapA === "HCHO"}
           />
         </div>
 
