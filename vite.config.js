@@ -69,11 +69,30 @@ export default defineConfig({
       "/api/dlr-download": {
         target: "https://download.geoservice.dlr.de",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/dlr-download/, ""),
+        rewrite: (path) => {
+          console.log("Original path:", path);
+          const newPath = path.replace(/^\/api\/dlr-download/, "");
+          console.log("Rewritten path:", newPath);
+          console.log(
+            "🎯 Full target URL:",
+            `https://download.geoservice.dlr.de${newPath}`
+          );
+
+          return newPath;
+        },
         configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            console.log("Proxy request to:", proxyReq.path);
+            console.log("Request header:", proxyReq.getHeaders());
+          });
           proxy.on("proxyRes", (proxyRes, req, res) => {
+            console.log("Response status:", proxyRes.statusCode);
+            console.log("Response headers:", proxyRes.headers);
             proxyRes.headers["access-control-allow-origin"] = "*";
             delete proxyRes.headers["x-frame-options"];
+          });
+          proxy.on("error", (err, req, res) => {
+            console.error("Proxy error:", err);
           });
         },
       },

@@ -222,7 +222,7 @@ export default function SyncMapTracking({
 
     // Function for creating all layers for map
     function createAllLayersForMap(map, mapId) {
-      createLayer("HCHO", map, mapId);
+      /*createLayer("HCHO", map, mapId);*/
       createLayer("SO2", map, mapId);
       createLayer("O3", map, mapId);
       createLayer("AI", map, mapId);
@@ -413,6 +413,7 @@ export default function SyncMapTracking({
             mapId="A"
             targetMap="A"
           />
+
           <FormaldehydeGeoTIFFLayer
             sentinelData={sentinelData}
             mapRefA={mapRefA}

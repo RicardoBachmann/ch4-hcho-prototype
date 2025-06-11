@@ -4,7 +4,14 @@ export default function FormaldehydeGeoTIFFLayer({ sentinelData, mapRefA }) {
   console.log("GeoTIFF data flows in", sentinelData);
 
   useEffect(() => {
-    if (!mapRefA?.current || !sentinelData?.formaldehyde) return;
+    console.log("GeoTIFF useEffect triggered");
+    console.log("MapRefA:", !!mapRefA?.current);
+    console.log("sentinel hcho data:", !!sentinelData?.formaldehyde);
+    if (!mapRefA?.current || !sentinelData?.formaldehyde) {
+      console.log("Early return - missing dependencies");
+      return;
+    }
+    console.log("Creating GeoTIFF layer");
     const originalUrl = sentinelData.formaldehyde.features[0].assets.hcho.href;
     const url = originalUrl.replace(
       "https://download.geoservice.dlr.de",
