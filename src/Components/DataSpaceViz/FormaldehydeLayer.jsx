@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+/*import { useEffect } from "react";
 
 export default function FormaldehydeLayer({ mapRefs }) {
   console.log("mapRefs structure:", mapRefs);
@@ -69,3 +69,4 @@ export default function FormaldehydeLayer({ mapRefs }) {
 
   return null;
 }
+*/

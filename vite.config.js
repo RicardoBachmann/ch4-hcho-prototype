@@ -12,6 +12,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/n2yo/, ""),
       },
+      // STAC API (Metadata)
       "/api/dlr": {
         target: "https://geoservice.dlr.de",
         changeOrigin: true,
@@ -57,6 +58,18 @@ export default defineConfig({
         target: "https://d1nklfio7vscoe.cloudfront.net",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/cloudfront/, ""),
+        configure: (proxy) => {
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            proxyRes.headers["access-control-allow-origin"] = "*";
+            delete proxyRes.headers["x-frame-options"];
+          });
+        },
+      },
+      // GeoTIFF Downlaods
+      "/api/dlr-download": {
+        target: "https://download.geoservice.dlr.de",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/dlr-download/, ""),
         configure: (proxy) => {
           proxy.on("proxyRes", (proxyRes, req, res) => {
             proxyRes.headers["access-control-allow-origin"] = "*";
