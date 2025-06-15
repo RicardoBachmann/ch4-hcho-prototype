@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-console.log("VITE CONFIG LOADED!"); // DEBUG
+console.log("VITE CONFIG LOADED!");
 
 export default defineConfig({
   plugins: [react()],
@@ -20,9 +20,9 @@ export default defineConfig({
       "/api/nasa": {
         target: "https://data.lpdaac.earthdatacloud.nasa.gov",
         changeOrigin: true,
-        followRedirects: true, // IMPORTANT! NASA redirects PNG requests to CloudFront - prevents CORS errors
+        followRedirects: true,
         rewrite: (path) => {
-          console.log(" NASA PROXY HIT:", path); // DEBUG
+          console.log("NASA PROXY HIT:", path);
           return path.replace(/^\/api\/nasa/, "");
         },
         configure: (proxy) => {
@@ -36,7 +36,6 @@ export default defineConfig({
                 "🔍 Token length:",
                 process.env.VITE_NASA_TOKEN?.length || 0
               );
-
               proxyReq.setHeader(
                 "Authorization",
                 `Bearer ${process.env.VITE_NASA_TOKEN}`
@@ -46,7 +45,6 @@ export default defineConfig({
               console.log("NO token found...");
             }
           });
-          // CORS Headers auch für redirects
           proxy.on("proxyRes", (proxyRes, req, res) => {
             proxyRes.headers["access-control-allow-origin"] = "*";
             delete proxyRes.headers["x-frame-options"];

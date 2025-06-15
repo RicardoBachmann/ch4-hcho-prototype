@@ -10,10 +10,7 @@ function App() {
   const [error, setError] = useState(null);
   // null Initial state and indicates that the data is not yet loaded
   const [sentinelData, setSentinelData] = useState({
-    carbonMonoxideLayer: null,
     formaldehyde: null,
-    methan: null,
-    nitrogenDioxide: null,
     ozone: null,
     sulfurDioxide: null,
     aerosolIndex: null,

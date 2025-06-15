@@ -22,6 +22,7 @@ async function fetchDLRStacData(productKey) {
   try {
     const collectionID = productName[productKey];
     const url = `/api/dlr/eoc/ogc/stac/v1/collections/${collectionID}/items?&limit=5`;
+
     console.log("Fetching URL:", url);
     const response = await fetch(url);
     console.log("Response status:", response.status);

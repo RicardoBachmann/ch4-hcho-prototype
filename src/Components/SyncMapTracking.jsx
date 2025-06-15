@@ -3,10 +3,11 @@ import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import FormaldehydeLayer from "../Components/DataSpaceViz/FormaldehydeLayer";
 import SulfurDioxide from "../Components/DataSpaceViz/SulfurDioxideLayer";
 import OzoneLayer from "../Components/DataSpaceViz/OzoneLayer";
 import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
+
+import FormaldehydeGeoTIFFLayer from "./DataSpaceViz/FormaldehydeGeoTIFFLayer";
 
 // import NitrogenDioxideLayer from "../Components/DataSpaceViz/NitrogenDioxideLayer";
 // import CarbonMonoxideLayer from "../Components/DataSpaceViz/CarbonMonoxideLayer";
@@ -134,7 +135,7 @@ export default function SyncMapTracking({
       // Provides the initialised map instances of the parent component.
       // This callback function enables other components (such as FormaldehydeLayer),
       // directly access the map references and add their own layers,
-      // without having to create new map instances.
+      // without having to create new map instances..
       if (onLayerReady) {
         onLayerReady({
           mapA: mapRefA.current,
@@ -221,7 +222,7 @@ export default function SyncMapTracking({
 
     // Function for creating all layers for map
     function createAllLayersForMap(map, mapId) {
-      createLayer("HCHO", map, mapId);
+      /*createLayer("HCHO", map, mapId);*/
       createLayer("SO2", map, mapId);
       createLayer("O3", map, mapId);
       createLayer("AI", map, mapId);
@@ -403,7 +404,6 @@ export default function SyncMapTracking({
             ref={mapContainerRefA}
             style={{ width: "100%", height: "100%" }}
           />
-
           <LayerToggle
             // Current active layer (null or layerId e.g("hcho"))
             isActive={activeMapLayers.mapA}
@@ -412,6 +412,12 @@ export default function SyncMapTracking({
             // ID, that specifies which map this LayerToggle applies to (A or C)
             mapId="A"
             targetMap="A"
+          />
+
+          <FormaldehydeGeoTIFFLayer
+            sentinelData={sentinelData}
+            mapRefA={mapRefA}
+            isActive={activeMapLayers.mapA === "HCHO"}
           />
         </div>
 
