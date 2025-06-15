@@ -135,7 +135,7 @@ export default function SyncMapTracking({
       // Provides the initialised map instances of the parent component.
       // This callback function enables other components (such as FormaldehydeLayer),
       // directly access the map references and add their own layers,
-      // without having to create new map instances.
+      // without having to create new map instances..
       if (onLayerReady) {
         onLayerReady({
           mapA: mapRefA.current,
