@@ -1,4 +1,4 @@
-/*import { useEffect } from "react";
+import { useEffect } from "react";
 
 export default function FormaldehydeLayer({ mapRefs }) {
   console.log("mapRefs structure:", mapRefs);
@@ -8,7 +8,7 @@ export default function FormaldehydeLayer({ mapRefs }) {
       console.log("Adding HCHO-WMS layer to map A & C");
 
       const wmsUrl =
-        "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0&TIME=2025-06-09";
+        "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
 
       //Map A
       if (mapRefs.mapA.isStyleLoaded()) {
@@ -69,4 +69,3 @@ export default function FormaldehydeLayer({ mapRefs }) {
 
   return null;
 }
-*/

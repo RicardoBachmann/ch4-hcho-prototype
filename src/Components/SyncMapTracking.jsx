@@ -8,6 +8,7 @@ import OzoneLayer from "../Components/DataSpaceViz/OzoneLayer";
 import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
 
 import FormaldehydeGeoTIFFLayer from "./DataSpaceViz/FormaldehydeGeoTIFFLayer";
+import FormaldehydeLayer from "./DataSpaceViz/FormaldehydeLayer";
 
 // import NitrogenDioxideLayer from "../Components/DataSpaceViz/NitrogenDioxideLayer";
 // import CarbonMonoxideLayer from "../Components/DataSpaceViz/CarbonMonoxideLayer";
@@ -222,7 +223,7 @@ export default function SyncMapTracking({
 
     // Function for creating all layers for map
     function createAllLayersForMap(map, mapId) {
-      /*createLayer("HCHO", map, mapId);*/
+      createLayer("HCHO", map, mapId);
       createLayer("SO2", map, mapId);
       createLayer("O3", map, mapId);
       createLayer("AI", map, mapId);
@@ -265,6 +266,26 @@ export default function SyncMapTracking({
       }
     }
   }, [mapsInitialized]); // runs once when map mounted
+
+  useEffect(() => {
+    if (mapsInitialized && mapRefA.current) {
+      setTimeout(() => {
+        console.log("===LAYER DEBUG===");
+        console.log(
+          "All Layer:",
+          mapRefA.current.getStyle().layers.map((l) => l.id)
+        );
+        console.log(
+          "HCHO layer exists:",
+          !!mapRefA.current.getLayer("HCHO-layer-a")
+        );
+        console.log(
+          "HCHO Source exists:",
+          !!mapRefA.current.getSource("HCHO-source-a")
+        );
+      }, 3000);
+    }
+  }, [mapsInitialized]);
 
   // Visibility control for Map-A
   useEffect(() => {
@@ -413,12 +434,6 @@ export default function SyncMapTracking({
             mapId="A"
             targetMap="A"
           />
-
-          <FormaldehydeGeoTIFFLayer
-            sentinelData={sentinelData}
-            mapRefA={mapRefA}
-            isActive={activeMapLayers.mapA === "HCHO"}
-          />
         </div>
 
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
@@ -441,6 +456,7 @@ export default function SyncMapTracking({
             mapRefB={mapRefB}
             damData={damData}
           />
+
           {clickedLocation && (
             <div
               style={{
