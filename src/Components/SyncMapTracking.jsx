@@ -234,16 +234,21 @@ export default function SyncMapTracking({
       let layerId = `${layerType}-layer-${mapId}`;
       let sourceId = `${layerType}-source-${mapId}`;
 
+      const wmsLayerType = `${layerType}_v2`;
+
       if (!map.getSource(sourceId)) {
         try {
-          console.log(`Source ${sourceId} added successfully`);
+          console.log(
+            `Adding source ${sourceId} with layer ${wmsLayerType} successfully`
+          );
           map.addSource(sourceId, {
             type: "raster",
             tiles: [
-              `/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${layerType}&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
+              `/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_${wmsLayerType}&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`,
             ],
             tileSize: 256,
           });
+          console.log(`Source ${sourceId} added successfully`);
         } catch (error) {
           console.error(`Error adding source ${sourceId}:`, error);
         }
@@ -333,12 +338,17 @@ export default function SyncMapTracking({
       "AI-layer-c",
     ];
 
+    console.log("=== VISIBILITY DEBUG MAP-C ===");
+    console.log("activeLayerC:", activeLayerC);
+
     // Set all layers default of invisible
     allLayerIds.forEach((layerId) => {
       if (mapRefC.current.getLayer(layerId)) {
         mapRefC.current.setLayoutProperty(layerId, "visibility", "none");
+        console.log(`Set ${layerId} to NONE`);
       }
     });
+    // Show active layer
     if (activeLayerC) {
       const activeLayerId = `${activeLayerC}-layer-c`;
       if (mapRefC.current.getLayer(activeLayerId)) {
@@ -347,6 +357,16 @@ export default function SyncMapTracking({
           "visibility",
           "visible"
         );
+        console.log(`Set ${activeLayerId} to visible`);
+
+        // DEBUG: Check if its really visible
+        setTimeout(() => {
+          const visibility = mapRefC.current.getLayoutProperty(
+            activeLayerId,
+            "visibility"
+          );
+          console.log(`${activeLayerId} visibility after setting:`, visibility);
+        }, 1000);
       } else {
         console.error("Active layer", activeLayerId, "not found on map");
       }
