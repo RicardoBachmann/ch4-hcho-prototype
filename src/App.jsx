@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-import fetchDLRStacData from "./sentinel5DLRdata";
-import fetchEMITdata from "./nasaEMITdata";
+import fetchDlrService from "./services/dlrService";
+import fetchNasaService from "./services/nasaService";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
@@ -48,10 +48,10 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const formaldehydeData = await fetchDLRStacData("Formaldehyde");
-        const sulfurDioxideData = await fetchDLRStacData("SulfurDioxide");
-        const aerosolIndexData = await fetchDLRStacData("AerosolIndex");
-        const ozoneData = await fetchDLRStacData("Ozone");
+        const formaldehydeData = await fetchDlrService("Formaldehyde");
+        const sulfurDioxideData = await fetchDlrService("SulfurDioxide");
+        const aerosolIndexData = await fetchDlrService("AerosolIndex");
+        const ozoneData = await fetchDlrService("Ozone");
         setSentinelData({
           formaldehyde: formaldehydeData,
           sulfurDioxide: sulfurDioxideData,
@@ -77,7 +77,7 @@ function App() {
   useEffect(() => {
     async function loadEmitData() {
       try {
-        const data = await fetchEMITdata();
+        const data = await fetchNasaService();
         console.log("EMIT Data loaded:", data);
         setEmitData(data);
       } catch (error) {
