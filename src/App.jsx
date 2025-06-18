@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import fetchDlrService from "./services/dlrService";
-import fetchNasaService from "./services/nasaService";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
@@ -15,8 +14,7 @@ function App() {
     sulfurDioxide: null,
     aerosolIndex: null,
   });
-  // Sate to save NASA EMIT-Data
-  const [emitData, setEmitData] = useState(null);
+
   // State to store the map instance that are initialized in SyncMapTracking
   // and needed by layer components to add visualizations (instances available all over the app hierarchy).
   const [mapInstance, setMapInstance] = useState(null);
@@ -70,21 +68,6 @@ function App() {
     fetchData();
   }, []);
 
-  // NASA-EMIT API integration
-  useEffect(() => {
-    async function loadEmitData() {
-      try {
-        const data = await fetchNasaService();
-        console.log("EMIT Data loaded:", data);
-        setEmitData(data);
-      } catch (error) {
-        console.error("Error fetching EMIT data:", error);
-        setError(error.message);
-      }
-    }
-    loadEmitData();
-  }, []);
-
   return (
     <div>
       <section>
@@ -93,7 +76,6 @@ function App() {
             onLayerReady={handleMapsReady}
             sentinel5Position={sentinel5Position}
             sentinelData={sentinelData}
-            emitData={emitData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>

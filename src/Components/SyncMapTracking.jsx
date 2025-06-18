@@ -24,7 +24,6 @@ export default function SyncMapTracking({
   sentinel5Position, // Live coordinates
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
-  emitData, // Nasa-Emit data
 }) {
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
@@ -468,7 +467,6 @@ export default function SyncMapTracking({
           <MethaneEMITLayer
             mapsInitialized={mapsInitialized}
             mapRefB={mapRefB.current}
-            emitData={emitData}
           />
           <DamLayer mapsInitialized={mapsInitialized} mapRefB={mapRefB} />
 

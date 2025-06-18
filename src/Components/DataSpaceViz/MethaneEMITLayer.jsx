@@ -1,10 +1,8 @@
 import { useEffect } from "react";
+import { useEmitData } from "../../hooks/useEmitData";
 
-export default function MethaneEMITLayer({
-  emitData,
-  mapsInitialized,
-  mapRefB,
-}) {
+export default function MethaneEMITLayer({ mapsInitialized, mapRefB }) {
+  const { emitData, loading, error } = useEmitData();
   useEffect(() => {
     if (!mapsInitialized || !mapRefB || !emitData) return;
 
