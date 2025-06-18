@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import mapboxGl from "mapbox-gl";
 
-export default function DamLayer({ damData, mapRefB, mapsInitialized }) {
+import { useTropicalDamData } from "../../hooks/useTropicalDamData";
+
+export default function DamLayer({ mapRefB, mapsInitialized }) {
+  const { damData, loading, error } = useTropicalDamData();
   useEffect(() => {
     // Wait for all dependencies: map initialization, map reference, and dam data
     // Note: ?. (optional chaining) prevents crash if mapRefB is null/undefined

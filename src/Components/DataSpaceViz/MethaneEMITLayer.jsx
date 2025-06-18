@@ -151,3 +151,5 @@ export default function MethaneEMITLayer({
 // For separation of concerns: Use mapRefB to visualize the methane layer in mapViewB
 // useEffect triggers only when mapInitialized becomes true and when new NASA EMIT data flows in
 // mapRefB in dependency array is just an "ESLint passenger" - required by linting rules but doesn't trigger re-runs
+
+//     console.log("First granule links:", data.feed.entry[0].links);

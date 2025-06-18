@@ -25,7 +25,6 @@ export default function SyncMapTracking({
   onLayerReady, // Callback for map instances to share with app.jsx
   sentinelData, // S5-data for visual layers
   emitData, // Nasa-Emit data
-  damData, // Global-Dam-Watch data
 }) {
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
@@ -471,11 +470,7 @@ export default function SyncMapTracking({
             mapRefB={mapRefB.current}
             emitData={emitData}
           />
-          <DamLayer
-            mapsInitialized={mapsInitialized}
-            mapRefB={mapRefB}
-            damData={damData}
-          />
+          <DamLayer mapsInitialized={mapsInitialized} mapRefB={mapRefB} />
 
           {clickedLocation && (
             <div
