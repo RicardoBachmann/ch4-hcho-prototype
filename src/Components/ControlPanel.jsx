@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useSentinelData } from "../hooks/useSentinelData";
+import { useSatellitePosition } from "../hooks/useSatellitePosition";
 
-export default function ControlPanel({ sentinel5Position }) {
+export default function ControlPanel() {
   const { collectionData, loading, error } = useSentinelData();
+  const { sentinelPosition } = useSatellitePosition();
 
   const productTypes = [
     {
@@ -55,8 +57,8 @@ export default function ControlPanel({ sentinel5Position }) {
           {" "}
           Current S5 Position:
           <ul style={{ listStyle: "none" }}>
-            <li>Latitude:{sentinel5Position.latitude.toFixed(3)}</li>
-            <li>Longitude:{sentinel5Position.longitude.toFixed(3)}</li>
+            <li>Latitude:{sentinelPosition?.latitude?.toFixed(3)}</li>
+            <li>Longitude:{sentinelPosition?.longitude?.toFixed(3)}</li>
           </ul>
           <p>
             Instruments:{" "}
@@ -138,3 +140,11 @@ export default function ControlPanel({ sentinel5Position }) {
     </div>
   );
 }
+
+// Note:
+// Custom Hooks naming conflict (loading, error)
+// Slower hook(Sentinel Data 4 API calls) for the loading state
+
+// Improvments:
+// Destructuring Rename:
+// const {sentinelPosition, loading: positionLoading, error: positionError} = useSatellitePosition()

@@ -19,12 +19,12 @@ import DamLayer from "./DataSpaceViz/DamLayer";
 
 import LayerToggle from "./LayerToggle";
 import ControlPanel from "./ControlPanel";
+import { useSatellitePosition } from "../hooks/useSatellitePosition";
 
 export default function SyncMapTracking({
-  sentinel5Position, // Live coordinates
   onLayerReady, // Callback for map instances to share with app.jsx
-  sentinelData, // S5-data for visual layers
 }) {
+  const { sentinelPosition, loading, error } = useSatellitePosition();
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
   const mapContainerRefB = useRef(null);
@@ -166,11 +166,17 @@ export default function SyncMapTracking({
 
   // Sentinel-5 Satellite postion data
   useEffect(() => {
-    if (!mapsInitialized || !mapRefB.current || !sentinel5Position) return;
+    if (
+      !mapsInitialized ||
+      !mapRefB.current ||
+      !sentinelPosition?.longitude ||
+      !sentinelPosition?.latitude
+    )
+      return;
 
     // Skip if invalid coordinates
-    if (!sentinel5Position.longitude || !sentinel5Position.latitude) {
-      console.warn("Invalid position data:", sentinel5Position);
+    if (!sentinelPosition.longitude || !sentinelPosition.latitude) {
+      console.warn("Invalid position data:", sentinelPosition);
       return;
     }
 
@@ -190,7 +196,7 @@ export default function SyncMapTracking({
       const marker = new mapboxGl.Marker({
         color: "#FF0000",
       })
-        .setLngLat([sentinel5Position.longitude, sentinel5Position.latitude])
+        .setLngLat([sentinelPosition.longitude, sentinelPosition.latitude])
         .addTo(mapRefB.current);
 
       // Mark as satellite marker
@@ -206,7 +212,7 @@ export default function SyncMapTracking({
     } catch (error) {
       console.error("Error updating map:", error);
     }
-  }, [sentinel5Position, mapsInitialized]);
+  }, [sentinelPosition, mapsInitialized]);
 
   // Rendering map layer-data once and save it
   useEffect(() => {
@@ -459,7 +465,7 @@ export default function SyncMapTracking({
             ref={mapContainerRefB}
             style={{ width: "100%", height: "100%" }}
           />
-          <ControlPanel sentinel5Position={sentinel5Position} />
+          <ControlPanel />
           <MethaneEMITLayer
             mapsInitialized={mapsInitialized}
             mapRefB={mapRefB.current}
