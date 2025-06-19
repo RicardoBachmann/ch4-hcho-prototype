@@ -17,10 +17,18 @@ export function useSentinelData() {
       try {
         setLoading(true);
         setError(null);
-        const formaldehydeData = await fetchDlrService("formaldehyde");
-        const ozoneData = await fetchDlrService("ozone");
-        const sulfurDioxideData = await fetchDlrService("sulfurDioxide");
-        const aerosolIndexData = await fetchDlrService("aerosolIndex");
+        // Implement Promise.all to call all 4 collections at the same time!
+        const [
+          formaldehydeData,
+          ozoneData,
+          sulfurDioxideData,
+          aerosolIndexData,
+        ] = await Promise.all([
+          fetchDlrService("Formaldehyde"),
+          fetchDlrService("Ozone"),
+          fetchDlrService("SulfurDioxide"),
+          fetchDlrService("AerosolIndex"),
+        ]);
         setCollectionData({
           formaldehyde: formaldehydeData,
           ozone: ozoneData,
@@ -29,7 +37,8 @@ export function useSentinelData() {
         });
         setLoading(false);
       } catch (error) {
-        setError(error);
+        console.error("Error fetching Sentinel 5P collections data:", error);
+        setError(error.message);
         setLoading(false);
       }
     }
@@ -37,3 +46,11 @@ export function useSentinelData() {
   }, []);
   return { collectionData, loading, error };
 }
+
+// Notes:
+// Promise.all() is "fail-fast"
+// If 1 of 4 APIs fails → whole Promise.all() failed
+// Get 0 data back, even if 3 APIs were successful
+
+// Improvements:
+// const results = await Promise.allSettled([...]);

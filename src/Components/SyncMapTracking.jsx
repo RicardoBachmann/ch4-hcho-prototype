@@ -459,11 +459,7 @@ export default function SyncMapTracking({
             ref={mapContainerRefB}
             style={{ width: "100%", height: "100%" }}
           />
-          <ControlPanel
-            sentinel5Position={sentinel5Position}
-            clickedLocation={clickedLocation}
-            sentinelData={sentinelData}
-          />
+          <ControlPanel sentinel5Position={sentinel5Position} />
           <MethaneEMITLayer
             mapsInitialized={mapsInitialized}
             mapRefB={mapRefB.current}

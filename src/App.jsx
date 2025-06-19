@@ -1,20 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 
-import fetchDlrService from "./services/dlrService";
 import SyncMapTracking from "./Components/SyncMapTracking";
 import Sentinel5Tracking from "./Components/Sentinel5Tracking";
 
 function App() {
-  const [error, setError] = useState(null);
-  // null Initial state and indicates that the data is not yet loaded
-  const [sentinelData, setSentinelData] = useState({
-    formaldehyde: null,
-    ozone: null,
-    sulfurDioxide: null,
-    aerosolIndex: null,
-  });
-
   // State to store the map instance that are initialized in SyncMapTracking
   // and needed by layer components to add visualizations (instances available all over the app hierarchy).
   const [mapInstance, setMapInstance] = useState(null);
@@ -38,36 +28,6 @@ function App() {
     setIsPositionLoaded(true);
   };
 
-  // useEffect fetches DLR-Satellite data products on component mount
-  // and stores them in the sentinelData state for use throughout the app
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const formaldehydeData = await fetchDlrService("Formaldehyde");
-        const sulfurDioxideData = await fetchDlrService("SulfurDioxide");
-        const aerosolIndexData = await fetchDlrService("AerosolIndex");
-        const ozoneData = await fetchDlrService("Ozone");
-        setSentinelData({
-          formaldehyde: formaldehydeData,
-          sulfurDioxide: sulfurDioxideData,
-          aerosolIndex: aerosolIndexData,
-          ozone: ozoneData,
-        });
-        console.log(
-          "Data:",
-          formaldehydeData,
-          sulfurDioxideData,
-          aerosolIndexData,
-          ozoneData
-        );
-      } catch (error) {
-        console.error("Error to get Sentinel5 product-data:", error);
-        setError(error.message);
-      }
-    }
-    fetchData();
-  }, []);
-
   return (
     <div>
       <section>
@@ -75,16 +35,12 @@ function App() {
           <SyncMapTracking
             onLayerReady={handleMapsReady}
             sentinel5Position={sentinel5Position}
-            sentinelData={sentinelData}
           />
         ) : (
           <div className="loading">Loading satellite position...</div>
         )}
-        {error && <div className="error-message">Error:{error}</div>}
-        <Sentinel5Tracking
-          setSentinel5Position={handleSetPosition}
-          sentinelData={sentinelData}
-        />
+
+        <Sentinel5Tracking setSentinel5Position={handleSetPosition} />
       </section>
     </div>
   );
