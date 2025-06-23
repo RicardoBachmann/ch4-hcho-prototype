@@ -29,10 +29,17 @@ export const MapProvider = ({ children }) => {
   });
   return (
     <MapContext.Provider
-      value={{ mapRefA, mapRefB, mapRefC, mapsInitialized, activeMapLayers }}
+      value={{
+        mapRefA,
+        mapRefB,
+        mapRefC,
+        mapsInitialized,
+        setMapsInitialized,
+        activeMapLayers,
+        setActiveMapLayers,
+      }}
     >
-      {" "}
-      {children}{" "}
+      {children}
     </MapContext.Provider>
   );
 };

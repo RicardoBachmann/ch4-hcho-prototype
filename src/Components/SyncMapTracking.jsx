@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, use } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -20,29 +20,24 @@ import DamLayer from "./DataSpaceViz/DamLayer";
 import LayerToggle from "./LayerToggle";
 import ControlPanel from "./ControlPanel";
 import { useSatellitePosition } from "../hooks/useSatellitePosition";
+import { MapContext } from "../context/MapContext.jsx";
 
-export default function SyncMapTracking({
-  onLayerReady, // Callback for map instances to share with app.jsx
-}) {
+export default function SyncMapTracking() {
   const { sentinelPosition, loading, error } = useSatellitePosition();
   // Refs(DOM anchor) for Mabpox-maps
   const mapContainerRefA = useRef(null);
   const mapContainerRefB = useRef(null);
   const mapContainerRefC = useRef(null);
-  // ***Refs to initialised Mapbox map instances
-  const mapRefA = useRef(null);
-  const mapRefB = useRef(null);
-  const mapRefC = useRef(null);
 
-  // ***State to track if maps are initialized attempting to interact with these (def. coding)
-  const [mapsInitialized, setMapsInitialized] = useState(false);
-
-  // ***States to switch between S5-product layers in Map A-C
-  // Stores which data layer is active on which map
-  const [activeMapLayers, setActiveMapLayers] = useState({
-    mapA: null,
-    mapC: null,
-  });
+  const {
+    mapRefA,
+    mapRefB,
+    mapRefC,
+    mapsInitialized,
+    setMapsInitialized,
+    activeMapLayers,
+    setActiveMapLayers,
+  } = useContext(MapContext);
 
   // States for click-based reverse geocoding feature
   const [clickedCoordinates, setClickedCoordinates] = useState(null);
@@ -125,23 +120,6 @@ export default function SyncMapTracking({
       mapRefC.current.scrollZoom.disable();
       mapRefC.current.dragPan.disable();
       setMapsInitialized(true);
-
-      // debugg
-      console.log("Maps initialized!");
-      console.log("Map A exists:", !!mapRefA.current);
-      console.log("Map A style loaded:", mapRefA.current?.isStyleLoaded());
-
-      // Provides the initialised map instances of the parent component.
-      // This callback function enables other components (such as FormaldehydeLayer),
-      // directly access the map references and add their own layers,
-      // without having to create new map instances..
-      if (onLayerReady) {
-        onLayerReady({
-          mapA: mapRefA.current,
-          mapB: mapRefB.current,
-          mapC: mapRefC.current,
-        });
-      }
     };
 
     // Wait for all maps to load
