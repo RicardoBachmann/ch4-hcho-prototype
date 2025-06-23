@@ -29,15 +29,15 @@ export default function SyncMapTracking({
   const mapContainerRefA = useRef(null);
   const mapContainerRefB = useRef(null);
   const mapContainerRefC = useRef(null);
-  // Refs to initialised Mapbox map instances
+  // ***Refs to initialised Mapbox map instances
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
 
-  // State to track if maps are initialized attempting to interact with these (def. coding)
+  // ***State to track if maps are initialized attempting to interact with these (def. coding)
   const [mapsInitialized, setMapsInitialized] = useState(false);
 
-  // States to switch between S5-product layers in Map A-C
+  // ***States to switch between S5-product layers in Map A-C
   // Stores which data layer is active on which map
   const [activeMapLayers, setActiveMapLayers] = useState({
     mapA: null,
