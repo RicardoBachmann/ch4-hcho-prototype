@@ -1,9 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useEmitData } from "../../hooks/useEmitData";
+import { MapContext } from "../../context/MapContext";
 
-export default function MethaneEMITLayer({ mapsInitialized, mapRefB }) {
+export default function MethaneEMITLayer() {
+  const { mapRefB, mapsInitialized } = useContext(MapContext);
   const { emitData, loading, error } = useEmitData();
   useEffect(() => {
+    console.log("🔍 DEBUG MapRefB:", mapRefB);
+    console.log("🔍 Type:", typeof mapRefB);
+    console.log("🔍 Is object?", mapRefB && typeof mapRefB === "object");
+    console.log(
+      "🔍 Has getSource?",
+      mapRefB && typeof mapRefB.getSource === "function"
+    );
     if (!mapsInitialized || !mapRefB || !emitData) return;
 
     // To see data structure sample

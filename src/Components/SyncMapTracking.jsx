@@ -3,17 +3,6 @@ import mapboxGl from "mapbox-gl";
 import syncMaps from "@mapbox/mapbox-gl-sync-move";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import SulfurDioxide from "../Components/DataSpaceViz/SulfurDioxideLayer";
-import OzoneLayer from "../Components/DataSpaceViz/OzoneLayer";
-import AerosolIndexLayer from "../Components/DataSpaceViz/AerosolIndexLayer";
-
-import FormaldehydeGeoTIFFLayer from "./DataSpaceViz/FormaldehydeGeoTIFFLayer";
-import FormaldehydeLayer from "./DataSpaceViz/FormaldehydeLayer";
-
-// import NitrogenDioxideLayer from "../Components/DataSpaceViz/NitrogenDioxideLayer";
-// import CarbonMonoxideLayer from "../Components/DataSpaceViz/CarbonMonoxideLayer";
-// import MethanLayer from "../Components/DataSpaceViz/MethanLayer";
-
 import MethaneEMITLayer from "./DataSpaceViz/MethaneEMITLayer";
 import DamLayer from "./DataSpaceViz/DamLayer";
 
@@ -444,11 +433,8 @@ export default function SyncMapTracking() {
             style={{ width: "100%", height: "100%" }}
           />
           <ControlPanel />
-          <MethaneEMITLayer
-            mapsInitialized={mapsInitialized}
-            mapRefB={mapRefB.current}
-          />
-          <DamLayer mapsInitialized={mapsInitialized} mapRefB={mapRefB} />
+          <MethaneEMITLayer />
+          <DamLayer />
 
           {clickedLocation && (
             <div

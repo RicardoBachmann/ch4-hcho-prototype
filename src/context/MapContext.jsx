@@ -1,11 +1,3 @@
-// Context State List = 6 items total (Global needed):
-// mapRefA
-// mapRefB
-// mapRefC
-// mapsInitialized
-// activeMapLayers
-// mapInstance
-
 import { createContext, useState, useRef } from "react";
 
 export const MapContext = createContext({
@@ -30,9 +22,9 @@ export const MapProvider = ({ children }) => {
   return (
     <MapContext.Provider
       value={{
-        mapRefA,
-        mapRefB,
-        mapRefC,
+        mapRefA: mapRefA.current,
+        mapRefB: mapRefB.current,
+        mapRefC: mapRefC.current,
         mapsInitialized,
         setMapsInitialized,
         activeMapLayers,
@@ -43,3 +35,16 @@ export const MapProvider = ({ children }) => {
     </MapContext.Provider>
   );
 };
+
+// Global State Managment
+
+// Context Items(5 total):
+// - mapRefA/B/C: Individual map references for syncMaps functionality
+// - mapsInitialized: Defensive coding for timing-safe map interactions
+// - activeMapLayer: Global layer toggle state for mapA/B/C
+
+// Architecture Decision: Individual refs over grouped oobjects
+// Reason: syncMaps requires separate ref parameters
+
+// Future Consideration: Hybrid approach for responsive design scenarios
+// (bulk operations, mobile layout changes, performance optimizations)
