@@ -2,24 +2,23 @@ import { useEffect, useContext } from "react";
 import { MapContext } from "../../context/MapContext";
 
 export default function FormaldehydeLayer() {
-  const { mapRefA, mapRefB, mapRefC } = useContext(MapContext);
+  const { mapRefA, mapRefC } = useContext(MapContext);
 
   useEffect(() => {
-    if (mapRefA && mapRefB && mapRefC) {
-      console.log("Adding HCHO-WMS layer to map A & C");
-
+    if (mapRefA && mapRefC) {
       const wmsUrl =
         "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
 
       //Map A
-      if (mapRefA.isStyleLoaded()) {
-        if (!mapRefA.getSource("hcho-source-a"))
-          mapRefA.addSource("hcho-source-a", {
+      // Layer components now get .current from the refs
+      if (mapRefA.current && mapRefA.current.isStyleLoaded()) {
+        if (!mapRefA.current.getSource("hcho-source-a"))
+          mapRefA.current.addSource("hcho-source-a", {
             type: "raster",
             tiles: [wmsUrl],
             tileSize: 256,
           });
-        mapRefA.addLayer({
+        mapRefA.current.addLayer({
           id: "hcho-layer-a",
           type: "raster",
           source: "hcho-source-a",
@@ -30,14 +29,14 @@ export default function FormaldehydeLayer() {
       }
 
       //Map C
-      if (mapRefC.isStyleLoaded()) {
-        if (!mapRefC.getSource("hcho-source-c"))
-          mapRefC.addSource("hcho-source-c", {
+      if (mapRefC.current && mapRefC.current.isStyleLoaded()) {
+        if (!mapRefC.current.getSource("hcho-source-c"))
+          mapRefC.current.addSource("hcho-source-c", {
             type: "raster",
             tiles: [wmsUrl],
             tileSize: 256,
           });
-        mapRefC.addLayer({
+        mapRefC.current.addLayer({
           id: "hcho-layer-c",
           type: "raster",
           source: "hcho-source-c",
@@ -49,20 +48,20 @@ export default function FormaldehydeLayer() {
     }
     // Clean up
     return () => {
-      if (mapRefA) {
-        if (mapRefA.getLayer("hcho-layer-a")) {
-          mapRefA.removeLayer("hcho-layer-a");
+      if (mapRefA.current) {
+        if (mapRefA.current.getLayer("hcho-layer-a")) {
+          mapRefA.current.removeLayer("hcho-layer-a");
         }
-        if (mapRefA.getSource("hcho-source-a")) {
-          mapRefA.removeSource("hcho-source-a");
+        if (mapRefA.current.getSource("hcho-source-a")) {
+          mapRefA.current.removeSource("hcho-source-a");
         }
       }
-      if (mapRefC) {
-        if (mapRefC.getLayer("hcho-layer-c")) {
-          mapRefC.removeLayer("hcho-layer-c");
+      if (mapRefC.current) {
+        if (mapRefC.current.getLayer("hcho-layer-c")) {
+          mapRefC.current.removeLayer("hcho-layer-c");
         }
-        if (mapRefC.getSource("hcho-source-c")) {
-          mapRefC.removeSource("hcho-source-c");
+        if (mapRefC.current.getSource("hcho-source-c")) {
+          mapRefC.current.removeSource("hcho-source-c");
         }
       }
     };

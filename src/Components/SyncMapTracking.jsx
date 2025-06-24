@@ -6,8 +6,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import MethaneEMITLayer from "./DataSpaceViz/MethaneEMITLayer";
 import DamLayer from "./DataSpaceViz/DamLayer";
 
-import LayerToggle from "./LayerToggle";
-import ControlPanel from "./ControlPanel";
+import LayerToggle from "./ui/LayerToggle.jsx";
+import ControlPanel from "./ui/ControlPanel.jsx";
 import { useSatellitePosition } from "../hooks/useSatellitePosition";
 import { MapContext } from "../context/MapContext.jsx";
 

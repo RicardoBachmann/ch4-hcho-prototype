@@ -8,11 +8,7 @@ export default function DamLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
   const { damData, loading, error } = useTropicalDamData();
   useEffect(() => {
-    // Wait for all dependencies: map initialization, map reference, and dam data
-    // Note: ?. (optional chaining) prevents crash if mapRefB is null/undefined
-    if (!mapsInitialized || !mapRefB?.current || !damData) return;
-
-    console.log("Creating markers...");
+    if (!mapsInitialized || !mapRefB.current || !damData) return;
 
     damData.features.forEach((item, index) => {
       const el = document.createElement("div");

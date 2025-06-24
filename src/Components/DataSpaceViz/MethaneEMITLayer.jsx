@@ -6,14 +6,7 @@ export default function MethaneEMITLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
   const { emitData, loading, error } = useEmitData();
   useEffect(() => {
-    console.log("🔍 DEBUG MapRefB:", mapRefB);
-    console.log("🔍 Type:", typeof mapRefB);
-    console.log("🔍 Is object?", mapRefB && typeof mapRefB === "object");
-    console.log(
-      "🔍 Has getSource?",
-      mapRefB && typeof mapRefB.getSource === "function"
-    );
-    if (!mapsInitialized || !mapRefB || !emitData) return;
+    if (!mapsInitialized || !mapRefB.current || !emitData) return;
 
     // To see data structure sample
     console.log("EMIT data:", emitData.feed.entry[0]);
@@ -33,8 +26,8 @@ export default function MethaneEMITLayer() {
       // 2. addSource
       // add source as polygon and creat for each an individual index for data improvment
       const sourceId = `ch4-source-${index}`;
-      if (!mapRefB.getSource(sourceId)) {
-        mapRefB.addSource(sourceId, {
+      if (!mapRefB.current.getSource(sourceId)) {
+        mapRefB.current.addSource(sourceId, {
           type: "geojson",
           data: {
             type: "Feature",
@@ -51,8 +44,8 @@ export default function MethaneEMITLayer() {
       // 3. addLayer
       // add layer and get the id of NASA's entry.id prop
       const layerId = entry.id;
-      if (!mapRefB.getLayer(layerId)) {
-        mapRefB.addLayer({
+      if (!mapRefB.current.getLayer(layerId)) {
+        mapRefB.current.addLayer({
           id: entry.id,
           type: "line",
           source: sourceId,
@@ -116,8 +109,8 @@ export default function MethaneEMITLayer() {
 
             // 6. Add PNG Source
             const pngSourceId = `ch4-png-source-${index}`;
-            if (!mapRefB.getSource(pngSourceId)) {
-              mapRefB.addSource(pngSourceId, {
+            if (!mapRefB.current.getSource(pngSourceId)) {
+              mapRefB.current.addSource(pngSourceId, {
                 type: "image",
                 url: imageUrl,
                 // EMIT Granules are mostly rectangular polygons
@@ -127,8 +120,8 @@ export default function MethaneEMITLayer() {
                 coordinates: coordinatePairs.slice(0, 4),
               });
               const pngLayerId = `ch4-png-layer-${index}`;
-              if (!mapRefB.getLayer(pngLayerId)) {
-                mapRefB.addLayer({
+              if (!mapRefB.current.getLayer(pngLayerId)) {
+                mapRefB.current.addLayer({
                   id: pngLayerId,
                   type: "raster",
                   source: `ch4-png-source-${index}`,

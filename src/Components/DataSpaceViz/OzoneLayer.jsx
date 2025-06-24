@@ -6,20 +6,18 @@ export default function OzoneLayer() {
 
   useEffect(() => {
     if (mapRefA && mapRefC) {
-      console.log("Adding O3-WMS layer to map A & C");
-
       const wmsUrl =
         "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_O3&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
 
       //Map A
-      if (mapRefA.isStyleLoaded()) {
-        if (!mapRefA.getSource("o3-source-a"))
-          mapRefA.addSource("o3-source-a", {
+      if (mapRefA.current && mapRefA.current.isStyleLoaded()) {
+        if (!mapRefA.current.getSource("o3-source-a"))
+          mapRefA.current.addSource("o3-source-a", {
             type: "raster",
             tiles: [wmsUrl],
             tileSize: 256,
           });
-        mapRefA.addLayer({
+        mapRefA.current.addLayer({
           id: "o3-layer-a",
           type: "raster",
           source: "o3-source-a",
@@ -29,14 +27,14 @@ export default function OzoneLayer() {
         });
       }
       //Map C
-      if (mapRefC.isStyleLoaded()) {
-        if (!mapRefC.getSource("o3-source-c"))
-          mapRepC.addSource("o3-source-c", {
+      if (mapRefC.current && mapRefC.current.isStyleLoaded()) {
+        if (!mapRefC.current.getSource("o3-source-c"))
+          mapRefC.current.addSource("o3-source-c", {
             type: "raster",
             tiles: [wmsUrl],
             tileSize: 256,
           });
-        mapRefC.addLayer({
+        mapRefC.current.addLayer({
           id: "o3-layer-c",
           type: "raster",
           source: "o3-source-c",
@@ -48,24 +46,24 @@ export default function OzoneLayer() {
     }
     // Clean up
     return () => {
-      if (mapRefA) {
-        if (mapRefA.getLayer("o3-layer-a")) {
-          mapRefA.removeLayer("o3-layer-a");
+      if (mapRefA.current) {
+        if (mapRefA.current.getLayer("o3-layer-a")) {
+          mapRefA.current.removeLayer("o3-layer-a");
         }
-        if (mapRefA.getSource("o3-source-a")) {
-          mapRefA.removeSource("o3-source-a");
+        if (mapRefA.current.getSource("o3-source-a")) {
+          mapRefA.current.removeSource("o3-source-a");
         }
       }
-      if (mapRefC) {
-        if (mapRefC.getLayer("o3-layer-c")) {
-          mapRefC.removeLayer("o3-layer-c");
+      if (mapRefC.current) {
+        if (mapRefC.current.getLayer("o3-layer-c")) {
+          mapRefC.current.removeLayer("o3-layer-c");
         }
-        if (mapRefC.getSource("o3-source-c")) {
-          mapRefC.removeSource("o3-source-c");
+        if (mapRefC.current.getSource("o3-source-c")) {
+          mapRefC.current.removeSource("o3-source-c");
         }
       }
     };
-  }, []);
+  }, [mapRefA, mapRefC]);
 
   return null;
 }
