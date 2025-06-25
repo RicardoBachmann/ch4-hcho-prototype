@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useSentinelData } from "../../hooks/useSentinelData";
-import { useSatellitePosition } from "../../hooks/useSatellitePosition";
 
-export default function ControlPanel() {
-  const { collectionData, loading, error } = useSentinelData();
-  const { sentinelPosition } = useSatellitePosition();
-
+export default function ControlPanel({
+  sentinelPosition,
+  collectionData,
+  loading,
+  error,
+}) {
   const productTypes = [
     {
       id: "hcho",

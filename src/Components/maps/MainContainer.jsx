@@ -1,13 +1,16 @@
 import { useState } from "react";
-import MapContainerA from "./containers/MapContainerA";
-import MapContainerB from "./containers/MapContainerB";
-import MapContainerC from "./containers/MapContainerC";
-import MapSynchronizer from "./MapSynchronizer";
+import MapContainerA from "./containers/MapContainerA.jsx";
+import MapContainerB from "./containers/MapContainerB.jsx";
+import MapContainerC from "./containers/MapContainerC.jsx";
+import MapSynchronizer from "./MapSynchronizer.jsx";
+import LayerManager from "../layers/LayerManager.jsx";
 
-import LayerToggle from "../ui/LayerToggle";
-import ControlPanel from "../ui/ControlPanel";
+//import LayerToggle from "../ui/LayerToggle.jsx";
+// import ControlPanel from "../ui/ControlPanel.jsx";
 
-export default function MainContainer() {
+import Toggle from "../ui/Toggle.jsx";
+
+export default function MainContainer({}) {
   const [containerA, setContainerA] = useState(null);
   const [containerB, setContainerB] = useState(null);
   const [containerC, setContainerC] = useState(null);
@@ -27,23 +30,29 @@ export default function MainContainer() {
         {/* Map A */}
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <MapContainerA onContainerReady={setContainerA} />
-          <LayerToggle mapId="A" />
+          <Toggle mapId="A" />
         </div>
 
         {/* Map B */}
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <MapContainerB onContainerReady={setContainerB} />
-          <ControlPanel />
+          {/*<ControlPanel
+            sentinelPosition={sentinelPosition}
+            collectionData={collectionData}
+            loading={loading}
+            error={error}
+          />*/}
         </div>
 
         {/* Map C */}
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <MapContainerC onContainerReady={setContainerC} />
-          <LayerToggle mapId="C" />
+          <Toggle mapId="C" />
         </div>
       </div>
 
       {/* Logic Component */}
+      <LayerManager />
       <MapSynchronizer
         containerA={containerA}
         containerB={containerB}

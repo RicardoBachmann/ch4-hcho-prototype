@@ -1,14 +1,12 @@
 import "./App.css";
-
-import SyncMapTracking from "./Components/SyncMapTracking";
+import { MapProvider } from "./context/MapContext.jsx";
+import MainContainer from "./Components/maps/MainContainer.jsx";
 
 function App() {
   return (
-    <div>
-      <section>
-        <SyncMapTracking />
-      </section>
-    </div>
+    <MapProvider>
+      <MainContainer />
+    </MapProvider>
   );
 }
 

@@ -5,18 +5,26 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 import { MapContext } from "../../context/MapContext";
 
-export default function MapSynchronizer() {
-  // MapSynchroniser gets real refs and can set .current
-  const { mapRefA, mapRefB, mapRefC, mapsInitialized } = useContext(MapContext);
+export default function MapSynchronizer({
+  containerA,
+  containerB,
+  containerC,
+}) {
+  // MapSynchronizer gets real refs and can set .current
+  const { mapRefA, mapRefB, mapRefC, mapsInitialized, setMapsInitialized } =
+    useContext(MapContext);
 
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
-    if (mapsInitialized) return;
+    if (!containerA || !containerB || !containerC) return;
+    console.log("✅ Creating maps with containers!");
+
     mapboxGl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    console.log("MapBox Token:", import.meta.env.VITE_MAPBOX_TOKEN);
 
     const defaultPosition = [-90.96, -0.47];
     mapRefA.current = new mapboxGl.Map({
-      container: mapContainerRefA.current,
+      container: containerA,
       center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
@@ -24,7 +32,7 @@ export default function MapSynchronizer() {
     });
 
     mapRefB.current = new mapboxGl.Map({
-      container: mapContainerRefB.current,
+      container: containerB,
       center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
@@ -32,7 +40,7 @@ export default function MapSynchronizer() {
     });
 
     mapRefC.current = new mapboxGl.Map({
-      container: mapContainerRefC.current,
+      container: containerC,
       center: defaultPosition,
       style: "mapbox://styles/mapbox/satellite-v9",
       zoom: 4,
@@ -67,7 +75,7 @@ export default function MapSynchronizer() {
       if (mapRefB.current) mapRefB.current.remove();
       if (mapRefC.current) mapRefC.current.remove();
     };
-  }, []);
+  }, [containerA, containerB, containerC, mapsInitialized]);
   return null;
 }
 

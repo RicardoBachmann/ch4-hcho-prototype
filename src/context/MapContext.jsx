@@ -8,12 +8,13 @@ export const MapContext = createContext({
   mapsInitialized: false,
   activeMapLayers: null,
 });
-
 export const MapProvider = ({ children }) => {
   const mapRefA = useRef(null);
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
+
   const [mapsInitialized, setMapsInitialized] = useState(false);
+  // Object that saves which layer is currently active
   const [activeMapLayers, setActiveMapLayers] = useState({
     mapA: null,
     mapB: null,
@@ -22,9 +23,10 @@ export const MapProvider = ({ children }) => {
   return (
     <MapContext.Provider
       value={{
-        mapRefA: mapRefA.current,
-        mapRefB: mapRefB.current,
-        mapRefC: mapRefC.current,
+        // Context returns real Ref objects, not .current
+        mapRefA: mapRefA,
+        mapRefB: mapRefB,
+        mapRefC: mapRefC,
         mapsInitialized,
         setMapsInitialized,
         activeMapLayers,
