@@ -17,7 +17,8 @@ export default function MapSynchronizer({
   // !IMPORTANT! For sync map style has to be the same in all 3 Layer projection
   useEffect(() => {
     if (!containerA || !containerB || !containerC) return;
-    console.log("✅ Creating maps with containers!");
+    if (mapsInitialized) return;
+    console.log("Creating maps with containers!");
 
     mapboxGl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     console.log("MapBox Token:", import.meta.env.VITE_MAPBOX_TOKEN);
@@ -75,7 +76,7 @@ export default function MapSynchronizer({
       if (mapRefB.current) mapRefB.current.remove();
       if (mapRefC.current) mapRefC.current.remove();
     };
-  }, [containerA, containerB, containerC, mapsInitialized]);
+  }, [containerA, containerB, containerC]);
   return null;
 }
 

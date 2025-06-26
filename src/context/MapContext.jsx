@@ -13,8 +13,10 @@ export const MapProvider = ({ children }) => {
   const mapRefB = useRef(null);
   const mapRefC = useRef(null);
 
+  // For defensive coding through the entery app  
   const [mapsInitialized, setMapsInitialized] = useState(false);
-  // Object that saves which layer is currently active
+
+  // This is an object that stores which layer is currently active for each map.
   const [activeMapLayers, setActiveMapLayers] = useState({
     mapA: null,
     mapB: null,
