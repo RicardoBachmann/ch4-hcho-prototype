@@ -5,6 +5,8 @@ import MapContainerC from "./containers/MapContainerC.jsx";
 import MapSynchronizer from "./MapSynchronizer.jsx";
 import LayerManager from "../layers/LayerManager.jsx";
 
+import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
+
 //import LayerToggle from "../ui/LayerToggle.jsx";
 // import ControlPanel from "../ui/ControlPanel.jsx";
 
@@ -53,6 +55,7 @@ export default function MainContainer({}) {
       </div>
 
       {/* Logic Component */}
+      <FormaldehydeLayer />
       <LayerManager />
       <MapSynchronizer
         containerA={containerA}
