@@ -1,18 +1,34 @@
 import { useEffect, useContext } from "react";
-import { useEmitData } from "../../hooks/useEmitData";
-import { MapContext } from "../../context/MapContext";
+import useEmitData from "../../../hooks/useEmitData";
+import { MapContext } from "../../../context/MapContext";
 
 export default function MethaneEMITLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
   const { emitData, loading, error } = useEmitData();
   useEffect(() => {
-    if (!mapsInitialized || !mapRefB.current || !emitData) return;
+    console.log("MethaneEMITLayer useEffect running");
+    console.log("mapsInitialized:", mapsInitialized);
+    console.log("mapRefB.current:", !!mapRefB.current);
+    console.log("emitData:", emitData);
+    console.log("emitData structure:", emitData?.feed?.entry?.length);
+
+    console.log("Current mapsInitialized:", mapsInitialized);
+
+    if (!mapsInitialized || !mapRefB.current || !emitData) {
+      console.log("Early return - conditions not met");
+      return;
+    }
+    console.log("Processing granules...");
+    console.log("EMIT data loaded:", emitData);
+    console.log("Number of granules:", emitData?.feed?.entry?.length);
 
     // To see data structure sample
     console.log("EMIT data:", emitData.feed.entry[0]);
 
     // NASA-EMIT extract coordinates for polygon granules
     emitData.feed.entry.forEach((entry, index) => {
+      console.log(`Processing granule ${index}:`, entry.id);
+      console.log("Polygon coords:", entry.polygons?.[0]?.[0]);
       // 1. Coordinates extraction and switch coord-props to the order: 1)lng 2)lat
       // (Mapbox dont accept NASA's default order of lat,lng)
       const polygonString = entry.polygons[0][0];

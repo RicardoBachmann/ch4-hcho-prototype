@@ -1,8 +1,8 @@
 import { useEffect, useContext } from "react";
 import mapboxGl from "mapbox-gl";
 
-import { useTropicalDamData } from "../../hooks/useTropicalDamData";
-import { MapContext } from "../../context/MapContext";
+import { useTropicalDamData } from "../../../hooks/useTropicalDamData";
+import { MapContext } from "../../../context/MapContext";
 
 export default function DamLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
