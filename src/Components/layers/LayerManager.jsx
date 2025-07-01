@@ -49,10 +49,10 @@ export default function LayerManager() {
 */
 
 export default function LayerManager() {
-  const { mapRefA, mapRefC, mapsInitialized, activeMapLayers } =
+  const { mapRefA, mapRefB, mapRefC, mapsInitialized, activeMapLayers } =
     useContext(MapContext);
 
-  // 🎯 ERSTMAL: Alle Layer hier erstellen (Debugging)
+  // Create HCHO layer
   useEffect(() => {
     if (!mapsInitialized || !mapRefA.current || !mapRefC.current) return;
 
@@ -62,10 +62,9 @@ export default function LayerManager() {
         mapRefA.current?.isStyleLoaded() &&
         mapRefC.current?.isStyleLoaded()
       ) {
-        console.log("✅ BOTH STYLES LOADED - Creating all layers");
-        createAllLayers();
+        console.log("Creating HCHO layer");
+        createHCHOLayer();
       } else {
-        console.log("⏳ Waiting for styles...");
         setTimeout(waitAndCreate, 100);
       }
     };
@@ -73,119 +72,92 @@ export default function LayerManager() {
     waitAndCreate();
   }, [mapsInitialized]);
 
-  function createAllLayers() {
-    console.log("🎯 Creating HCHO layers");
-    createLayer("HCHO", "S5P_TROPOMI_L3_P1D_HCHO");
-
-    console.log("🎯 Creating SO2 layers");
-    createLayer("SO2", "S5P_TROPOMI_L3_P1D_SO2");
-
-    console.log("🎯 Creating O3 layers");
-    createLayer("O3", "S5P_TROPOMI_L3_P1D_O3");
-
-    console.log("🎯 Creating AI layers");
-    createLayer("AI", "S5P_TROPOMI_L3_P1D_AI");
-  }
-
-  function createLayer(layerType, wmsLayer) {
-    const wmsUrl = `/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=${wmsLayer}&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0`;
+  function createHCHOLayer() {
+    const wmsUrl =
+      "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
 
     // Map A
-    const sourceIdA = `${layerType}-source-a`;
-    const layerIdA = `${layerType}-layer-a`;
+    mapRefA.current.addSource("hcho-source-a", {
+      type: "raster",
+      tiles: [wmsUrl],
+      tileSize: 256,
+    });
 
-    if (!mapRefA.current.getSource(sourceIdA)) {
-      mapRefA.current.addSource(sourceIdA, {
-        type: "raster",
-        tiles: [wmsUrl],
-        tileSize: 256,
-        // ✅ ADD ERROR HANDLING:
-        maxzoom: 10, // Prevent too high zoom requests
-        scheme: "xyz", // Ensure correct tile scheme
-      });
-    }
+    mapRefA.current.addLayer({
+      id: "hcho-layer-a",
+      type: "raster",
+      source: "hcho-source-a",
+      layout: { visibility: "none" },
+      paint: { "raster-opacity": 0.7 },
+    });
 
-    if (!mapRefA.current.getLayer(layerIdA)) {
-      mapRefA.current.addLayer({
-        id: layerIdA,
-        type: "raster",
-        source: sourceIdA,
-        layout: { visibility: "none" },
-        paint: {
-          "raster-opacity": 0.7,
-          "raster-fade-duration": 0, // ✅ Prevent fade errors
-        },
-      });
+    // Map B
+    mapRefB.current.addSource("hcho-source-b", {
+      type: "raster",
+      tiles: [wmsUrl],
+      tileSize: 256,
+    });
 
-      // ✅ ADD ERROR LISTENER:
-      mapRefA.current.on("error", (e) => {
-        if (e.sourceId === sourceIdA) {
-          console.warn(`Layer ${layerIdA} failed to load:`, e);
-        }
-      });
+    mapRefB.current.addLayer({
+      id: "hcho-layer-b",
+      type: "raster",
+      source: "hcho-source-b",
+      layout: { visibility: "none" },
+      paint: { "raster-opacity": 0.7 },
+    });
 
-      console.log(`✅ Created ${layerIdA}`);
-    }
+    // Map C
+    mapRefC.current.addSource("hcho-source-c", {
+      type: "raster",
+      tiles: [wmsUrl],
+      tileSize: 256,
+    });
 
-    // Map C (same pattern)
-    const sourceIdC = `${layerType}-source-C`;
-    const layerIdC = `${layerType}-layer-c`;
+    mapRefC.current.addLayer({
+      id: "hcho-layer-c",
+      type: "raster",
+      source: "hcho-source-c",
+      layout: { visibility: "none" },
+      paint: { "raster-opacity": 0.7 },
+    });
 
-    if (!mapRefC.current.getSource(sourceIdC)) {
-      mapRefC.current.addSource(sourceIdC, {
-        type: "raster",
-        tiles: [wmsUrl],
-        tileSize: 256,
-        // ✅ ADD ERROR HANDLING:
-        maxzoom: 10, // Prevent too high zoom requests
-        scheme: "xyz", // Ensure correct tile scheme
-      });
-    }
-
-    if (!mapRefC.current.getLayer(layerIdC)) {
-      mapRefC.current.addLayer({
-        id: layerIdC,
-        type: "raster",
-        source: sourceIdC,
-        layout: { visibility: "none" },
-        paint: {
-          "raster-opacity": 0.7,
-          "raster-fade-duration": 0, // ✅ Prevent fade errors
-        },
-      });
-
-      // ✅ ADD ERROR LISTENER:
-      mapRefC.current.on("error", (e) => {
-        if (e.sourceId === sourceIdC) {
-          console.warn(`Layer ${layerIdC} failed to load:`, e);
-        }
-      });
-      console.log(`✅ Created ${layerIdC}`);
-    }
+    console.log("HCHO layers A/B/C created");
   }
 
   // Visibility Control
   useEffect(() => {
-    if (!mapsInitialized || !mapRefA.current || !mapRefC.current) return;
-    if (!mapRefA.current.isStyleLoaded() || !mapRefC.current.isStyleLoaded())
-      return;
+    if (!mapsInitialized) return;
 
-    updateVisibility(mapRefA.current, "a", activeMapLayers.mapA);
-    updateVisibility(mapRefC.current, "c", activeMapLayers.mapC);
+    // Map A
+    if (mapRefA.current?.getLayer("hcho-layer-a")) {
+      const visibilityA = activeMapLayers.mapA === "HCHO" ? "visible" : "none";
+      mapRefA.current.setLayoutProperty(
+        "hcho-layer-a",
+        "visibility",
+        visibilityA
+      );
+    }
+
+    // Map B
+    if (mapRefB.current?.getLayer("hcho-layer-b")) {
+      const visibilityB = activeMapLayers.mapB === "HCHO" ? "visible" : "none";
+      mapRefB.current.setLayoutProperty(
+        "hcho-layer-b",
+        "visibility",
+        visibilityB
+      );
+    }
+
+    // Map C
+    if (mapRefC.current?.getLayer("hcho-layer-c")) {
+      const visibilityC = activeMapLayers.mapC === "HCHO" ? "visible" : "none";
+      mapRefC.current.setLayoutProperty(
+        "hcho-layer-c",
+        "visibility",
+        visibilityC
+      );
+    }
   }, [activeMapLayers, mapsInitialized]);
 
-  function updateVisibility(map, mapId, activeLayer) {
-    const allLayers = ["HCHO", "SO2", "O3", "AI"];
-
-    allLayers.forEach((layer) => {
-      const layerId = `${layer}-layer-${mapId}`;
-      if (map.getLayer(layerId)) {
-        const visibility = activeLayer === layer ? "visible" : "none";
-        map.setLayoutProperty(layerId, "visibility", visibility);
-        console.log(`Set ${layerId} to ${visibility}`);
-      }
-    });
-  }
-
-  return null; // Keine individual components
+  return null;
 }

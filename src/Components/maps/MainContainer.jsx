@@ -36,6 +36,7 @@ export default function MainContainer({}) {
         {/* Map B */}
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <MapContainerB onContainerReady={setContainerB} />
+          <Toggle mapId="B" />
           {/*<ControlPanel
             sentinelPosition={sentinelPosition}
             collectionData={collectionData}

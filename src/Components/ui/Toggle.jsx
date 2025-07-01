@@ -4,18 +4,7 @@ import { MapContext } from "../../context/MapContext";
 export default function Toggle({ mapId }) {
   const { activeMapLayers, setActiveMapLayers, mapsInitialized } =
     useContext(MapContext);
-  const layers = [
-    { id: "HCHO", name: "Formaldehyde" },
-    {
-      id: "SO2",
-      name: "Sulfur Dioxide",
-    },
-    { id: "O3", name: "Ozone" },
-    {
-      id: "AI",
-      name: "Aerosol Index",
-    },
-  ];
+  const layers = [{ id: "HCHO", name: "Formaldehyde" }];
 
   const handleToggle = (layerId) => {
     if (!mapsInitialized) return;

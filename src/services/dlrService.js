@@ -10,9 +10,6 @@ async function fetchDlrService(productKey) {
   // productName for actual API collection IDs for better code readability
   const API_COLLECTIONS = {
     Formaldehyde: "S5P_TROPOMI_L3_P1D_HCHO_v2",
-    SulfurDioxide: "S5P_TROPOMI_L3_P1D_SO2_v2",
-    Ozone: "S5P_TROPOMI_L3_P1D_O3_v2",
-    AerosolIndex: "S5P_TROPOMI_L3_P1D_AI_v2",
   };
 
   const collectionId = API_COLLECTIONS[productKey];

@@ -12,8 +12,9 @@ export default function FormaldehydeLayer() {
       mapRefA.current?.isStyleLoaded()
     );
 
-    if (!mapsInitialized || !mapRefA.current?.isStyleLoaded()) return;
-
+    if (!mapsInitialized || !mapRefA.current || !mapRefC.current) return;
+    if (!mapRefA.current.isStyleLoaded() || !mapRefC.current.isStyleLoaded())
+      return;
     console.log("Creating HCHO layers!");
     const wmsUrl =
       "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
@@ -78,6 +79,10 @@ export default function FormaldehydeLayer() {
         }
       }
     };
-  }, [mapsInitialized]);
+  }, [
+    mapsInitialized,
+    mapRefA.current?.isStyleLoaded(),
+    mapRefC.current?.isStyleLoaded(),
+  ]);
   return null;
 }
