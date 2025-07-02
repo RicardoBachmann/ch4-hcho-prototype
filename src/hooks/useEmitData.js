@@ -8,11 +8,12 @@ export default function useEmitData() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     async function loadEmitData() {
       try {
-        const data = await fetchNasaService();
+        const data = await fetchNasaService(controller.signal);
         console.log("NASA-EMIT data loaded:", data);
         setEmitData(data);
         setLoading(false);
@@ -23,6 +24,11 @@ export default function useEmitData() {
       }
     }
     loadEmitData();
+
+    // Clean up
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   return { emitData, loading, error };

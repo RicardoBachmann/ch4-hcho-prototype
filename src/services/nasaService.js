@@ -1,4 +1,4 @@
-async function fetchNasaService() {
+async function fetchNasaService(signal) {
   console.log("=== NASA-Service connection ===");
 
   //NASA CMR API for EMIT Methane data
@@ -11,15 +11,13 @@ async function fetchNasaService() {
     sort_key: "-start_date",
   });
 
+  let timeoutId;
   try {
     // 10s Timeout for network calls
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    timeoutId = setTimeout(() => signal.abort(), 10000);
     const response = await fetch(`${cmrUrl}?${params}`, {
-      signal: controller.signal,
+      signal: signal,
     });
-
-    clearTimeout(timeoutId);
 
     // HTTP Status Errors(enhanced error messages)
     if (!response.ok) {
@@ -64,6 +62,8 @@ async function fetchNasaService() {
       );
     }
     throw error; // Errors for data structure validation
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
