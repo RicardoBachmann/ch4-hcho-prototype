@@ -33,3 +33,6 @@ export default function useEmitData() {
 
   return { emitData, loading, error };
 }
+
+// NASA EMIT data hook with abort control and error state management
+// Handles: Component unmount cleanup, loading states, error propagation

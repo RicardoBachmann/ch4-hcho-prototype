@@ -69,8 +69,6 @@ async function fetchNasaService(signal) {
 
 export default fetchNasaService;
 
-// Comprehensive error handling:
-
-// Timeout Protection with AbortController() - controller object allows to abort Web requests after 10s.
+// Timeout Protection via external signal - aborts after 10s OR component unmount
 // API errors (4xx, 5xx responses + User-friendliy error messages)
 // Data Structure Validation - Fail Fast with Clear Messages

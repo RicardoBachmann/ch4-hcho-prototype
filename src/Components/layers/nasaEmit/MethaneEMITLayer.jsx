@@ -4,34 +4,19 @@ import { MapContext } from "../../../context/MapContext";
 
 export default function MethaneEMITLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
-  const { emitData, loading, error } = useEmitData();
+  const { emitData } = useEmitData(); // Add loading, error states for control panel UI
   useEffect(() => {
-    console.log("MethaneEMITLayer useEffect running");
-    console.log("mapsInitialized:", mapsInitialized);
-    console.log("mapRefB.current:", !!mapRefB.current);
-    console.log("emitData:", emitData);
-    console.log("emitData structure:", emitData?.feed?.entry?.length);
-
-    console.log("Current mapsInitialized:", mapsInitialized);
-
     if (!mapsInitialized || !mapRefB.current || !emitData) {
       console.log("Early return - conditions not met");
       return;
     }
-    console.log("Processing granules...");
-    console.log("EMIT data loaded:", emitData);
-    console.log("Number of granules:", emitData?.feed?.entry?.length);
+    console.log("EMIT V002 data loaded:", emitData);
+    console.log("EMIT V002 data structure sample:", emitData.feed.entry[0]);
+    console.log("EMIT V002 granules:", emitData?.feed?.entry?.length);
 
-    // To see data structure sample
-    console.log("EMIT data:", emitData.feed.entry[0]);
-
-    // NASA-EMIT extract coordinates for polygon granules
-    emitData.feed.entry.forEach((entry, index) => {
-      console.log(`Processing granule ${index}:`, entry.id);
-      console.log("Polygon coords:", entry.polygons?.[0]?.[0]);
-      // 1. Coordinates extraction and switch coord-props to the order: 1)lng 2)lat
+    function transformCoordinates(polygonString) {
+      // Coordinates extraction, switch coord-props to the order: 1)lng 2)lat and push in coordinatePairs
       // (Mapbox dont accept NASA's default order of lat,lng)
-      const polygonString = entry.polygons[0][0];
       const coordArray = polygonString.split(" ");
       const coordinatePairs = [];
       for (let i = 0; i < coordArray.length; i += 2) {
@@ -39,9 +24,11 @@ export default function MethaneEMITLayer() {
         const lng = parseFloat(coordArray[i + 1]);
         coordinatePairs.push([lng, lat]);
       }
-      // 2. addSource
-      // add source as polygon and creat for each an individual index for data improvment
-      const sourceId = `ch4-source-${index}`;
+      return coordinatePairs;
+    }
+
+    function addPolygonLayer(coordinatePairs, sourceId, layerId, mapRefB) {
+      // Add Source as polygon and creat for each an individual index for data improvment
       if (!mapRefB.current.getSource(sourceId)) {
         mapRefB.current.addSource(sourceId, {
           type: "geojson",
@@ -54,15 +41,13 @@ export default function MethaneEMITLayer() {
           },
         });
       } else {
-        console.error(`Source ${sourceId} already exists, skipping`);
+        console.warn(`Source ${sourceId} already exists, skipping`);
       }
 
-      // 3. addLayer
-      // add layer and get the id of NASA's entry.id prop
-      const layerId = entry.id;
+      // Add Layer and get the id of NASA's entry.id prop
       if (!mapRefB.current.getLayer(layerId)) {
         mapRefB.current.addLayer({
-          id: entry.id,
+          id: layerId,
           type: "line",
           source: sourceId,
           layout: {},
@@ -74,98 +59,92 @@ export default function MethaneEMITLayer() {
       } else {
         console.warn(`Layer ${layerId} already exists, skipping`);
       }
+    }
 
-      // PNG extraction for each polygon granules
-      // 4. Find and get all the links with png in it (no tifs)
+    function addPngLayer(imageUrl, coordinatePairs, index, mapRefB) {
+      const pngSourceId = `CH4-png-source-${index}`;
+      // Source-Check
+      if (!mapRefB.current.getSource(pngSourceId)) {
+        mapRefB.current.addSource(pngSourceId, {
+          type: "image",
+          url: imageUrl,
+          coordinates: coordinatePairs.slice(0, 4),
+        });
+      } else {
+        console.warn(`PNG Source ${pngSourceId} already exists, skipping`);
+      }
+      // Layer-Check
+      const pngLayerId = `CH4-png-layer-${index}`;
+      if (!mapRefB.current.getLayer(pngLayerId)) {
+        mapRefB.current.addLayer({
+          id: pngLayerId,
+          type: "raster",
+          source: pngSourceId,
+          paint: {
+            "raster-opacity": 0.8,
+          },
+        });
+      } else {
+        console.warn(`PNG Layer ${pngLayerId} already exists, skipping`);
+      }
+    }
+
+    // Load, process & create blob
+    async function processPngOverlay(entry) {
       const extractPNG = entry.links.find((link) => {
         return link.title.includes("png");
       });
+      if (!extractPNG) return null;
 
-      if (extractPNG) {
-        /* console.log("Original PNG URL:", extractPNG.href);*/
+      // IMPORTANT: NASA URL --> Proxy URL
+      // "https://data.lpdaac.earthdatacloud.nasa.gov/path/to/file.png"
+      // to:
+      // "/api/nasa/path/to/file.png"
+      const nasaProxyUrl = extractPNG.href.replace(
+        "https://data.lpdaac.earthdatacloud.nasa.gov",
+        "/api/nasa"
+      );
 
-        // IMPORTANT: NASA URL --> Proxy URL
-        // "https://data.lpdaac.earthdatacloud.nasa.gov/path/to/file.png"
-        // to:
-        // "/api/nasa/path/to/file.png"
-        const nasaProxyUrl = extractPNG.href.replace(
-          "https://data.lpdaac.earthdatacloud.nasa.gov",
-          "/api/nasa"
-        );
-
-        /* console.log("NASA Proxy URL:", nasaProxyUrl);*/
-
-        // 5. Load PNG & create blob
-        // blob(): "Binary Large Object"
+      try {
+        const response = await fetch(nasaProxyUrl);
+        if (!response.ok) {
+          throw new Error(
+            `NASA API Error: ${response.status} ${response.statusText}`
+          );
+        }
         // Container for raw binary data(NASA) to render NASA-PNG Data in Mapbox
-        const loadPNG = async () => {
-          try {
-            /*
-            console.log("Load PNG from:", nasaProxyUrl);*/
+        // blob(): "Binary Large Object"
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        /* console.log("PNG successfully loaded, size:", blob.size, "bytes"); */
+        return imageUrl;
+      } catch (error) {
+        console.error(`PNG loading failed:`, error);
+        return null;
+      }
+    }
 
-            // Test fetch with detailed logging
-            const response = await fetch(nasaProxyUrl);
+    // NASA-EMIT forEach orchestrated granules
+    emitData.feed.entry.forEach(async (entry, index) => {
+      const polygonString = entry.polygons[0][0];
+      const coordinatePairs = transformCoordinates(polygonString);
 
-            /*
-            console.log("NASA Response Status:", response.status);
-            console.log("NASA Response Headers:", response.headers);*/
+      const sourceId = `CH4-source-${index}`;
+      const layerId = entry.id;
 
-            if (!response.ok) {
-              throw new Error(
-                `NASA API Error: ${response.status} ${response.statusText}`
-              );
-            }
-
-            // Create blob
-            const blob = await response.blob();
-            const imageUrl = URL.createObjectURL(blob);
-
-            /*
-            console.log("PNG successfully loaded, size:", blob.size, "bytes");*/
-
-            // 6. Add PNG Source
-            const pngSourceId = `ch4-png-source-${index}`;
-            if (!mapRefB.current.getSource(pngSourceId)) {
-              mapRefB.current.addSource(pngSourceId, {
-                type: "image",
-                url: imageUrl,
-                // EMIT Granules are mostly rectangular polygons
-                // Mapbox takes these 4 points and "stretches" the PNG exactly between them!
-                // NASA EMIT provides coordinates in clockwise order: TL→TR→BR→BL
-                // First 4 coordinates form the rectangular projection boundary
-                coordinates: coordinatePairs.slice(0, 4),
-              });
-              const pngLayerId = `ch4-png-layer-${index}`;
-              if (!mapRefB.current.getLayer(pngLayerId)) {
-                mapRefB.current.addLayer({
-                  id: pngLayerId,
-                  type: "raster",
-                  source: `ch4-png-source-${index}`,
-                  paint: {
-                    "raster-opacity": 0.8,
-                  },
-                });
-                /*
-                console.log(" Add PNG Layer!");*/
-              } else {
-                console.warn(
-                  `PNG Layer ${pngLayerId} already exists, skipping`
-                );
-              }
-            }
-          } catch (error) {
-            console.error("PNG Loading Error:", error);
-          }
-        };
-        loadPNG();
+      addPolygonLayer(coordinatePairs, sourceId, layerId, mapRefB);
+      const imageUrl = await processPngOverlay(entry);
+      if (imageUrl) {
+        addPngLayer(imageUrl, coordinatePairs, index, mapRefB);
       }
     });
   }, [mapsInitialized, mapRefB, emitData]);
-  return <></>;
+  return;
 }
 
-// For separation of concerns: Use mapRefB to visualize the methane layer in mapViewB
-// useEffect triggers only when mapInitialized becomes true and when new NASA EMIT data flows in
+// Renders NASA EMIT Methane V002 granules as red polygon outlines + PNG overlays on mapB
+// 4 seperate functions: transformCoordinates() | addPolygonLayer() | processPngOverlay() | addPngLayer()
+// Data flow: NASA bytes → Blob (cache) → Browser URL → Mapbox rendering
 // mapRefB in dependency array is just an "ESLint passenger" - required by linting rules but doesn't trigger re-runs
 
-//     console.log("First granule links:", data.feed.entry[0].links);
+// TODO: Add helper functions for ID generation (generateIds(index, entryId))
