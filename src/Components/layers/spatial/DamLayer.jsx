@@ -20,7 +20,7 @@ export default function DamLayer() {
       const marker = new mapboxGl.Marker(el)
         .setLngLat([item.geometry.coordinates[0], item.geometry.coordinates[1]])
         .addTo(mapRefB.current);
-      console.log(`Marker ${index} getLngLat:`, marker.getLngLat());
+      //console.log(`Marker ${index} getLngLat:`, marker.getLngLat());
     });
     // All dam locations markers + Sentinel Satellite
     const allMarkers = document.querySelectorAll(".mapboxgl-marker");

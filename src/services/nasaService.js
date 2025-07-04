@@ -1,5 +1,5 @@
 async function fetchNasaService(signal) {
-  console.log("=== NASA-Service connection ===");
+  console.log("===NASA-Service connection===");
 
   //NASA CMR API for EMIT Methane data
   const cmrUrl = "https://cmr.earthdata.nasa.gov/search/granules.json";

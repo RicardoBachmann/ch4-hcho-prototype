@@ -1,8 +1,10 @@
 import { useEffect, useContext } from "react";
 import { MapContext } from "../../../context/MapContext";
+import { useSentinelData } from "../../../hooks/useSentinelData";
 
 export default function FormaldehydeLayer() {
   const { mapRefA, mapRefB, mapRefC, mapsInitialized } = useContext(MapContext);
+  const { collectionData } = useSentinelData();
 
   useEffect(() => {
     if (
@@ -27,6 +29,8 @@ export default function FormaldehydeLayer() {
       }
     };
     waitAndCreate();
+
+    console.log("Dataflow:", collectionData);
 
     function createHCHOLayer() {
       const wmsUrl =
