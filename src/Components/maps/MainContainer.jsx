@@ -6,6 +6,7 @@ import MapSynchronizer from "./MapSynchronizer.jsx";
 import LayerManager from "../layers/LayerManager.jsx";
 
 import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
+import FormaldehydeTimeline from "../layers/sentinel5p/FormaldehydeTimeline.jsx";
 import DamLayer from "../layers/spatial/DamLayer.jsx";
 import MethaneEMITLayer from "../layers/nasaEmit/MethaneEMITLayer.jsx";
 
@@ -58,6 +59,7 @@ export default function MainContainer({}) {
 
       {/* Logic Component */}
       <FormaldehydeLayer />
+      <FormaldehydeTimeline />
       <DamLayer />
       <MethaneEMITLayer />
       <LayerManager />

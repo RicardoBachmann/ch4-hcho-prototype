@@ -1,55 +1,26 @@
 import { useEffect, useContext } from "react";
 import { MapContext } from "../../../context/MapContext";
-import { useSentinelData } from "../../../hooks/useSentinelData";
 
 export default function FormaldehydeLayer() {
-  const { mapRefA, mapRefB, mapRefC, mapsInitialized } = useContext(MapContext);
-  const { collectionData } = useSentinelData();
+  const { mapRefB, mapsInitialized } = useContext(MapContext);
 
   useEffect(() => {
-    if (
-      !mapsInitialized ||
-      !mapRefA.current ||
-      !mapRefB.current ||
-      !mapRefC.current
-    )
-      return;
+    if (!mapsInitialized || !mapRefB.current) return;
 
     const waitAndCreate = () => {
-      if (
-        mapRefA.current?.isStyleLoaded() &&
-        mapRefB.current?.isStyleLoaded() &&
-        mapRefC.current?.isStyleLoaded()
-      ) {
-        console.log("HCHO Layer: Creating layer");
+      if (mapRefB.current?.isStyleLoaded()) {
+        console.log("HCHO Layer mapB: Creating layer");
         createHCHOLayer();
       } else {
-        console.log("HCHO Layer: Waiting for styles...");
+        console.log("HCHO Layer mapB: Waiting for styles...");
         setTimeout(waitAndCreate, 100);
       }
     };
     waitAndCreate();
 
-    console.log("Dataflow:", collectionData);
-
     function createHCHOLayer() {
       const wmsUrl =
         "/api/dlr/eoc/atmosphere/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=S5P_TROPOMI_L3_P1D_HCHO_v2&FORMAT=image/png&TRANSPARENT=TRUE&WIDTH=256&HEIGHT=256&CRS=EPSG:3857&BBOX={bbox-epsg-3857}&VERSION=1.3.0";
-
-      // Map A
-      mapRefA.current.addSource("HCHO-source-a", {
-        type: "raster",
-        tiles: [wmsUrl],
-        tileSize: 256,
-      });
-
-      mapRefA.current.addLayer({
-        id: "HCHO-layer-a",
-        type: "raster",
-        source: "HCHO-source-a",
-        layout: { visibility: "none" },
-        paint: { "raster-opacity": 0.7 },
-      });
 
       // Map B
       mapRefB.current.addSource("HCHO-source-b", {
@@ -65,34 +36,9 @@ export default function FormaldehydeLayer() {
         layout: { visibility: "none" },
         paint: { "raster-opacity": 0.7 },
       });
-
-      // Map C
-      mapRefC.current.addSource("HCHO-source-c", {
-        type: "raster",
-        tiles: [wmsUrl],
-        tileSize: 256,
-      });
-
-      mapRefC.current.addLayer({
-        id: "HCHO-layer-c",
-        type: "raster",
-        source: "HCHO-source-c",
-        layout: { visibility: "none" },
-        paint: { "raster-opacity": 0.7 },
-      });
-
-      console.log("HCHO layers A/B/C created");
     }
     // Clean up
     return () => {
-      if (mapRefA.current) {
-        if (mapRefA.current.getLayer("HCHO-layer-a")) {
-          mapRefA.current.removeLayer("HCHO-layer-a");
-        }
-        if (mapRefA.current.getSource("HCHO-source-a")) {
-          mapRefA.current.removeSource("HCHO-source-a");
-        }
-      }
       if (mapRefB.current) {
         if (mapRefB.current.getLayer("HCHO-layer-b")) {
           mapRefB.current.removeLayer("HCHO-layer-b");
@@ -101,16 +47,13 @@ export default function FormaldehydeLayer() {
           mapRefB.current.removeSource("HCHO-source-b");
         }
       }
-      if (mapRefC.current) {
-        if (mapRefC.current.getLayer("HCHO-layer-c")) {
-          mapRefC.current.removeLayer("HCHO-layer-c");
-        }
-        if (mapRefC.current.getSource("HCHO-source-c")) {
-          mapRefC.current.removeSource("HCHO-source-c");
-        }
-      }
     };
   }, [mapsInitialized]);
 
   return null;
 }
+
+// WMS layer component for HCHO visualization on Map B
+// waitAndCreate: isStyleLoaded() checks until Style is ready → Create layer (Mapbox loads asynchron)
+// Layer Type: Raster tiles with 70% opacity
+// Handles: DLR atmosphere service integration, layer creation, cleanup
