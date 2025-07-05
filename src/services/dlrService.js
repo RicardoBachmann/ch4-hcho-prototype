@@ -3,7 +3,7 @@ async function fetchDlrService(productKey) {
   if (productKey !== "Formaldehyde")
     throw new Error("Invalid product key: only 'Formaldehyde' is supported");
 
-  // productName for actual API collection IDs for better code readability
+  // API_COLLECTIONS object for storing and categorize different Sentinel 5p products
   const API_COLLECTIONS = {
     Formaldehyde: "S5P_TROPOMI_L3_P1D_HCHO_v2",
   };
@@ -38,9 +38,10 @@ async function fetchDlrService(productKey) {
   } catch (error) {
     if (error.name === "TypeError") {
       throw new Error("DLR API not available - please check your connection");
-    } else {
-      throw new Error("Error processing DLR data - please try again");
+    } else if (error.name === "SyntaxError") {
+      throw new Error("DLR server returned invalid data format");
     }
+    throw new Error("Error processing DLR data - please try again");
   }
 }
 
@@ -55,3 +56,8 @@ export default fetchDlrService;
 // Service-Responsibility:
 // Fetch DLR STAC data and provide user-friendly error messages
 // Data validation ensures timeline-ready HCHO data
+
+// Error Types:
+// "TypeError" = Network/Internet connection problem
+// "SyntaxError" = Server returned invalid data format
+// else = General data processing problem

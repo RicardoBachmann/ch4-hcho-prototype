@@ -56,10 +56,15 @@ async function fetchNasaService(signal) {
     return data; // Guaranteed: data.feed.entry exists!
   } catch (error) {
     if (error.name === "AbortError") {
-      // Errors for timeout abort()
       throw new Error(
         "NASA API request timeout - please check your connection "
       );
+    }
+    if (error.name === "TypeError") {
+      throw new Error("NASA API not available - please check your connection");
+    }
+    if (error.name === "SyntaxError") {
+      throw new Error("NASA server returned invalid data format");
     }
     throw error; // Errors for data structure validation
   } finally {
@@ -69,6 +74,15 @@ async function fetchNasaService(signal) {
 
 export default fetchNasaService;
 
+// Service-Responsibility:
+// Fetch NASA EMIT L2B Methane Enhancement Data 60 m V002
+
 // Timeout Protection via external signal - aborts after 10s OR component unmount
 // API errors (4xx, 5xx responses + User-friendliy error messages)
 // Data Structure Validation - Fail Fast with Clear Messages
+
+// Error Types:
+// "AbortError" = Request timeout (10s) or component unmount
+// "TypeError" = Network/Internet connection problem
+// "SyntaxError" = Server returned invalid data format
+// else = Data structure validation errors (passed through)
