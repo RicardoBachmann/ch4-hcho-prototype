@@ -5,9 +5,6 @@ import fetchDlrService from "../services/dlrService";
 export function useSentinelData() {
   const [collectionData, setCollectionData] = useState({
     formaldehyde: null,
-    ozone: null,
-    sulfurDioxide: null,
-    aerosolIndex: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,27 +14,16 @@ export function useSentinelData() {
       try {
         setLoading(true);
         setError(null);
-        // Implement Promise.all to call all 4 collections at the same time!
-        const [
-          formaldehydeData,
-          ozoneData,
-          sulfurDioxideData,
-          aerosolIndexData,
-        ] = await Promise.all([
-          fetchDlrService("Formaldehyde"),
-          fetchDlrService("Ozone"),
-          fetchDlrService("SulfurDioxide"),
-          fetchDlrService("AerosolIndex"),
-        ]);
+        const formaldehydeData = await fetchDlrService("Formaldehyde");
         setCollectionData({
           formaldehyde: formaldehydeData,
-          ozone: ozoneData,
-          sulfurDioxide: sulfurDioxideData,
-          aerosolIndex: aerosolIndexData,
         });
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching Sentinel 5P collections data:", error);
+        console.error(
+          "Error fetching Sentinel 5P Formaldehyde collection data:",
+          error
+        );
         setError(error.message);
         setLoading(false);
       }
