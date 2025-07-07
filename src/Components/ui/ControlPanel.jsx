@@ -1,4 +1,4 @@
-import { useState } from "react";
+/* import { useState } from "react";
 
 export default function ControlPanel({
   sentinelPosition,
@@ -148,3 +148,5 @@ export default function ControlPanel({
 // Improvments:
 // Destructuring Rename:
 // const {sentinelPosition, loading: positionLoading, error: positionError} = useSatellitePosition()
+
+*/
