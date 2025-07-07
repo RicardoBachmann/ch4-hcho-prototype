@@ -9,8 +9,8 @@ import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
 import FormaldehydeTimeline from "../layers/sentinel5p/FormaldehydeTimeline.jsx";
 import DamLayer from "../layers/spatial/DamLayer.jsx";
 import MethaneEMITLayer from "../layers/nasaEmit/MethaneEMITLayer.jsx";
+import WetlandLayer from "../layers/lpjEosim/WetlandLayer.jsx";
 
-//import LayerToggle from "../ui/LayerToggle.jsx";
 // import ControlPanel from "../ui/ControlPanel.jsx";
 
 import Toggle from "../ui/Toggle.jsx";
@@ -62,6 +62,7 @@ export default function MainContainer({}) {
       <FormaldehydeTimeline />
       <DamLayer />
       <MethaneEMITLayer />
+      <WetlandLayer />
       <LayerManager />
       <MapSynchronizer
         containerA={containerA}
