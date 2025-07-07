@@ -33,10 +33,5 @@ export function useSentinelData() {
   return { collectionData, loading, error };
 }
 
-// Notes:
-// Promise.all() is "fail-fast"
-// If 1 of 4 APIs fails → whole Promise.all() failed
-// Get 0 data back, even if 3 APIs were successful
-
-// Improvements:
-// const results = await Promise.allSettled([...]);
+// HCHO data hook for temporal investigation and timeline functionality
+// Handles: DLR STAC API, loading states, user-friendly error messages

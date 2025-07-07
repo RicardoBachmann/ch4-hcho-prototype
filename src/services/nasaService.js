@@ -86,3 +86,4 @@ export default fetchNasaService;
 // "TypeError" = Network/Internet connection problem
 // "SyntaxError" = Server returned invalid data format
 // else = Data structure validation errors (passed through)
+
