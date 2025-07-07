@@ -1,30 +1,31 @@
-import { useState } from "react";
+/* import { useState } from "react";
 
 export default function ControlPanel({
-  sentinel5Position,
-  clickedLocation,
-  sentinelData,
+  sentinelPosition,
+  collectionData,
+  loading,
+  error,
 }) {
   const productTypes = [
     {
       id: "hcho",
       name: "Formaldehyde HCHO",
-      dataSource: sentinelData.formaldehyde,
+      dataSource: collectionData.formaldehyde,
     },
     {
       id: "so2",
       name: "Sulfur Dioxide SO2",
-      dataSource: sentinelData.sulfurDioxide,
+      dataSource: collectionData.sulfurDioxide,
     },
     {
       id: "o3",
       name: "Ozone O3",
-      dataSource: sentinelData.ozone,
+      dataSource: collectionData.ozone,
     },
     {
       id: "ai",
       name: "Aerosol Index AI",
-      dataSource: sentinelData.aerosolIndex,
+      dataSource: collectionData.aerosolIndex,
     },
   ];
   const [showProduct, setShowProduct] = useState({});
@@ -36,7 +37,8 @@ export default function ControlPanel({
       [id]: !prev[id],
     }));
   }
-
+  if (loading) return <div>Loading Sentinel data...</div>;
+  if (error) return <div>Error: {error}</div>;
   return (
     <div
       style={{
@@ -50,22 +52,22 @@ export default function ControlPanel({
       }}
     >
       <h2>Sentinel-5 Data:</h2>
-      {sentinelData && sentinelData.formaldehyde && (
+      {collectionData && collectionData.formaldehyde && (
         <label>
           {" "}
           Current S5 Position:
           <ul style={{ listStyle: "none" }}>
-            <li>Latitude:{sentinel5Position.latitude.toFixed(3)}</li>
-            <li>Longitude:{sentinel5Position.longitude.toFixed(3)}</li>
+            <li>Latitude:{sentinelPosition?.latitude?.toFixed(3)}</li>
+            <li>Longitude:{sentinelPosition?.longitude?.toFixed(3)}</li>
           </ul>
           <p>
             Instruments:{" "}
-            {sentinelData.formaldehyde.features[0].properties.instruments}
+            {collectionData.formaldehyde.features[0].properties.instruments}
           </p>
           <p>
             Processing Level:{" "}
             {
-              sentinelData.formaldehyde.features[0].properties[
+              collectionData.formaldehyde.features[0].properties[
                 "processing:level"
               ]
             }
@@ -73,7 +75,7 @@ export default function ControlPanel({
           <p>
             Spatial Resolution:
             {
-              sentinelData.formaldehyde.features[0].properties[
+              collectionData.formaldehyde.features[0].properties[
                 "s5p:spatial_resolution"
               ]
             }
@@ -138,3 +140,13 @@ export default function ControlPanel({
     </div>
   );
 }
+
+// Note:
+// Custom Hooks naming conflict (loading, error)
+// Slower hook(Sentinel Data 4 API calls) for the loading state
+
+// Improvments:
+// Destructuring Rename:
+// const {sentinelPosition, loading: positionLoading, error: positionError} = useSatellitePosition()
+
+*/
