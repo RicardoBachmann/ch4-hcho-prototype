@@ -1,56 +1,45 @@
 import { useEffect, useContext, useState } from "react";
-import mapboxGl from "mapbox-gl";
 
 import { useTropicalDamData } from "../../../hooks/useTropicalDamData";
 import { MapContext } from "../../../context/MapContext";
 
 export default function DamLayer() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
-  const { damData, loading, error } = useTropicalDamData();
-  const [damMarkers, setDamMarkers] = useState({});
+  const { damData } = useTropicalDamData(); // Add loading, error states for control panel UI
+
   useEffect(() => {
     if (!mapsInitialized || !mapRefB.current || !damData) return;
 
-    const tempMarkers = {};
-
-    damData.features.forEach((item, index) => {
-      const el = document.createElement("div");
-      el.style.width = "10px";
-      el.style.height = "10px";
-      el.style.background = "red";
-      el.style.borderRadius = "50%";
-
-      const marker = new mapboxGl.Marker(el)
-        .setLngLat([item.geometry.coordinates[0], item.geometry.coordinates[1]])
-        .addTo(mapRefB.current);
-
-      tempMarkers[item.properties.GDW_ID] = marker;
+    mapRefB.current.addSource("dams", {
+      type: "geojson",
+      data: damData,
     });
-    setDamMarkers(tempMarkers);
 
-    /*
-    damData.features.forEach((item, index) => {
-      const el = document.createElement("div");
-      el.style.width = "10px";
-      el.style.height = "10px";
-      el.style.background = "red";
-      el.style.borderRadius = "50%";
-
-      const marker = new mapboxGl.Marker(el)
-        .setLngLat([item.geometry.coordinates[0], item.geometry.coordinates[1]])
-        .addTo(mapRefB.current);
-      //console.log(`Marker ${index} getLngLat:`, marker.getLngLat());
+    mapRefB.current.addLayer({
+      id: "dam-points",
+      source: "dams",
+      type: "circle",
+      paint: {
+        "circle-radius": 5,
+        "circle-color": "red",
+      },
     });
-    // All dam locations markers + Sentinel Satellite
-    const allMarkers = document.querySelectorAll(".mapboxgl-marker");
-    console.log("Found markers in DOM:", allMarkers.length);
-*/
 
-    // cleanup
     return () => {
-      Object.values(damMarkers).forEach((marker) => marker.remove());
-      setDamMarkers({});
+      if (mapRefB.current) {
+        if (mapRefB.current.getLayer("dam-points")) {
+          mapRefB.current.removeLayer("dam-points");
+        }
+
+        if (mapRefB.current.getSource("dams")) {
+          mapRefB.current.removeSource("dams");
+        }
+      }
     };
   }, [damData, mapRefB, mapsInitialized]);
   return null;
 }
+
+// Tropical Hydro-dams GeoJSON Layer
+// Renders 403 tropical dam locations as optimized GeoJSON layer
+// Data source: /data/hydropower-tropical-dams.geojson
