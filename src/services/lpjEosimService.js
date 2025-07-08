@@ -6,7 +6,7 @@ async function fetchLpjEmosimService(signal) {
   const params = new URLSearchParams({
     short_name: "LPJ_EOSIM_L2_MCH4E_LL",
     version: "001",
-    "bounding_box[]": "-180,-23.5,180,23.5",
+    // "bounding_box[]": "-180,-23.5,180,23.5",
     page_size: 12, // 1 Year
     sort_key: "-start_date",
   });
@@ -14,7 +14,7 @@ async function fetchLpjEmosimService(signal) {
   let timeoutId;
   try {
     // 10s Timeout for network calls
-    timeoutId = setTimeout(() => signal.abort(), 10000);
+    timeoutId = setTimeout(() => signal.abort(), 30000);
     const response = await fetch(`${cmrUrl}?${params}`, {
       signal: signal,
     });
