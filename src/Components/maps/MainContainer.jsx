@@ -58,11 +58,11 @@ export default function MainContainer({}) {
       </div>
 
       {/* Logic Component */}
+      <WetlandLayer />
       <FormaldehydeLayer />
       <FormaldehydeTimeline />
       <DamLayer />
       <MethaneEMITLayer />
-      <WetlandLayer />
       <LayerManager />
       <MapSynchronizer
         containerA={containerA}

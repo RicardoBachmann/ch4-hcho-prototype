@@ -1,101 +1,61 @@
 import { useContext, useEffect } from "react";
 import { MapContext } from "../../../context/MapContext";
-import useLpjEosimData from "../../../hooks/useLpjEosimData";
 
 export default function WetlandLayer() {
   console.log("WetlandLayer component mounted!");
   const { mapRefB, mapsInitialized } = useContext(MapContext);
-  const { lpjEosimData } = useLpjEosimData();
-
   useEffect(() => {
-    if (!mapsInitialized || !mapRefB.current || !lpjEosimData) {
+    if (!mapsInitialized || !mapRefB.current) {
       console.log("Early return - conditions not met");
       return;
     }
+    /*
     console.log("LPJ-EOSIM data loaded:", lpjEosimData);
-    console.log("First LPJ-EOSIM entry structure:", lpjEosimData.feed.entry[0]);
+    console.log("First LPJ-EOSIM entry structure:", lpjEosimData.feed.entry[0]);*/
 
-    async function processWetlandsPNG(entry) {
-      console.log("processWetlandsPNG called!");
-
-      const pngLink = entry.links[7];
-      console.log("PNG URL:", pngLink.href);
-      if (!pngLink) return;
-
-      const nasaProxyUrl = pngLink.href.replace(
-        "https://data.lpdaac.earthdatacloud.nasa.gov",
-        "/api/nasa"
-      );
-
-      try {
-        const response = await fetch(nasaProxyUrl);
-        if (!response.ok) {
-          throw new Error(
-            `NASA API Error: ${response.status} ${response.statusText}`
-          );
-        }
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        return imageUrl;
-      } catch (error) {
-        console.error(`PNG loading failed:`, error);
-        return null;
-      }
-    }
-
-    function addWetlandRasterLayer(mapsInitialized, mapRefB, imageUrl, entry) {
-      if (!mapsInitialized || !mapRefB.current || !imageUrl) return;
-      const sourceId = "wetland-source";
-      const [lat_min, lng_min, lat_max, lng_max] = entry.boxes[0]
-        .split(" ")
-        .map(Number);
-
-      const coordinates = [
-        [-170, 80], // Top-left
-        [170, 80], // Top-right
-        [170, -80], // Bottom-right
-        [-170, -80], // Bottom-left
-      ];
-
-      console.log("Box values:", { lat_min, lng_min, lat_max, lng_max });
-      console.log("Coordinates:", coordinates);
-      if (!mapRefB.current.getSource(sourceId)) {
-        mapRefB.current.addSource(sourceId, {
-          type: "image",
-          url: imageUrl,
-          coordinates: coordinates,
-        });
+    const waitAndCreate = () => {
+      if (mapRefB.current?.isStyleLoaded()) {
+        console.log("Wetland Layer mapB: Creating layer");
+        createWetlandLayer();
       } else {
-        console.warn(`PNG Source ${sourceId} already exists, skipping`);
-      }
-      const layerId = "wetland-layer";
-      if (!mapRefB.current.getLayer(layerId)) {
-        mapRefB.current.addLayer({
-          id: layerId,
-          type: "raster",
-          source: sourceId,
-          paint: {
-            "raster-opacity": 0.8,
-          },
-        });
-      } else {
-        console.warn(`PNG Layer ${layerId} already exists, skipping`);
-      }
-    }
-    const loadAddLayer = async () => {
-      const entry = lpjEosimData.feed.entry[0];
-      const imageUrl = await processWetlandsPNG(entry);
-      if (imageUrl) {
-        addWetlandRasterLayer(mapsInitialized, mapRefB, imageUrl, entry);
+        console.log("Wetland Layer mapB: Waiting for styles...");
+        setTimeout(waitAndCreate, 100);
       }
     };
-    console.log("About to call loadAddLayer");
-    console.log(
-      "Debug: lpjEosimData structure:",
-      lpjEosimData.feed.entry[0].links[7]
-    );
-    loadAddLayer();
-  }, [mapsInitialized, mapRefB, lpjEosimData]);
+    waitAndCreate();
+
+    function createWetlandLayer() {
+      const wmsUrl =
+        "https://earth.gov/ghgcenter/api/raster/searches/05dbc16251570f995029001fcf6c930e/tiles/WebMercatorQuad/{z}/{x}/{y}?colormap_name=magma&rescale=0%2C3e-9&reScale=0%2C3e-9&assets=ensemble-mean-ch4-wetlands-emissions";
+
+      mapRefB.current.addSource("wetland-source", {
+        type: "raster",
+        tiles: [wmsUrl],
+        tileSize: 256,
+      });
+      mapRefB.current.addLayer({
+        id: "wetland-layer",
+        type: "raster",
+        source: "wetland-source",
+        layout: { visibility: "visible" },
+        paint: {
+          "raster-opacity": 0.7,
+          "raster-blend": "screen",
+        },
+      });
+    }
+    //Cleanup
+
+    return () => {
+      if (mapRefB.current) {
+        if (mapRefB.current.getLayer("wetland-layer")) {
+          mapRefB.current.removeLayer("wetland-layer");
+        }
+        if (mapRefB.current.getSource("wetland-source"))
+          mapRefB.current.removeSource("wetland-source");
+      }
+    };
+  }, [mapsInitialized]);
 
   return null;
 }

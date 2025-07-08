@@ -26,7 +26,7 @@ export default function MapSynchronizer({
       mapRefA.current = new mapboxGl.Map({
         container: containerA,
         center: defaultPosition,
-        style: "mapbox://styles/mapbox/satellite-v9",
+        style: "mapbox://styles/mapbox/dark-v11",
         zoom: 4,
         attributionControl: false,
       });
@@ -34,7 +34,7 @@ export default function MapSynchronizer({
       mapRefB.current = new mapboxGl.Map({
         container: containerB,
         center: defaultPosition,
-        style: "mapbox://styles/mapbox/satellite-v9",
+        style: "mapbox://styles/mapbox/dark-v11",
         zoom: 4,
         attributionControl: true,
       });
