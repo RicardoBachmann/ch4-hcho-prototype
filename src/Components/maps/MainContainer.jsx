@@ -8,7 +8,8 @@ import LayerManager from "../layers/LayerManager.jsx";
 import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
 import FormaldehydeTimeline from "../layers/sentinel5p/FormaldehydeTimeline.jsx";
 import DamLayer from "../layers/spatial/DamLayer.jsx";
-import MethaneEMITLayer from "../layers/nasaEmit/MethaneEMITLayer.jsx";
+import MethaneEMITLayer from "../layers/nasaEmit/MethaneEmitV002.jsx";
+import MethaneEmitV001 from "../layers/nasaEmit/MethaneEmitV001.jsx";
 import WetlandLayer from "../layers/ghgCenter/WetlandLayer.jsx";
 
 // import ControlPanel from "../ui/ControlPanel.jsx";
@@ -63,6 +64,7 @@ export default function MainContainer({}) {
       <FormaldehydeTimeline />
       <DamLayer />
       <MethaneEMITLayer />
+      <MethaneEmitV001 />
       <LayerManager />
       <MapSynchronizer
         containerA={containerA}
