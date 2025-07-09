@@ -7,8 +7,9 @@ async function fetchNasaEmitV001Service() {
   const params = new URLSearchParams({
     short_name: "EMITL2BCH4ENH",
     version: "001",
-    "bounding_box[]": "-180,-23.5,180,23.5",
-    page_size: 50, // max. 1500
+    //"bounding_box[]": "-180,-23.5,180,23.5",
+    "bounding_box[]": "-81,-56,-34,13",
+    page_size: 500, // max. 1500
     sort_key: "-start_date",
   });
 

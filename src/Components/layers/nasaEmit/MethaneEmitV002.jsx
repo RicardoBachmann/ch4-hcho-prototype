@@ -1,34 +1,48 @@
 import { useEffect, useContext } from "react";
-import useEmitData from "../../../hooks/useEmitData";
+import useEmitV002Data from "../../../hooks/useEmitV002Data";
 import { MapContext } from "../../../context/MapContext";
 
-export default function MethaneEMITLayer() {
+export default function MethaneEmitV002() {
   const { mapRefB, mapsInitialized } = useContext(MapContext);
-  const { emitData } = useEmitData(); // Add loading, error states for control panel UI
+  const { emitV002Data } = useEmitV002Data(); // Add loading, error states for control panel UI
   useEffect(() => {
-    if (!mapsInitialized || !mapRefB.current || !emitData) {
-      console.log("Early return - conditions not met");
+    if (!mapsInitialized || !mapRefB.current || !emitV002Data) {
+      console.log("Early return - conditions V002 not met");
       return;
     }
-    console.log("EMIT V002 data loaded:", emitData);
-    console.log("EMIT V002 data structure sample:", emitData.feed.entry[0]);
-    console.log("EMIT V002 granules:", emitData?.feed?.entry?.length);
 
+    console.log("EMIT V002 data loaded:", emitV002Data);
+    console.log("EMIT V002 data structure sample:", emitV002Data.feed.entry[0]);
+    console.log("EMIT V002 granules:", emitV002Data?.feed?.entry?.length);
+
+    // Helper function for consistent ID generation across EMIT versions
+    function generateIds(version, index, entryId) {
+      return {
+        sourceId: `CH4${version}-source-${index}`,
+        layerId: entryId,
+        pngSourceId: `CH4${version}-png-source-${index}`,
+        pngLayerId: `CH4${version}-png-layer-${index}`,
+      };
+    }
+
+    // Transforms NASA's lat,lng coordinate strings to Mapbox-compatible [lng,lat] arrays
     function transformCoordinates(polygonString) {
-      // Coordinates extraction, switch coord-props to the order: 1)lng 2)lat and push in coordinatePairs
-      // (Mapbox dont accept NASA's default order of lat,lng)
       const coordArray = polygonString.split(" ");
       const coordinatePairs = [];
+      // Loop through array, taking 2 values at a time (lat + lng pairs)
       for (let i = 0; i < coordArray.length; i += 2) {
+        // index (0,2,4...) latitude
         const lat = parseFloat(coordArray[i]);
+        // index (1,3,5...) longitude
         const lng = parseFloat(coordArray[i + 1]);
+        // Mapbox wants [longitude, latitude] order (opposite of NASA!)
         coordinatePairs.push([lng, lat]);
       }
       return coordinatePairs;
     }
 
+    // Creates GeoJSON polygon source and red outline layer for methane hotspot boundaries
     function addPolygonLayer(coordinatePairs, sourceId, layerId, mapRefB) {
-      // Add Source as polygon and creat for each an individual index for data improvment
       if (!mapRefB.current.getSource(sourceId)) {
         mapRefB.current.addSource(sourceId, {
           type: "geojson",
@@ -61,8 +75,13 @@ export default function MethaneEMITLayer() {
       }
     }
 
-    function addPngLayer(imageUrl, coordinatePairs, index, mapRefB) {
-      const pngSourceId = `CH4-png-source-${index}`;
+    function addPngLayer(
+      imageUrl,
+      coordinatePairs,
+      pngSourceId,
+      pngLayerId,
+      mapRefB
+    ) {
       // Source-Check
       if (!mapRefB.current.getSource(pngSourceId)) {
         mapRefB.current.addSource(pngSourceId, {
@@ -74,7 +93,7 @@ export default function MethaneEMITLayer() {
         console.warn(`PNG Source ${pngSourceId} already exists, skipping`);
       }
       // Layer-Check
-      const pngLayerId = `CH4-png-layer-${index}`;
+
       if (!mapRefB.current.getLayer(pngLayerId)) {
         mapRefB.current.addLayer({
           id: pngLayerId,
@@ -89,18 +108,19 @@ export default function MethaneEMITLayer() {
       }
     }
 
-    // Load, process & create blob
+    // Fetches PNG from NASA via proxy, creates blob URL, and adds as raster overlay
     async function processPngOverlay(entry) {
-      const extractPNG = entry.links.find((link) => {
+      const extractPng = entry.links.find((link) => {
         return link.title.includes("png");
       });
-      if (!extractPNG) return null;
+
+      if (!extractPng) return null;
 
       // IMPORTANT: NASA URL --> Proxy URL
       // "https://data.lpdaac.earthdatacloud.nasa.gov/path/to/file.png"
       // to:
       // "/api/nasa/path/to/file.png"
-      const nasaProxyUrl = extractPNG.href.replace(
+      const nasaProxyUrl = extractPng.href.replace(
         "https://data.lpdaac.earthdatacloud.nasa.gov",
         "/api/nasa"
       );
@@ -124,27 +144,36 @@ export default function MethaneEMITLayer() {
       }
     }
 
-    // NASA-EMIT forEach orchestrated granules
-    emitData.feed.entry.forEach(async (entry, index) => {
+    // NASA-EMITV002 forEach orchestrated granules
+    emitV002Data.feed.entry.forEach(async (entry, index) => {
       const polygonString = entry.polygons[0][0];
       const coordinatePairs = transformCoordinates(polygonString);
 
-      const sourceId = `CH4-source-${index}`;
-      const layerId = entry.id;
-
+      const { sourceId, layerId, pngSourceId, pngLayerId } = generateIds(
+        "V002",
+        index,
+        entry.id
+      );
       addPolygonLayer(coordinatePairs, sourceId, layerId, mapRefB);
       const imageUrl = await processPngOverlay(entry);
       if (imageUrl) {
-        addPngLayer(imageUrl, coordinatePairs, index, mapRefB);
+        // Adds PNG overlay as Mapbox image source with 80% opacity for methane concentration visualization
+        addPngLayer(
+          imageUrl,
+          coordinatePairs,
+          pngSourceId,
+          pngLayerId,
+          mapRefB
+        );
       }
     });
-  }, [mapsInitialized, mapRefB, emitData]);
+  }, [mapsInitialized, mapRefB, emitV002Data]);
   return;
 }
 
 // Renders NASA EMIT Methane V002 granules as red polygon outlines + PNG overlays on mapB
-// 4 seperate functions: transformCoordinates() | addPolygonLayer() | processPngOverlay() | addPngLayer()
+// V002: COMPREHENSIVE COVERAGE - all scenes regardless of plume detection + uncertainty data
+// Enhanced algorithms with improved spectral filtering and bias correction
+
 // Data flow: NASA bytes → Blob (cache) → Browser URL → Mapbox rendering
 // mapRefB in dependency array is just an "ESLint passenger" - required by linting rules but doesn't trigger re-runs
-
-// TODO: Add helper functions for ID generation (generateIds(index, entryId))
