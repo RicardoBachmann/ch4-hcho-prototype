@@ -34,7 +34,7 @@ export default function FormaldehydeLayer() {
         type: "raster",
         source: "HCHO-source-b",
         layout: { visibility: "none" },
-        paint: { "raster-opacity": 0.7 },
+        paint: { "raster-opacity": 0.3 },
       });
     }
     // Clean up
