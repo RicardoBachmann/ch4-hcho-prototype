@@ -1,4 +1,4 @@
-async function fetchNasaService(signal) {
+async function fetchNasaEmitV002Service(signal) {
   console.log("===NASA-Service connection===");
 
   //NASA CMR API for EMIT Methane data
@@ -6,8 +6,9 @@ async function fetchNasaService(signal) {
   const params = new URLSearchParams({
     short_name: "EMITL2BCH4ENH",
     version: "002",
-    "bounding_box[]": "-180,-23.5,180,23.5",
-    page_size: 50, // max. 1500
+    //"bounding_box[]": "-180,-23.5,180,23.5",
+    "bounding_box[]": "-81,-56,-34,13",
+    page_size: 200, // max. 1500
     sort_key: "-start_date",
   });
 
@@ -72,7 +73,7 @@ async function fetchNasaService(signal) {
   }
 }
 
-export default fetchNasaService;
+export default fetchNasaEmitV002Service;
 
 // Service-Responsibility:
 // Fetch NASA EMIT L2B Methane Enhancement Data 60 m V002
@@ -86,4 +87,3 @@ export default fetchNasaService;
 // "TypeError" = Network/Internet connection problem
 // "SyntaxError" = Server returned invalid data format
 // else = Data structure validation errors (passed through)
-
