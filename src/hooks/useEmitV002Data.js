@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
-import fetchNasaService from "../services/nasaService";
+import fetchNasaEmitV002Service from "../services/nasaEmitV002Service";
 
-export default function useEmitData() {
-  const [emitData, setEmitData] = useState(null);
+export default function useEmitV002Data() {
+  const [emitV002Data, setEmitV002Data] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -11,11 +11,11 @@ export default function useEmitData() {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    async function loadEmitData() {
+    async function loadEmitV002Data() {
       try {
-        const data = await fetchNasaService(controller.signal);
+        const data = await fetchNasaEmitV002Service(controller.signal);
         console.log("NASA-EMIT data loaded:", data);
-        setEmitData(data);
+        setEmitV002Data(data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching NASA-EMIT data:", error);
@@ -23,7 +23,7 @@ export default function useEmitData() {
         setLoading(false);
       }
     }
-    loadEmitData();
+    loadEmitV002Data();
 
     // Clean up
     return () => {
@@ -31,7 +31,7 @@ export default function useEmitData() {
     };
   }, []);
 
-  return { emitData, loading, error };
+  return { emitV002Data, loading, error };
 }
 
 // NASA EMIT data hook with abort control and error state management
