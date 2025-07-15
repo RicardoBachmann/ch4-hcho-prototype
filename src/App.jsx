@@ -1,11 +1,14 @@
 import "./App.css";
 import { MapProvider } from "./context/MapContext.jsx";
+import { LayerProvider } from "./context/LayerContext.jsx";
 import MainContainer from "./Components/maps/MainContainer.jsx";
 
 function App() {
   return (
     <MapProvider>
-      <MainContainer />
+      <LayerProvider>
+        <MainContainer />
+      </LayerProvider>
     </MapProvider>
   );
 }
