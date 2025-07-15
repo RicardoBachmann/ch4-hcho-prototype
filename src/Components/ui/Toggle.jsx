@@ -1,20 +1,21 @@
 import { useContext } from "react";
-import { MapContext } from "../../context/MapContext";
+import { LayerContext } from "../../context/LayerContext";
 
 export default function Toggle({ mapId }) {
-  const { activeMapLayers, setActiveMapLayers, mapsInitialized } =
-    useContext(MapContext);
-  const layers = [{ id: "HCHO", name: "Formaldehyde" }];
+  const { activeLayers, toggleLayer } = useContext(LayerContext);
 
-  const handleToggle = (layerId) => {
-    if (!mapsInitialized) return;
-
+  const handleToggle = (mapId, layerId) => {
     console.log(`Toggling ${layerId} for map ${mapId}`);
-    setActiveMapLayers((prev) => ({
-      ...prev,
-      [`map${mapId}`]: prev[`map${mapId}`] === layerId ? null : layerId,
-    }));
+    toggleLayer(`map${mapId}`, layerId); // "B" → "mapB"
   };
+
+  const layers = [
+    { id: "Formaldehyde", name: "Formaldehyde" },
+    { id: "EmitV001", name: "Emit V001" },
+    { id: "EmitV002", name: "Emit V002" },
+    { id: "Wetlands", name: "Wetlands" },
+    { id: "HydropowerDams", name: "HydropowerDams" },
+  ];
 
   return (
     <div
@@ -28,17 +29,30 @@ export default function Toggle({ mapId }) {
         borderRadius: "5px",
       }}
     >
-      {layers.map((layer) => (
-        <button
-          key={layer.id}
-          style={{ display: "block", margin: "5px 0" }}
-          onClick={() => {
-            handleToggle(layer.id);
-          }}
-        >
-          {layer.name}
-        </button>
-      ))}
+      {layers.map((layer) => {
+        // Get current visibility for this specific map + layer
+        const isVisible =
+          activeLayers[`map${mapId}`]?.[layer.id]?.visible || false;
+
+        return (
+          <button
+            key={layer.id}
+            style={{
+              display: "block",
+              margin: "5px 0",
+              backgroundColor: isVisible ? "lightgreen" : "lightgray",
+              border: "1px solid #ccc",
+              padding: "5px 10px",
+              borderRadius: "3px",
+            }}
+            onClick={() => {
+              handleToggle(mapId, layer.id);
+            }}
+          >
+            {layer.name} {isVisible ? "ON" : "OFF"}
+          </button>
+        );
+      })}
     </div>
   );
 }

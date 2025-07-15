@@ -1,44 +1,80 @@
 import { useContext, useEffect } from "react";
 import { MapContext } from "../../context/MapContext";
+import { LayerContext } from "../../context/LayerContext";
 
 export default function LayerManager() {
-  const { mapRefA, mapRefB, mapRefC, mapsInitialized, activeMapLayers } =
-    useContext(MapContext);
+  const { mapRefA, mapRefB, mapRefC, mapsInitialized } = useContext(MapContext);
+  const { activeLayers } = useContext(LayerContext);
 
-  // Visibility Control
+  // TODO: REFACTOR - Replace mapping with self-registering layers
+  const LAYER_MAPPING = {
+    Formaldehyde: {
+      mapA: "HCHO-layer-a",
+      mapB: "HCHO-layer-b",
+      mapC: "HCHO-layer-c",
+    },
+    EmitV001: {
+      mapA: "CH4V001-layer-a",
+      mapB: "CH4V001-layer-b",
+      mapC: "CH4V001-layer-c",
+    },
+    EmitV002: {
+      mapA: "CH4V002-layer-a",
+      mapB: "CH4V002-layer-b",
+      mapC: "CH4V002-layer-c",
+    },
+    Wetlands: {
+      mapA: "wetland-layer",
+      mapB: "wetland-layer",
+      mapC: "wetland-layer",
+    },
+    HydropowerDams: {
+      mapA: "dam-points",
+      mapB: "dam-points",
+      mapC: "dam-points",
+    },
+  };
+
+  // Map References für einfachere Iteration
+  const mapRefs = {
+    mapA: mapRefA,
+    mapB: mapRefB,
+    mapC: mapRefC,
+  };
+
   useEffect(() => {
     if (!mapsInitialized) return;
 
-    // Map A
-    if (mapRefA.current?.getLayer("HCHO-layer-a")) {
-      const visibilityA = activeMapLayers.mapA === "HCHO" ? "visible" : "none";
-      mapRefA.current.setLayoutProperty(
-        "HCHO-layer-a",
-        "visibility",
-        visibilityA
-      );
-    }
+    // Für jede Map
+    Object.entries(activeLayers).forEach(([mapId, mapLayers]) => {
+      const mapRef = mapRefs[mapId];
+      if (!mapRef?.current) return;
 
-    // Map B
-    if (mapRefB.current?.getLayer("HCHO-layer-b")) {
-      const visibilityB = activeMapLayers.mapB === "HCHO" ? "visible" : "none";
-      mapRefB.current.setLayoutProperty(
-        "HCHO-layer-b",
-        "visibility",
-        visibilityB
-      );
-    }
+      // Für jeden Layer in dieser Map
+      Object.entries(mapLayers).forEach(([layerId, layerConfig]) => {
+        const mapboxLayerId = LAYER_MAPPING[layerId]?.[mapId];
 
-    // Map C
-    if (mapRefC.current?.getLayer("HCHO-layer-c")) {
-      const visibilityC = activeMapLayers.mapC === "HCHO" ? "visible" : "none";
-      mapRefC.current.setLayoutProperty(
-        "HCHO-layer-c",
-        "visibility",
-        visibilityC
-      );
-    }
-  }, [activeMapLayers, mapsInitialized]);
+        if (mapboxLayerId && mapRef.current.getLayer(mapboxLayerId)) {
+          const visibility = layerConfig.visible ? "visible" : "none";
+          mapRef.current.setLayoutProperty(
+            mapboxLayerId,
+            "visibility",
+            visibility
+          );
+
+          console.log(`Set ${mapboxLayerId} on ${mapId} to ${visibility}`);
+        }
+      });
+    });
+  }, [activeLayers, mapsInitialized]);
 
   return null;
 }
+
+/* 
+TODO: FUTURE REFACTOR IDEAS
+- Replace LAYER_MAPPING with self-registering layers
+- Each layer component registers its own mapbox IDs
+- Move to event-driven architecture instead of useEffect polling
+- Add support for opacity, blend modes, z-index
+*/
