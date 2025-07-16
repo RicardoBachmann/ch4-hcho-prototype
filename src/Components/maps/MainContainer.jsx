@@ -7,7 +7,7 @@ import LayerManager from "../layers/LayerManager.jsx";
 
 import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
 import FormaldehydeTimeline from "../layers/sentinel5p/FormaldehydeTimeline.jsx";
-import DamLayer from "../layers/spatial/DamLayer.jsx";
+import HydroBarrierLayer from "../layers/spatial/HydroBarrierLayer.jsx";
 import HydroReserviorLayer from "../layers/spatial/HydroReserviorLayer.jsx";
 import MethaneEmitV001 from "../layers/nasaEmit/MethaneEmitV001.jsx";
 import MethaneEmitV002 from "../layers/nasaEmit/MethaneEmitV002.jsx";
@@ -43,6 +43,7 @@ export default function MainContainer({}) {
         {/* Map B */}
         <div style={{ flex: 1, position: "relative", height: "100%" }}>
           <MapContainerB onContainerReady={setContainerB} />
+
           <Toggle mapId="B" />
           {/*<ControlPanel
             sentinelPosition={sentinelPosition}
@@ -61,10 +62,10 @@ export default function MainContainer({}) {
 
       {/* Logic Component */}
       <WetlandLayer />
+      <HydroReserviorLayer />
       <FormaldehydeLayer />
       <FormaldehydeTimeline />
-      <DamLayer />
-      <HydroReserviorLayer />
+      <HydroBarrierLayer />
       <MethaneEmitV001 />
       <MethaneEmitV002 />
       <LayerManager />
