@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext } from "react";
 
 import { useTropicalDamData } from "../../../hooks/useTropicalDamData";
 import { MapContext } from "../../../context/MapContext";
