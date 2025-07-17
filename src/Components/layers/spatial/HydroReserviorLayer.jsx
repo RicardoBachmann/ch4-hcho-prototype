@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 
-import { useHydroReservoirData } from "../../../hooks/useHydroReservoirData";
+import useHydroReservoirData from "../../../hooks/useHydroReservoirData";
 import { MapContext } from "../../../context/MapContext";
 
 export default function HydroReservoirLayer() {

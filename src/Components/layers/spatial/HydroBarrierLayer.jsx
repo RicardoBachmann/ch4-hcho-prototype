@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 
-import { useHydroBarrierData } from "../../../hooks/useHydroBarrierData";
+import useHydroBarrierData from "../../../hooks/useHydroBarrierData";
 import { MapContext } from "../../../context/MapContext";
 
 export default function DamLayer() {
