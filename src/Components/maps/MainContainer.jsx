@@ -12,6 +12,7 @@ import HydroReserviorLayer from "../layers/spatial/HydroReserviorLayer.jsx";
 import MethaneEmitV001 from "../layers/nasaEmit/MethaneEmitV001.jsx";
 import MethaneEmitV002 from "../layers/nasaEmit/MethaneEmitV002.jsx";
 import WetlandLayer from "../layers/ghgCenter/WetlandLayer.jsx";
+import WaterbodyLayer from "../layers/spatial/WaterbodyLayer.jsx";
 
 // import ControlPanel from "../ui/ControlPanel.jsx";
 
@@ -62,6 +63,7 @@ export default function MainContainer({}) {
 
       {/* Logic Component */}
       <WetlandLayer />
+      <WaterbodyLayer />
       <HydroReserviorLayer />
       <FormaldehydeLayer />
       <FormaldehydeTimeline />

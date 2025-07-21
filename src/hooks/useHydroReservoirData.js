@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useHydroReservoirData() {
+export default function useHydroReservoirData() {
   const [hydroReservoirData, setHydroReservoirData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

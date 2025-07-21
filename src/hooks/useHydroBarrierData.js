@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useHydroBarrierData() {
+export default function useHydroBarrierData() {
   const [barrierData, setBarrierData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
