@@ -6,6 +6,7 @@ import MapSynchronizer from "./MapSynchronizer.jsx";
 import LayerManager from "../layers/LayerManager.jsx";
 
 import FormaldehydeLayer from "../layers/sentinel5p/FormaldehydeLayer.jsx";
+import HchoLayer from "../layers/sentinel5p/HchoLayer.jsx";
 import FormaldehydeTimeline from "../layers/sentinel5p/FormaldehydeTimeline.jsx";
 import HydroBarrierLayer from "../layers/spatial/HydroBarrierLayer.jsx";
 import HydroReserviorLayer from "../layers/spatial/HydroReserviorLayer.jsx";
@@ -63,6 +64,7 @@ export default function MainContainer({}) {
 
       {/* Logic Component */}
       <WetlandLayer />
+      <HchoLayer />
       <WaterbodyLayer />
       <HydroReserviorLayer />
       <FormaldehydeLayer />
